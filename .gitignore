@@ -1,0 +1,14 @@
+# 学生档案数据（运行时生成，绝不入库）
+data/
+学生入口二维码.png
+
+# 本地状态与凭证
+.herenow/
+node_modules/
+class-server.log
+http-server.log
+
+# 系统文件
+Thumbs.db
+desktop.ini
+__pycache__/
