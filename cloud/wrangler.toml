@@ -1,0 +1,20 @@
+# 学考冲刺通 · 主站（zcstudy 账户 + KV 存储 + 自定义域名）
+# 为什么主站用 KV：该账户 D1 配额已满（不删用户现有库）；KV 完全覆盖本场景读写模式。
+# D1 备用版见 wrangler.d1.toml（zcvoice 账户）。
+name = "xuekao"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+account_id = "b945f659e7168126d8c819670695bd9f"
+workers_dev = false
+
+routes = [
+  { pattern = "xuekao.jiuyeke.cn", custom_domain = true }
+]
+
+[assets]
+directory = "../site"
+binding = "ASSETS"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "93fcbda217d344dca6fb5e4ced0c9fab"

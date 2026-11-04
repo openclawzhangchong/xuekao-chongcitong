@@ -421,6 +421,7 @@ body.big .mods{grid-template-columns:1fr 1fr 1fr}
       <div class="dlg-t">🎓 输入学号</div>
       <input id="dlgSid" placeholder="老师发的学号，如 2025001" maxlength="32">
       <input id="dlgName" placeholder="姓名（选填）" maxlength="24">
+      <input id="dlgCode" placeholder="班级码（老师发的 6 位数字；本机/局域网版可留空）" maxlength="32" inputmode="numeric">
       <div class="dlg-err" id="dlgErr"></div>
       <div style="display:flex;gap:9px">
         <button class="btn ghost sm" id="dlgCancel">取消</button>
@@ -1513,16 +1514,17 @@ window.BANK = [{"m": "M1", "kd": "考点 1 · 信息技术的概念及典型应�
 
   /* ---------- 班级同步（渐进增强） ---------- */
   // 班级版服务存在 → 学号身份 + 档案同步到老师电脑；file:// 或线上版 → 静默本机模式
-  var CLS = { mode: 'local', sid: '', name: '' };
+  var CLS = { mode: 'local', sid: '', name: '', code: '' };
   var SKEY = 'xkc.class.v1';
   function loadCls() {
     try {
       var raw = JSON.parse(localStorage.getItem(SKEY) || '{}');
       CLS.sid = String(raw.sid || '').slice(0, 32);
       CLS.name = String(raw.name || '').slice(0, 24);
+      CLS.code = String(raw.code || '').slice(0, 32);
     } catch (e) { }
   }
-  function saveCls() { try { localStorage.setItem(SKEY, JSON.stringify({ sid: CLS.sid, name: CLS.name })); } catch (e) { } }
+  function saveCls() { try { localStorage.setItem(SKEY, JSON.stringify({ sid: CLS.sid, name: CLS.name, code: CLS.code })); } catch (e) { } }
   function detectClassMode() {
     if (location.protocol === 'file:') { renderClsBar(); return; }
     fetch('/api/hello', { method: 'GET' }).then(function (r) {
@@ -1531,6 +1533,7 @@ window.BANK = [{"m": "M1", "kd": "考点 1 · 信息技术的概念及典型应�
     }).then(function (j) {
       if (j && j.mode === 'class') {
         CLS.mode = 'class';
+        CLS.label = j.label === 'cloud' ? 'cloud' : 'lan';
         renderClsBar();
         if (!CLS.sid) setTimeout(promptSid, 600);
       } else { renderClsBar(); }
@@ -1543,12 +1546,13 @@ window.BANK = [{"m": "M1", "kd": "考点 1 · 信息技术的概念及典型应�
       return;
     }
     bar.classList.remove('hidden');
+    var where = CLS.label === 'cloud' ? '云端班级库' : '老师电脑';
     if (CLS.sid) {
-      bar.innerHTML = '🎓 班级模式 · 学号 <b>' + esc(CLS.sid) + '</b>' + (CLS.name ? '（' + esc(CLS.name) + '）' : '') +
-        ' · 刷题成绩实时同步到老师电脑 <span class="clsLink" id="clsEdit">更换学号</span>';
+      bar.innerHTML = '🎓 ' + (CLS.label === 'cloud' ? '云端同步' : '班级模式') + ' · 学号 <b>' + esc(CLS.sid) + '</b>' + (CLS.name ? '（' + esc(CLS.name) + '）' : '') +
+        ' · 刷题成绩实时同步到' + where + ' <span class="clsLink" id="clsEdit">更换学号</span>';
       $('clsEdit').onclick = promptSid;
     } else {
-      bar.innerHTML = '🎓 班级模式 · <span class="clsLink" id="clsEdit">点这里输入学号</span>，成绩才能长久记录';
+      bar.innerHTML = '🎓 ' + (CLS.label === 'cloud' ? '云端同步' : '班级模式') + ' · <span class="clsLink" id="clsEdit">点这里输入学号</span>，成绩才能长久记录';
       $('clsEdit').onclick = promptSid;
     }
   }
@@ -1556,6 +1560,7 @@ window.BANK = [{"m": "M1", "kd": "考点 1 · 信息技术的概念及典型应�
     var mask = $('dlgMask');
     $('dlgSid').value = CLS.sid || '';
     $('dlgName').value = CLS.name || '';
+    $('dlgCode').value = CLS.code || '';
     $('dlgErr').textContent = '';
     mask.classList.remove('hidden');
     setTimeout(function () { try { $('dlgSid').focus(); } catch (e) { } }, 60);
@@ -1564,10 +1569,11 @@ window.BANK = [{"m": "M1", "kd": "考点 1 · 信息技术的概念及典型应�
   function submitSidDialog() {
     var sid = $('dlgSid').value.trim().slice(0, 32);
     var name = $('dlgName').value.trim().slice(0, 24);
+    var code = $('dlgCode').value.trim().slice(0, 32);
     if (!sid) { $('dlgErr').textContent = '学号不能为空'; return; }
     if (!/^[0-9A-Za-z_\-\u4e00-\u9fa5]{1,32}$/.test(sid)) { $('dlgErr').textContent = '学号只能包含中文、字母、数字、- 和 _'; return; }
-    CLS.sid = sid; CLS.name = name;
-    saveCls(); closeSidDialog(); renderClsBar(); syncNow(true);
+    CLS.sid = sid; CLS.name = name; CLS.code = code;
+    saveCls(); closeSidDialog(); renderClsBar(); syncNow(false);
   }
   function syncNow(silent) {
     if (CLS.mode !== 'class' || !CLS.sid) return;
@@ -1575,8 +1581,13 @@ window.BANK = [{"m": "M1", "kd": "考点 1 · 信息技术的概念及典型应�
       fetch('/api/sync', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ sid: CLS.sid, name: CLS.name, profile: P })
+        body: JSON.stringify({ sid: CLS.sid, name: CLS.name, code: CLS.code, profile: P })
       }).then(function (r) {
+        if (r.status === 401) {
+          if (!silent) alert('班级码不对：请点同步条上的「更换学号」重新填写（学号+班级码都要对）');
+          else promptSid();
+          return;
+        }
         if (!r.ok && !silent) alert('同步失败（' + r.status + '），成绩仍保存在本机');
       }).catch(function () {
         if (!silent) alert('同步失败（网络），成绩仍保存在本机');

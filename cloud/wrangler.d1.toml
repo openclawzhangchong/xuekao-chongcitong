@@ -1,0 +1,18 @@
+# 学考冲刺通 · D1 备用版（zcvoice 账户 zhangchong2@foxmail.com）
+# 部署：source ~/.cloudflare/zcvoice.env && export CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_API_TOKEN
+#       cd cloud && npx wrangler deploy -c wrangler.d1.toml
+# 入口：https://xuekao.zcvoice-app.workers.dev （国内可达性不稳定，主站用 xuekao.jiuyeke.cn）
+name = "xuekao"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+account_id = "0652817bf911d10df2367856419781d8"
+workers_dev = true
+
+[assets]
+directory = "../site"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "xuekao"
+database_id = "628a1a6f-0a79-4f11-9d47-92dc0f911932"

@@ -44,6 +44,45 @@ python 班级版服务.py
 依赖：Python 3.8+（仅标准库）；可选 `pip install qrcode` 自动生成入口二维码。
 缺失前端文件时先执行 `node src/build.js` 生成 `site/index.html`。
 
+## 云端版（Cloudflare Workers + KV/D1）
+
+**入口：https://xuekao.jiuyeke.cn** —— 学生手机直接打开（或扫 evidence/qr-xuekao-cloud.png），
+输学号 + 班级码，成绩实时存入云端，老师随时随地看全班学情。
+
+| 角色 | 用法 |
+|---|---|
+| 学生 | 打开入口 → 输学号、姓名、**班级码** → 刷题，每次交卷自动同步 |
+| 老师 | 打开 `https://xuekao.jiuyeke.cn/teacher?key=<教师密钥>` 看榜单 / 导出 CSV（密钥在部署者本地 cloud/keys.json，不入库） |
+
+防滥用：班级码是同步的必备口令（错码 401）；教师页与导出必须带密钥（403）；
+学号走白名单校验（防路径注入）；多设备同号自动合并（逐题取 max 防倒退）。
+
+### 双存储支持（同一份 worker.js）
+
+| 配置 | 账户 | 存储 | 入口 |
+|---|---|---|---|
+| `wrangler.toml`（主站） | zcstudy | **KV** | https://xuekao.jiuyeke.cn（自定义域，国内稳定） |
+| `wrangler.d1.toml`（备用） | zcvoice | **D1** | https://xuekao.zcvoice-app.workers.dev（国内可达性不稳定） |
+
+> 为什么主站用 KV：该账户 D1 配额已满且不宜删除既有库；KV 完全覆盖「按学号读写 JSON」的场景。
+> D1 版已完整部署可用，换存储只是换 wrangler 配置。
+
+### 部署/更新
+
+```bash
+node src/build.js && cp dist/学考冲刺通.html site/index.html   # 前端有改动时
+cd cloud
+npx wrangler deploy            # 主站（KV + 自定义域，用 zcstudy OAuth）
+npx wrangler secret put CLASS_CODE    # 班级码（已设）
+npx wrangler secret put TEACHER_KEY   # 教师密钥（已设）
+
+# D1 备用版：
+source ~/.cloudflare/zcvoice.env && export CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_API_TOKEN
+npx wrangler deploy -c wrangler.d1.toml
+```
+
+测试：`node cloud/worker.test.js`（20 项：sid 白名单/合并/预估对账）。
+
 ## 构建与测试
 
 ```bash

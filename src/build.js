@@ -211,6 +211,7 @@ ${css}
       <div class="dlg-t">🎓 输入学号</div>
       <input id="dlgSid" placeholder="老师发的学号，如 2025001" maxlength="32">
       <input id="dlgName" placeholder="姓名（选填）" maxlength="24">
+      <input id="dlgCode" placeholder="班级码（老师发的 6 位数字；本机/局域网版可留空）" maxlength="32" inputmode="numeric">
       <div class="dlg-err" id="dlgErr"></div>
       <div style="display:flex;gap:9px">
         <button class="btn ghost sm" id="dlgCancel">取消</button>
