@@ -173,6 +173,10 @@
     on('dlgOk', 'onclick', submitSidDialog);
     on('dlgMask', 'onclick', function (ev) { if (ev.target === this) closeSidDialog(); });
     $('dlgSid') && ($('dlgSid').onkeydown = function (e) { if (e.key === 'Enter') submitSidDialog(); });
+    // 课堂投屏：三个入口统一 toggle（含首页，修漏绑）
+    ['bigBtnHome', 'bigBtn', 'bigBtn2'].forEach(function (id) {
+      on(id, 'onclick', toggleBig);
+    });
     // 档案
     on('exportBtn', 'onclick', exportProfile);
     on('importBtn', 'onclick', function () { $('importFile').click(); });
@@ -214,6 +218,26 @@
       kind === 'weak' ? '弱项特训' : '自由练习';
     showPanel('quiz');
     renderQuestion();
+  }
+
+  /* ---------- 课堂投屏模式 ---------- */
+  // 三个按钮共用：切换 body.big + 同步所有按钮的 on 态（点击即见反馈）
+  function toggleBig() {
+    var on = document.body.classList.toggle('big');
+    ['bigBtnHome', 'bigBtn', 'bigBtn2'].forEach(function (id) {
+      var b = $(id);
+      if (b) b.classList.toggle('on', on);
+    });
+    saveBig(on);
+  }
+  function saveBig(v) { try { localStorage.setItem('xkc.big', v ? '1' : '0'); } catch (e) { } }
+  function loadBig() {
+    try {
+      if (localStorage.getItem('xkc.big') === '1') {
+        document.body.classList.add('big');
+        ['bigBtnHome', 'bigBtn', 'bigBtn2'].forEach(function (id) { var b = $(id); if (b) b.classList.add('on'); });
+      }
+    } catch (e) { }
   }
 
   /* ---------- 答题 ---------- */
@@ -330,8 +354,6 @@
     }
   };
   $('speakBtn').onclick = speakCurrent;
-  $('bigBtn').onclick = function () { document.body.classList.toggle('big'); };
-  $('bigBtn2').onclick = function () { document.body.classList.toggle('big'); };
 
   /* ---------- 结束与成绩 ---------- */
   function finishSession() {
@@ -670,6 +692,7 @@
     refreshBadges();
     showPanel('home');
     $('verTag').textContent = '题库版本 ' + (window.BANK_VER || '') + ' · 共 ' + BANK.length + ' 题 · 考纲 150 分制';
+    loadBig();
     loadCls();
     detectClassMode();
   } catch (e) {

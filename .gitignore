@@ -15,3 +15,5 @@ __pycache__/
 
 # 云端版密钥（班级码/教师密钥，绝不入库）
 cloud/keys.json
+.wrangler/
+**/.wrangler/

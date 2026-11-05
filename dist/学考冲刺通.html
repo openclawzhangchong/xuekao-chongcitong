@@ -183,7 +183,7 @@ header .h-sub{font-size:12px;opacity:.85;font-weight:400}
 .tab .ti{font-size:21px;display:block;line-height:1.2}
 .tab.on{color:var(--pri-d);font-weight:700;background:var(--pri-ll)}
 
-/* 大屏模式（投屏） */
+/* 大屏模式（投屏）：所有视口都有可见放大；宽屏横屏额外启用双列大字 */
 body.big{--fs:21px}
 body.big .app{max-width:1080px}
 body.big .qstem{font-size:28px}
@@ -192,6 +192,11 @@ body.big .opt{min-height:64px;padding:18px}
 body.big .score-hero .big{font-size:72px}
 body.big .grid4{grid-template-columns:repeat(4,1fr)}
 body.big .mods{grid-template-columns:1fr 1fr 1fr}
+body.big .card{padding:20px}
+body.big .h-title{font-size:22px}
+body.big .stat .v{font-size:26px}
+/* 投屏按钮 on 态：点亮 = 点击有反馈 */
+.h-btn.on,.speak-btn.on{background:#fff;color:var(--pri-d);font-weight:700;box-shadow:0 0 0 2px rgba(255,255,255,.5) inset}
 
 .empty{ text-align:center;color:var(--mut);padding:30px 10px;font-size:14px}
 .ver-tag{margin:14px 0 4px;text-align:center;font-size:12px;color:#a78bda}
@@ -1139,6 +1144,10 @@ window.BANK = [{"m": "M1", "kd": "考点 1 · 信息技术的概念及典型应�
     on('dlgOk', 'onclick', submitSidDialog);
     on('dlgMask', 'onclick', function (ev) { if (ev.target === this) closeSidDialog(); });
     $('dlgSid') && ($('dlgSid').onkeydown = function (e) { if (e.key === 'Enter') submitSidDialog(); });
+    // 课堂投屏：三个入口统一 toggle（含首页，修漏绑）
+    ['bigBtnHome', 'bigBtn', 'bigBtn2'].forEach(function (id) {
+      on(id, 'onclick', toggleBig);
+    });
     // 档案
     on('exportBtn', 'onclick', exportProfile);
     on('importBtn', 'onclick', function () { $('importFile').click(); });
@@ -1180,6 +1189,26 @@ window.BANK = [{"m": "M1", "kd": "考点 1 · 信息技术的概念及典型应�
       kind === 'weak' ? '弱项特训' : '自由练习';
     showPanel('quiz');
     renderQuestion();
+  }
+
+  /* ---------- 课堂投屏模式 ---------- */
+  // 三个按钮共用：切换 body.big + 同步所有按钮的 on 态（点击即见反馈）
+  function toggleBig() {
+    var on = document.body.classList.toggle('big');
+    ['bigBtnHome', 'bigBtn', 'bigBtn2'].forEach(function (id) {
+      var b = $(id);
+      if (b) b.classList.toggle('on', on);
+    });
+    saveBig(on);
+  }
+  function saveBig(v) { try { localStorage.setItem('xkc.big', v ? '1' : '0'); } catch (e) { } }
+  function loadBig() {
+    try {
+      if (localStorage.getItem('xkc.big') === '1') {
+        document.body.classList.add('big');
+        ['bigBtnHome', 'bigBtn', 'bigBtn2'].forEach(function (id) { var b = $(id); if (b) b.classList.add('on'); });
+      }
+    } catch (e) { }
   }
 
   /* ---------- 答题 ---------- */
@@ -1296,8 +1325,6 @@ window.BANK = [{"m": "M1", "kd": "考点 1 · 信息技术的概念及典型应�
     }
   };
   $('speakBtn').onclick = speakCurrent;
-  $('bigBtn').onclick = function () { document.body.classList.toggle('big'); };
-  $('bigBtn2').onclick = function () { document.body.classList.toggle('big'); };
 
   /* ---------- 结束与成绩 ---------- */
   function finishSession() {
@@ -1636,6 +1663,7 @@ window.BANK = [{"m": "M1", "kd": "考点 1 · 信息技术的概念及典型应�
     refreshBadges();
     showPanel('home');
     $('verTag').textContent = '题库版本 ' + (window.BANK_VER || '') + ' · 共 ' + BANK.length + ' 题 · 考纲 150 分制';
+    loadBig();
     loadCls();
     detectClassMode();
   } catch (e) {
