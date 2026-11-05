@@ -30,16 +30,46 @@
     $('badgeDiag').textContent = wk > 0 ? wk : '';
   }
 
-  /* ---------- 语音朗读 ---------- */
-  var zhVoice = null, speaking = false;
-  function pickVoice() {
-    if (!('speechSynthesis' in window)) return;
-    var vs = speechSynthesis.getVoices();
-    zhVoice = vs.filter(function (v) { return /^zh/i.test(v.lang); })[0] || null;
+  /* ---------- 语音朗读（多音色） ---------- */
+  var speaking = false;
+  var TTS_PREF = { voiceURI: '', rate: 1 };
+  function loadTtsPref() {
+    try {
+      TTS_PREF.voiceURI = localStorage.getItem('xkc.tts.voice') || '';
+      TTS_PREF.rate = parseFloat(localStorage.getItem('xkc.tts.rate')) || 1;
+    } catch (e) { }
   }
-  if ('speechSynthesis' in window) {
-    pickVoice();
-    speechSynthesis.onvoiceschanged = pickVoice;
+  function saveTtsPref() {
+    try {
+      localStorage.setItem('xkc.tts.voice', TTS_PREF.voiceURI);
+      localStorage.setItem('xkc.tts.rate', String(TTS_PREF.rate));
+    } catch (e) { }
+  }
+  function zhVoices() {
+    if (!('speechSynthesis' in window)) return [];
+    return speechSynthesis.getVoices().filter(function (v) { return /^zh/i.test(v.lang); });
+  }
+  function currentVoice() {
+    var vs = zhVoices();
+    if (!vs.length) return null;
+    for (var i = 0; i < vs.length; i++) if (vs[i].voiceURI === TTS_PREF.voiceURI) return vs[i];
+    return vs[0];
+  }
+  // 通用朗读入口（表扬/读题/试听共用）：返回 utterance 或 null
+  function speak(text, opts) {
+    opts = opts || {};
+    if (!('speechSynthesis' in window)) return null;
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    var v = currentVoice();
+    if (v) u.voice = v;
+    u.lang = 'zh-CN';
+    u.rate = opts.rate || TTS_PREF.rate || 1;
+    u.pitch = opts.pitch || 1;
+    if (opts.onend) u.onend = opts.onend;
+    if (opts.onerror) u.onerror = opts.onerror;
+    speechSynthesis.speak(u);
+    return u;
   }
   function stopSpeak() { if ('speechSynthesis' in window) { speechSynthesis.cancel(); speaking = false; syncSpeakBtn(); } }
   function speakCurrent() {
@@ -48,16 +78,179 @@
     var q = S.list[S.idx]; if (!q) return;
     var parts = [q.s];
     q.o.forEach(function (op) { parts.push(op[0] + '，' + (op[1] || op[0])); });
-    var u = new SpeechSynthesisUtterance(parts.join('。'));
-    if (zhVoice) u.voice = zhVoice;
-    u.lang = 'zh-CN'; u.rate = 1;
-    u.onend = function () { speaking = false; syncSpeakBtn(); };
-    u.onerror = function () { speaking = false; syncSpeakBtn(); };
     speaking = true; syncSpeakBtn();
-    speechSynthesis.speak(u);
+    speak(parts.join('。'), {
+      onend: function () { speaking = false; syncSpeakBtn(); },
+      onerror: function () { speaking = false; syncSpeakBtn(); }
+    });
   }
   function syncSpeakBtn() {
     var b = $('speakBtn'); if (b) b.classList.toggle('on', speaking);
+  }
+
+  /* ---------- 课堂互动：名单 / 点名 / 表扬 ---------- */
+  var ROSTER = { list: [] };              // [{sid, name}]
+  var PICK = { name: '', sid: '' };       // 当前题被点学生
+  var DRAW = { queue: [], rolling: null, speaking: false, noRepeat: true }; // 不重复抽取袋
+
+  function rosterHash() {
+    return ROSTER.list.map(function (s) { return s.name + (s.sid ? ':' + s.sid : ''); }).join('|');
+  }
+  function loadRoster() {
+    try {
+      var raw = JSON.parse(localStorage.getItem('xkc.roster') || '{}');
+      if (Array.isArray(raw.list)) ROSTER.list = raw.list;
+    } catch (e) { }
+    try {
+      var bag = JSON.parse(localStorage.getItem('xkc.drawbag') || '{}');
+      if (bag.hash === rosterHash() && Array.isArray(bag.queue)) DRAW.queue = bag.queue;
+    } catch (e) { }
+  }
+  function saveRoster() {
+    try { localStorage.setItem('xkc.roster', JSON.stringify({ list: ROSTER.list, savedAt: Date.now() })); } catch (e) { }
+    saveBag();
+  }
+  function saveBag() {
+    try { localStorage.setItem('xkc.drawbag', JSON.stringify({ hash: rosterHash(), queue: DRAW.queue })); } catch (e) { }
+  }
+  // 名单文本解析：每行「姓名」或「学号,姓名」或「学号␣姓名」，# 开头为注释
+  function parseRoster(text) {
+    var out = [], seen = {};
+    String(text || '').split(/\r?\n/).forEach(function (line) {
+      line = line.trim();
+      if (!line || line.charAt(0) === '#') return;
+      var parts = line.split(/[,，\t ]+/);
+      var name = parts[parts.length - 1], sid = parts.length > 1 ? parts.slice(0, parts.length - 1).join('') : '';
+      name = name.trim(); sid = sid.trim();
+      if (!name || name.length > 24) return;
+      if (seen[name]) return;
+      seen[name] = 1;
+      out.push({ sid: sid, name: name });
+    });
+    return out;
+  }
+  // 不重复抽取：袋子空了重洗（reshuffled=true 提示一轮结束）；关闭开关则纯随机
+  function drawStudent() {
+    var names = ROSTER.list.map(function (s) { return s.name; });
+    if (!names.length) return null;
+    if (DRAW.noRepeat === false) {
+      return { name: names[Math.floor(Math.random() * names.length)], reshuffled: false };
+    }
+    if (!DRAW.queue.length) {
+      DRAW.queue = XK_SHUFFLE(names.slice());
+      var pick = DRAW.queue.shift();
+      saveBag();
+      return { name: pick, reshuffled: true };
+    }
+    var name = DRAW.queue.shift();
+    saveBag();
+    return { name: name, reshuffled: false };
+  }
+  function XK_SHUFFLE(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+  // 点名动画：全屏遮罩滚动 1.4s → 减速定格 → 号角
+  function runDraw() {
+    if (!ROSTER.list.length) { alert('先在首页「课堂互动」里导入学生名单'); return; }
+    if (DRAW.rolling) return;
+    var mask = $('drawMask'), nameEl = $('drawName'), tipEl = $('drawTip');
+    mask.classList.remove('hidden');
+    tipEl.textContent = '';
+    var names = ROSTER.list.map(function (s) { return s.name; });
+    var ticks = 0, total = 18;
+    XKS.unlock();
+    DRAW.rolling = setInterval(function () {
+      ticks++;
+      nameEl.textContent = names[Math.floor(Math.random() * names.length)];
+      if (ticks % 3 === 0) XKS.tick();
+      if (ticks >= total) {
+        clearInterval(DRAW.rolling); DRAW.rolling = null;
+        var res = drawStudent();
+        nameEl.textContent = res.name;
+        PICK.name = res.name;
+        PICK.sid = (ROSTER.list.filter(function (s) { return s.name === res.name; })[0] || {}).sid || '';
+        PICK.qIdx = S.idx;
+        XKS.fanfare();
+        tipEl.textContent = (res.reshuffled ? '🔄 全班轮完一轮，重新开始！　' : '') + '请 ' + res.name + ' 同学上来答题！';
+        renderQuestion(); // 刷新作答学生徽章
+        setTimeout(function () { speak('请' + res.name + '同学上来答题'); }, 350);
+      }
+    }, 78);
+  }
+  function closeDraw() {
+    $('drawMask').classList.add('hidden');
+  }
+  // 课堂互动设置卡渲染
+  function renderClassroom() {
+    var n = ROSTER.list.length;
+    var sidN = ROSTER.list.filter(function (s) { return s.sid; }).length;
+    var rc = $('rosterCount');
+    if (rc) rc.textContent = n ? ('已存 ' + n + ' 人（含学号 ' + sidN + ' 人）· 剩余未点 ' + (DRAW.queue.length || n) + ' 人') : '尚未导入名单';
+    var ta = $('rosterText');
+    if (ta && !ta.value && n) {
+      ta.value = ROSTER.list.map(function (s) { return (s.sid ? s.sid + ',' : '') + s.name; }).join('\n');
+    }
+    var sw = $('sfxSw'); if (sw) sw.classList.toggle('on', XKS.isEnabled());
+    var dt = $('drawToggle'); if (dt) dt.classList.toggle('on', DRAW.noRepeat !== false);
+    // 音色下拉
+    var sel = $('ttsVoice');
+    if (sel && !sel.options.length) {
+      var vs = zhVoices();
+      vs.forEach(function (v) {
+        var o = document.createElement('option');
+        o.value = v.voiceURI;
+        o.textContent = v.name.replace(/Microsoft |Online \(Natural\)|- /g, '') + (v.localService ? '' : '（在线）');
+        sel.appendChild(o);
+      });
+      if (!vs.length) {
+        var o = document.createElement('option');
+        o.value = ''; o.textContent = '系统默认音色';
+        sel.appendChild(o);
+      }
+    }
+    if (sel) sel.value = TTS_PREF.voiceURI || (sel.options[0] ? sel.options[0].value : '');
+    var rv = $('ttsRateVal'); if (rv) rv.textContent = (TTS_PREF.rate || 1).toFixed(1) + 'x';
+  }
+  // 从云端班级拉名单（需教师密钥；支持 ?teacherkey= 一次性参数）
+  function fetchCloudRoster(key, silent) {
+    key = (key || '').trim();
+    if (!key) {
+      if (typeof window.prompt === 'function') {
+        key = window.prompt('输入教师密钥（见部署者 cloud/keys.json 的 teacherKey）', '') || '';
+      }
+      key = (key || '').trim();
+    }
+    if (!key) return;
+    fetch('/api/students?key=' + encodeURIComponent(key)).then(function (r) {
+      if (r.status === 403) throw new Error('密钥不对');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (j) {
+      var st = (j && j.students) || [];
+      if (!st.length) throw new Error('云端还没有学生数据');
+      ROSTER.list = st.map(function (s) { return { sid: s.sid || '', name: s.name || s.sid }; });
+      DRAW.queue = [];
+      saveRoster();
+      if ($('rosterText')) $('rosterText').value = '';
+      renderClassroom();
+      if (!silent) alert('已从云端拉取 ' + ROSTER.list.length + ' 名学生');
+    }).catch(function (e) {
+      alert('云端拉取失败：' + e.message);
+    });
+  }
+  // 表扬/鼓励横幅：插入答题页顶部（投屏醒目），自动朗读
+  function banner(text, kind) {
+    var body = $('qbody');
+    var old = body.querySelector('.cheer'); if (old) old.remove();
+    var d = document.createElement('div');
+    d.className = 'cheer ' + (kind === 'praise' ? 'cheer-praise' : 'cheer-encourage');
+    d.textContent = text;
+    body.insertBefore(d, body.firstChild);
+    body.scrollTop = 0;
   }
 
   /* ---------- 面板切换 ---------- */
@@ -177,6 +370,58 @@
     ['bigBtnHome', 'bigBtn', 'bigBtn2'].forEach(function (id) {
       on(id, 'onclick', toggleBig);
     });
+    // 课堂互动
+    on('drawBtn', 'onclick', runDraw);
+    on('drawClose', 'onclick', function () { stopSpeak(); closeDraw(); });
+    on('drawGo', 'onclick', closeDraw);
+    on('drawRead', 'onclick', function () { closeDraw(); speakCurrent(); });
+    on('rosterSave', 'onclick', function () {
+      var list = parseRoster($('rosterText').value);
+      if (!list.length) { alert('没有解析出有效名单。每行一个姓名，或「学号,姓名」'); return; }
+      ROSTER.list = list;
+      DRAW.queue = []; // 名单变更重置抽取袋
+      saveRoster();
+      renderClassroom();
+      alert('已保存 ' + list.length + ' 名学生');
+    });
+    on('rosterClear', 'onclick', function () {
+      if (!confirm('清空学生名单？（不影响成绩档案）')) return;
+      ROSTER.list = []; DRAW.queue = [];
+      $('rosterText').value = '';
+      saveRoster(); renderClassroom();
+    });
+    on('rosterFile', 'onchange', function (ev) {
+      var f = ev.target.files && ev.target.files[0];
+      if (!f) return;
+      var fr = new FileReader();
+      fr.onload = function () { $('rosterText').value = String(fr.result || ''); $('rosterSave').click(); };
+      fr.readAsText(f);
+      ev.target.value = '';
+    });
+    on('rosterFetch', 'onclick', fetchCloudRoster);
+    on('sfxSw', 'onclick', function () {
+      var v = !XKS.isEnabled();
+      XKS.setEnabled(v);
+      if (v) { XKS.unlock(); XKS.correct(); }
+      renderClassroom();
+    });
+    on('ttsVoice', 'onchange', function () {
+      TTS_PREF.voiceURI = this.value; saveTtsPref();
+    });
+    on('ttsRate', 'oninput', function () {
+      TTS_PREF.rate = parseFloat(this.value) || 1;
+      $('ttsRateVal').textContent = TTS_PREF.rate.toFixed(1) + 'x';
+      saveTtsPref();
+    });
+    on('ttsTest', 'onclick', function () {
+      XKS.unlock();
+      speak('你好，我是学考冲刺通的朗读音色，马上开始读题。', { rate: TTS_PREF.rate });
+    });
+    on('drawToggle', 'onclick', function () {
+      DRAW.noRepeat = !DRAW.noRepeat;
+      try { localStorage.setItem('xkc.draw.norepeat', DRAW.noRepeat ? '1' : '0'); } catch (e) { }
+      renderClassroom();
+    });
     // 档案
     on('exportBtn', 'onclick', exportProfile);
     on('importBtn', 'onclick', function () { $('importFile').click(); });
@@ -250,6 +495,15 @@
     $('qIdx').textContent = '第 ' + (S.idx + 1) + ' / ' + total + ' 题';
     $('qKd').textContent = (mod.disp || '') + ' · ' + q.kd;
     $('progBar').style.width = ((S.idx + 1) / total * 100) + '%';
+    // 点名学生绑定题号：翻到别的题自动失效
+    if (PICK.qIdx !== S.idx) { PICK.name = ''; PICK.sid = ''; }
+    var pickBadge = $('pickBadge');
+    if (pickBadge) {
+      pickBadge.classList.toggle('hidden', !PICK.name);
+      pickBadge.textContent = '🎓 本题由 ' + PICK.name + ' 同学作答';
+    }
+    var drawBtn = $('drawBtn');
+    if (drawBtn) drawBtn.classList.toggle('hidden', !ROSTER.list.length);
     var saved = S.answers[S.idx];
     S.curSel = saved ? saved.sel.slice() : [];
     S.judged = !!(saved && saved.judged);
@@ -308,9 +562,30 @@
     S.answers[S.idx] = { sel: S.curSel.slice(), judged: true, right: right };
     XK.recordAnswer(P, q, right);
     save();
+    syncNow(false); // 班级/云端模式：静默同步
     showFeedback(q);
     // 短暂震动反馈（支持的设备）
     if (navigator.vibrate) navigator.vibrate(right ? 15 : [40, 40, 40]);
+    // 音效 + 课堂表扬/鼓励（点名题带姓名横幅与 TTS）
+    var streak = (P.answers[XK.qidOf(q)] || {}).k || 0;
+    if (right) {
+      XKS.correct();
+      if (PICK.name) {
+        var praise = XKP.pickPraise(PICK.name, streak);
+        banner(praise, 'praise');
+        setTimeout(function () { XKS.fanfare(); }, 420);
+        stopSpeak();
+        speak(praise);
+      }
+    } else {
+      XKS.wrong();
+      if (PICK.name) {
+        var enc = XKP.pickEncourage(PICK.name);
+        banner(enc, 'encourage');
+        stopSpeak();
+        speak(enc);
+      }
+    }
   }
   function showFeedback(q) {
     var right = S.answers[S.idx] && S.answers[S.idx].right;
@@ -693,6 +968,30 @@
     showPanel('home');
     $('verTag').textContent = '题库版本 ' + (window.BANK_VER || '') + ' · 共 ' + BANK.length + ' 题 · 考纲 150 分制';
     loadBig();
+    loadBig();
+    loadTtsPref();
+    try { DRAW.noRepeat = localStorage.getItem('xkc.draw.norepeat') !== '0'; } catch (e) { }
+    loadRoster();
+    renderHome();
+    refreshBadges();
+    showPanel('home');
+    $('verTag').textContent = '题库版本 ' + (window.BANK_VER || '') + ' · 共 ' + BANK.length + ' 题 · 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
+    renderSetup();
+    renderClassroom();
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = function () {
+        var sel = $('ttsVoice');
+        if (sel && !sel.options.length) renderClassroom();
+      };
+    }
+    // 教师页「把名单导入学生端」跳转：?teacherkey= 一次性消费
+    try {
+      var qm = location.search.match(/[?&]teacherkey=([^&]+)/);
+      if (qm) {
+        fetchCloudRoster(decodeURIComponent(qm[1]), true);
+        history.replaceState(null, '', location.pathname);
+      }
+    } catch (e) { }
     loadCls();
     detectClassMode();
   } catch (e) {

@@ -12,6 +12,8 @@ const css = read('style.css');
 const engine = read('engine.js');
 const data = read('data.js');
 const app = read('app.js');
+const praise = read('praise.js');
+const sfx = read('sfx.js');
 
 // ---- 构建期校验 ----
 global.window = {};
@@ -85,6 +87,37 @@ ${css}
         </div>
       </div>
 
+      <div class="card" style="margin-top:13px">
+        <div class="sec-t"><span class="dot"></span>🎓 课堂互动（投屏上课用）</div>
+        <div class="muted" id="rosterCount">尚未导入名单</div>
+        <textarea class="roster-box" id="rosterText" placeholder="每行一个学生，支持两种格式：
+张三
+2025001,李四
+2025002 王五
+# 号开头是注释">
+        </textarea>
+        <div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap">
+          <button class="mini-btn" id="rosterSave">💾 保存名单</button>
+          <button class="mini-btn" id="rosterClear">🗑 清空</button>
+          <label class="mini-btn" style="display:inline-block">📄 导入TXT/CSV<input type="file" id="rosterFile" accept=".txt,.csv" class="hidden"></label>
+          <button class="mini-btn" id="rosterFetch">☁️ 从云端班级拉取</button>
+        </div>
+        <div class="hint">云端拉取需教师密钥；也可从教师学情页点「📋 名单导入学生端」一键带过去。</div>
+        <div class="tts-row">
+          <select id="ttsVoice"></select>
+          <button class="mini-btn" id="ttsTest">🔊 试听</button>
+        </div>
+        <div class="tts-row">
+          <span class="muted" style="flex:none">语速</span>
+          <input type="range" id="ttsRate" min="0.6" max="1.6" step="0.1" value="1">
+          <span class="muted" id="ttsRateVal" style="flex:none">1.0x</span>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+          <div class="switch" style="flex:1;min-width:140px"><span style="font-size:13px;font-weight:700">音效</span><div class="sw" id="sfxSw"></div></div>
+          <div class="switch" style="flex:1;min-width:170px"><span style="font-size:13px;font-weight:700">不重复点名</span><div class="sw" id="drawToggle"></div></div>
+        </div>
+        <div class="hint">答题页每题都有「🎲 点名」：滚动抽取→请学生上台→可读题（当前音色）→答对自动播报带姓名的表扬（语库 ${320} 条）。</div>
+      </div>
       <div class="card" style="margin-top:13px">
         <div class="sec-t"><span class="dot"></span>学习档案（只存本机，不上传）</div>
         <div style="display:flex;gap:9px">
@@ -174,6 +207,7 @@ ${css}
       <button class="h-btn" id="exitBtn">✕</button>
       <div class="h-title" id="quizTitle" style="font-size:16px">练习</div>
       <button class="speak-btn" id="speakBtn">🔊 朗读</button>
+      <button class="speak-btn hidden" id="drawBtn">🎲 点名</button>
       <button class="h-btn" id="bigBtn">🖥 课堂</button>
     </header>
     <div class="qhead">
@@ -181,6 +215,7 @@ ${css}
         <span class="qbadge" id="badge">单选</span>
         <span id="qIdx">第 1 / 20 题</span>
         <span class="kd" id="qKd"></span>
+        <span class="pick-badge hidden" id="pickBadge"></span>
       </div>
       <div class="progress"><i id="progBar"></i></div>
     </div>
@@ -220,10 +255,28 @@ ${css}
     </div>
   </div>
 
+  <!-- ============ 点名遮罩 ============ -->
+  <div class="draw-mask hidden" id="drawMask">
+    <div class="draw-title">随 机 点 名</div>
+    <div class="draw-name" id="drawName">？</div>
+    <div class="draw-tip" id="drawTip"></div>
+    <div class="draw-actions">
+      <button class="btn ghost" id="drawRead">🔊 用当前音色读题</button>
+      <button class="btn" id="drawGo">开始作答 →</button>
+      <button class="h-btn" id="drawClose">✕</button>
+    </div>
+  </div>
+
 </div>
 <script>
 ${engine}
 ${engine}
+</script>
+<script>
+${praise}
+</script>
+<script>
+${sfx}
 </script>
 <script>
 ${data}

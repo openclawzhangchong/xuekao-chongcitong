@@ -167,6 +167,7 @@ tr:hover td{background:#111a2e}
 <div class="sub">__SUB__</div>
 <a class="btn" href="/teacher.csv">⬇ 导出 CSV（Excel 可开）</a>
 <a class="btn" href="/">打开学生端</a>
+<a class="btn" href="javascript:location.href='/?teacherkey='+location.search.split('key=')[1]">📋 名单导入学生端</a>
 <table><thead><tr>
 <th>#</th><th>学号</th><th>姓名</th><th>预估分</th><th>已覆盖(分)</th>
 <th>覆盖题数</th><th>累计作答</th><th>今日</th><th>活跃天数</th>
@@ -265,6 +266,16 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(500, '找不到 site/index.html，请先 node src/build.js 并复制产物'.encode('utf-8'))
         elif path == '/api/hello':
             self._send(200, json.dumps({'mode': 'class'}).encode('utf-8'), 'application/json')
+        elif path == '/api/students':
+            # 云端/局域网名单拉取（供学生端「课堂互动·从云端拉取」；仅本机，学生设备够不着）
+            if not self._local_only():
+                self._send(403, json.dumps({'ok': False, 'err': 'forbidden'}).encode('utf-8'), 'application/json')
+                return
+            students = [{'sid': s['sid'], 'name': s['name'] or s['sid']}
+                        for s in load_students() if s['covered'] > 0 or s['answered'] > 0]
+            students.sort(key=lambda s: s['sid'])
+            self._send(200, json.dumps({'ok': True, 'count': len(students), 'students': students},
+                                       ensure_ascii=False).encode('utf-8'), 'application/json')
         elif path == '/teacher':
             if not self._local_only():
                 self._send(403, '教师页仅限老师电脑本机打开'.encode('utf-8'))

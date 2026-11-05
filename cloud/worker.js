@@ -191,6 +191,7 @@ tr:hover td{background:#111a2e}
 <div class="sub">__SUB__</div>
 <a class="btn" href="/teacher.csv?__QS__">⬇ 导出 CSV</a>
 <a class="btn" href="/">打开学生端</a>
+<a class="btn" id="toStudent" href="javascript:void(0)">📋 名单导入学生端</a>
 <div class="tblwrap"><table><thead><tr>
 <th>#</th><th>学号</th><th>姓名</th><th>预估分</th><th>已覆盖(分)</th>
 <th>覆盖题数</th><th>累计作答</th><th>今日</th><th>活跃天数</th>
@@ -207,7 +208,8 @@ function renderTeacher(rows, qs) {
       return `<tr><td>${i + 1}</td><td><b>${esc(s.sid)}</b></td><td>${esc(s.name) || '-'}</td><td class="${cls}">${s.score}</td><td>${s.tested}/150</td><td>${s.covered}</td><td>${s.answered}</td><td>${s.today}</td><td>${s.daysCount}</td><td>${s.wrongPend || '-'}</td><td>${esc(last)}</td></tr>`;
     }).join('\n')
     : '<tr><td colspan="11" class="empty">还没有学生数据 —— 学生端输学号+班级码刷题后出现在这里</td></tr>';
-  return TEACHER_TPL.replace('__SUB__', esc(sub)).replace('__QS__', qs ? '?key=' + qs : '').replace('__ROWS__', body);
+  return TEACHER_TPL.replace('__SUB__', esc(sub)).replace('__QS__', qs ? '?key=' + qs : '').replace('__ROWS__', body)
+    .replace('</body>', '<script>document.getElementById("toStudent").onclick=function(){var k=new URLSearchParams(location.search).get("key")||"";location.href="/?teacherkey="+encodeURIComponent(k)};</' + 'script></body>');
 }
 
 function renderCsv(rows) {
@@ -256,6 +258,21 @@ export default {
 
       const est = estimate(merged.answers);
       return json({ ok: true, score: est.score, tested: est.tested });
+    }
+
+    // ---- 云端班级名单（教师密钥；供学生端「课堂互动·从云端拉取」） ----
+    if (path === '/api/students') {
+      const key = (url.searchParams.get('key') || '').trim();
+      if (!env.TEACHER_KEY || key !== env.TEACHER_KEY) {
+        return json({ ok: false, err: 'forbidden' }, 403);
+      }
+      const store = makeStore(env);
+      const all = await store.listAll();
+      const students = all
+        .filter(s => s.prof && Object.keys(s.prof.answers || {}).length > 0)
+        .map(s => ({ sid: s.sid, name: s.name || s.sid }))
+        .sort((a, b) => a.sid.localeCompare(b.sid, 'zh'));
+      return json({ ok: true, count: students.length, students });
     }
 
     // ---- 教师页 / 导出（密钥鉴权） ----
