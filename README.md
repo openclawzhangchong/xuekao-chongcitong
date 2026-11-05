@@ -11,6 +11,17 @@
 
 > 云端主站班级码向授课老师索取；教师学情页需教师密钥（密钥只存部署者本机，不在此仓库）。
 
+## 📸 界面一览
+
+| 首页（预估分 + 打卡 + 提分曲线） | 课堂互动（点名 / 音效 / 多音色朗读 / 表扬语库） |
+|---|---|
+| ![首页](evidence/screenshots/01-home.png) | ![课堂互动](evidence/screenshots/02-classroom-card.png) |
+| **答题页（完整辨析单选 + 难度徽章）** | **考点诊断（雷达图 + 薄弱考点）** |
+| ![答题页](evidence/screenshots/05-quiz.png) | ![考点诊断](evidence/screenshots/03-diagnosis.png) |
+| **错题本（连对 2 次毕业）** | **班级学情（教师端）** |
+| ![错题本](evidence/screenshots/04-wrongbook.png) | ![教师页](evidence/screenshots/e2e-10-cloud-teacher.png) |
+
+
 福建省中职学业水平考试《信息技术基础》**学生端智能刷题系统**。
 单文件 HTML，双击即用；可选「班级版」服务把成绩长久存到老师电脑。
 
