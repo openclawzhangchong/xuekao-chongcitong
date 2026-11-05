@@ -77,7 +77,7 @@ ${css}
         <div class="entry" id="entCardPractice">
           <div class="ic">📝</div><div class="nm">开始刷题</div>
           <div class="ds">选章节题型 · 即时判分</div>
-          <span class="bd">1238 题</span>
+          <span class="bd" id="entBankN">…</span>
         </div>
         <div class="entry" id="entCardSim">
           <div class="ic">🎯</div><div class="nm">模拟考</div>

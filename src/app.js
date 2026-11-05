@@ -294,6 +294,7 @@
     $('entWrong').textContent = XK.wrongQueue(BANK, P).length > 0 ? XK.wrongQueue(BANK, P).length + ' 题待重练' : '暂无错题';
     $('entWrong').className = 'bd' + (XK.wrongQueue(BANK, P).length > 0 ? ' hot' : '');
     $('entSim').textContent = '150 分 · 仿真卷';
+    var eb = $('entBankN'); if (eb) eb.textContent = BANK.length + ' 题';
     var wk = XK.weakSpots(BANK, META, P, 8).weak.length;
     $('entDiag').textContent = wk > 0 ? wk + ' 个薄弱考点' : '刷题后生成';
   }

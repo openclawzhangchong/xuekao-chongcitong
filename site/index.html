@@ -310,7 +310,7 @@ body.big .stat .v{font-size:26px}
         <div class="entry" id="entCardPractice">
           <div class="ic">📝</div><div class="nm">开始刷题</div>
           <div class="ds">选章节题型 · 即时判分</div>
-          <span class="bd">1238 题</span>
+          <span class="bd" id="entBankN">…</span>
         </div>
         <div class="entry" id="entCardSim">
           <div class="ic">🎯</div><div class="nm">模拟考</div>
@@ -1770,6 +1770,7 @@ body.big .stat .v{font-size:26px}
     $('entWrong').textContent = XK.wrongQueue(BANK, P).length > 0 ? XK.wrongQueue(BANK, P).length + ' 题待重练' : '暂无错题';
     $('entWrong').className = 'bd' + (XK.wrongQueue(BANK, P).length > 0 ? ' hot' : '');
     $('entSim').textContent = '150 分 · 仿真卷';
+    var eb = $('entBankN'); if (eb) eb.textContent = BANK.length + ' 题';
     var wk = XK.weakSpots(BANK, META, P, 8).weak.length;
     $('entDiag').textContent = wk > 0 ? wk + ' 个薄弱考点' : '刷题后生成';
   }
