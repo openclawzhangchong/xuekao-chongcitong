@@ -177,6 +177,17 @@ function mcOptions(correct, wrongs) {
   const ansIdx = opts.indexOf(correct);
   return { o: opts.map((t, i) => ['ABCD'[i], t]), a: 'ABCD'[ansIdx] };
 }
+function makeSinglePlain(correct, wrongs, e) {
+  const ws = [];
+  for (const w of shuffle(wrongs)) {
+    if (w !== correct && !ws.includes(w)) ws.push(w);
+    if (ws.length >= 3) break;
+  }
+  if (ws.length < 3) return null;
+  const opts = shuffle([correct].concat(ws));
+  const ansIdx = opts.indexOf(correct);
+  return { o: opts.map((t, i) => ['ABCD'[i], t]), a: 'ABCD'[ansIdx], e: e };
+}
 function judgeV(text, ans) { return { o: JUDGE_OPTS.map(x => [x[0], x[1]]), a: ans }; }
 // 「说法单选」题头唯一化：模块+题头 模板内序号（一/二/三…）
 const CN = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
@@ -278,46 +289,60 @@ BANK.forEach((q, idx) => {
   }
 
   if (isForwardMC(q)) {
+    // v5：说法辨析单选——4 个选项全部拼接为完整陈述，保留原题辨析语境（修复「判断题信息不全」）
     const a = q.o.find(o => o[0] === q.a);
     const at = optText(a);
-    const ws = shuffle(q.o.filter(o => o[0] !== q.a && !BAD_FILL.test(optText(o))).map(optText).filter(t => t.length <= 34 && t.length >= 1));
-    if (at.length <= 34 && !/[?？]/.test(q.s)) {
-      // V1 拼接判断 √ + 依次尝试错误项拼接判断 ×（辨析组：同题干不同填充，题面天然互异）
-      tryPush({ qt: '判断', s: fillBlank(q.s, at), ...judgeV(fillBlank(q.s, at), '√'), e: cleanE(E) }, 'fwdJudge');
-      for (const w of ws) {
-        if (made >= 2) break;
-        tryPush({
-          qt: '判断', s: fillBlank(q.s, w), ...judgeV(fillBlank(q.s, w), '×'),
-          e: cleanE(E) + '（注意：本题说法错误，正确表述应为“' + at + '”。）'
-        }, 'fwdJudge');
-      }
-    } else if (at.length <= 30) {
-      // 问句单选：疑问词替换为选项 → 判断题（疑问词需恰好出现一次）
-      const qw = q.s.match(/(哪个|什么|哪项|哪家|哪种)/);
-      if (qw && q.s.split(qw[1]).length === 2) {
-        tryPush({ qt: '判断', s: fillBlank(q.s.replace(qw[1], '§').replace(BLANK_RE, '').replace('§', at)).replace(/[?？]s*$/, '。'), ...judgeV('x', '√'), e: E }, 'fwdJudge');
-
-        // 上式若 tryPush 失败已弹回；V2 错误项
-        const w = ws[0];
-        if (w && made < 2) {
-          const s2 = fillBlank(q.s.replace(qw[1], '§').replace(BLANK_RE, '').replace('§', w)).replace(/[?？]s*$/, '。');
-          tryPush({ qt: '判断', s: s2, ...judgeV('x', '×'), e: E + '（注意：本题说法错误，正确表述应为“' + at + '”。）' }, 'fwdJudge');
+    const stmts = q.o.map(o => ({ k: o[0], t: optText(o), correct: o[0] === q.a, text: fillBlank(q.s, optText(o)) }))
+      .filter(x => x.t.length <= 34 && !/[?？]/.test(x.text) && !BAD_FILL.test(x.t) && !BAD_FILL.test(x.text));
+    const ks = kdShort(q.kd);
+    if (stmts.length === 4) {
+      const truth = stmts.find(x => x.correct);
+      const lies = stmts.filter(x => !x.correct);
+      // V1 正确的是：真 + 3 假（完整辨析组）
+      const hk1 = q.m + '|c' + ks;
+      headSeq[hk1] = (headSeq[hk1] || 0) + 1;
+      const seq1 = headSeq[hk1] > 1 ? '（' + (CN[headSeq[hk1] - 2] || headSeq[hk1] - 1) + '）' : '';
+      const mo1 = makeSinglePlain(truth.text, lies.map(x => x.text), cleanE(E));
+      if (mo1) {
+        tryPush({ qt: '单选', s: '【' + ks + '】' + seq1 + '下列说法正确的是（ ）。', o: mo1.o, a: mo1.a, e: mo1.e }, 'fwdJudge');
+        // V2 错误的是：某假 + 真 + 借池 2 真
+        if (made < 2) {
+          const borrowC = borrowCorrect(kdKey, q.m, 2, [truth.text]).concat(lies.map(x => x.text));
+          const hk2 = q.m + '|w' + ks;
+          headSeq[hk2] = (headSeq[hk2] || 0) + 1;
+          const seq2 = headSeq[hk2] > 1 ? '（' + (CN[headSeq[hk2] - 2] || headSeq[hk2] - 1) + '）' : '';
+          const mo2 = mcOptions(lies[0].text, [truth.text].concat(borrowC.filter(t => t !== lies[0].text && t !== truth.text)));
+          if (mo2) {
+            tryPush({ qt: '单选', s: '【' + ks + '】' + seq2 + '下列说法错误的是（ ）。', o: mo2.o, a: mo2.a, e: cleanE(E) + '（本题要求选出错误说法：“' + lies[0].text + '”。）' }, 'fwdJudge');
+          }
         }
       }
     }
   } else if (isReverseMC(q)) {
-    const a = q.o.find(o => o[0] === q.a);
-    const at = optText(a);
-    if (at.length <= 34 && BLANK_RE.test(q.s) && !/[?？]/.test(q.s)) {
-      const revS = fillBlank(q.s, at).replace(/^下列[^，,]*[，,]s*/, '').replace(/^以下[^，,]*[，,]s*/, '');
-      tryPush({ qt: '判断', s: revS, ...judgeV(revS, '×'), e: cleanE(E) }, 'revJudge');
-    }
-    const rights = q.o.filter(o => o[0] !== q.a).map(optText).filter(t => t.length <= 34);
-    if (rights[0]) {
-      const wr = [at].concat(borrowWrong(kdKey, q.m, 2, [at]));
-      const v = correctSingle(q.m, q.kd, rights[0], wr,
-        cleanE(E) + '（本题为原“选错误”题的反向变式；干扰项为相关考点易混说法。）');
-      tryPush(v, 'revCorrect');
+    // v5：反向题说法辨析——a 拼接=假、非 a 拼接=真，全部还原为完整选择题语境
+    const aR = q.o.find(o => o[0] === q.a);
+    const stmtsR = q.o.map(o => ({ k: o[0], t: optText(o), correct: o[0] !== q.a, text: fillBlank(q.s, optText(o)) }))
+      .filter(x => x.t.length <= 34 && !/[?？]/.test(x.text) && !BAD_FILL.test(x.t) && !BAD_FILL.test(x.text));
+    const ksR = kdShort(q.kd);
+    if (stmtsR.length === 4) {
+      const truthR = stmtsR.find(x => x.correct);
+      const lieR = stmtsR.find(x => !x.correct);
+      // V1 正确的是：真 + 3 假（假= a 拼接 + 借池 2）
+      const borrowW2 = borrowWrong(kdKey, q.m, 2, [truthR.text]).map(x => x);
+      const hk1 = q.m + '|c' + ksR;
+      headSeq[hk1] = (headSeq[hk1] || 0) + 1;
+      const seq1 = headSeq[hk1] > 1 ? '（' + (CN[headSeq[hk1] - 2] || headSeq[hk1] - 1) + '）' : '';
+      const mo1R = makeSinglePlain(truthR.text, [lieR.text].concat(borrowW2), cleanE(E) + '（本题由“选错误”题反转为“选正确”。）');
+      if (mo1R) tryPush({ qt: '单选', s: '【' + ksR + '】' + seq1 + '下列说法正确的是（ ）。', o: mo1R.o, a: mo1R.a, e: mo1R.e }, 'revCorrect');
+      // V2 错误的是：假 + 真 + 借池真
+      if (made < 2) {
+        const borrowC2 = borrowCorrect(kdKey, q.m, 2, [truthR.text, lieR.text]);
+        const hk2 = q.m + '|w' + ksR;
+        headSeq[hk2] = (headSeq[hk2] || 0) + 1;
+        const seq2 = headSeq[hk2] > 1 ? '（' + (CN[headSeq[hk2] - 2] || headSeq[hk2] - 1) + '）' : '';
+        const mo2R = makeSinglePlain(lieR.text, [truthR.text].concat(borrowC2), cleanE(E) + '（本题要求选出错误说法。）');
+        if (mo2R) tryPush({ qt: '单选', s: '【' + ksR + '】' + seq2 + '下列说法错误的是（ ）。', o: mo2R.o, a: mo2R.a, e: mo2R.e }, 'revJudge');
+      }
     }
   } else if (q.qt === '判断') {
     if (q.a === '√') {

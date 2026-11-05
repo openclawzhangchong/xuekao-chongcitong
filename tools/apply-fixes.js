@@ -21,6 +21,18 @@ for (const f of fixFiles) {
 }
 console.log('修正文件:', fixFiles.join(', '), '| 修正条数:', fixes.length);
 
+// 旧库映射：fix 的 i 基于 data-3714.js（v5 重构前的库），通过题面映射到当前库
+let oldBank = null;
+try { global.window = {}; eval(fs.readFileSync(path.join(__dirname, '..', 'src', 'data-3714.js'), 'utf8')); oldBank = window.BANK; } catch (e) {}
+function locate(fixIdx) {
+  if (!oldBank || !oldBank[fixIdx]) return { q: BANK[fixIdx], via: 'index' };
+  const oq = oldBank[fixIdx];
+  const key = oq.m + '|' + oq.qt + '|' + oq.s;
+  const ni = BANK.findIndex(x => (x.m + '|' + x.qt + '|' + x.s) === key);
+  if (ni !== -1) return { q: BANK[ni], via: 'stem', realI: ni };
+  return { q: null, via: 'gone' };
+}
+
 // 题面 key 索引（O(1) 冲突预检）
 const stemKeyOwner = {};
 BANK.forEach((o, oi) => { stemKeyOwner[o.m + '|' + o.qt + '|' + o.s] = oi; });
@@ -28,8 +40,9 @@ BANK.forEach((o, oi) => { stemKeyOwner[o.m + '|' + o.qt + '|' + o.s] = oi; });
 let applied = 0, clashSkipped = 0;
 const log = [];
 for (const fx of fixes) {
-  const q = BANK[fx.i];
-  if (!q || !['a', 'e', 's'].includes(fx.field)) { log.push('跳过 i=' + fx.i); continue; }
+  const loc = locate(fx.i);
+  const q = loc.q;
+  if (!q || !['a', 'e', 's'].includes(fx.field)) { log.push('跳过 i=' + fx.i + '（' + loc.via + '）'); continue; }
   const before = q[fx.field];
   q[fx.field] = fx.fix;
   // s 修正冲突预检：新题面与库内其他题相同 → 回退（教辅不允许同题面两道题）
