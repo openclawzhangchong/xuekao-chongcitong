@@ -15,7 +15,7 @@ function t(name, fn) {
 }
 
 console.log('== 1. 表扬语库规模与去重 ==');
-t('表扬总数 ≥ 300（实际 ' + XKP.praiseCount() + '）', () => assert.ok(XKP.praiseCount() >= 300));
+t('表扬总数 === 1000（实际 ' + XKP.praiseCount() + '）', () => assert.strictEqual(XKP.praiseCount(), 1000));
 t('全库零重复', () => {
   const all = XKP.allPraiseTemplates();
   assert.strictEqual(new Set(all).size, all.length);
@@ -23,7 +23,7 @@ t('全库零重复', () => {
 t('每条模板都含姓名占位 {n}', () => {
   XKP.allPraiseTemplates().forEach(tpl => assert.ok(tpl.includes('{n}'), '缺 {n}: ' + tpl));
 });
-t('鼓励语 ≥ 50（实际 ' + XKP.encourageCount() + '）', () => assert.ok(XKP.encourageCount() >= 50));
+t('鼓励语总数 === 500（实际 ' + XKP.encourageCount() + '）', () => assert.strictEqual(XKP.encourageCount(), 500));
 
 console.log('== 2. 姓名替换 ==');
 t('普通表扬替换姓名且无残留占位', () => {

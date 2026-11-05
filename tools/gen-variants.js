@@ -55,6 +55,10 @@ function kdShort(kd) {
   return (m ? m[1] : (kd || '')).trim();
 }
 
+/* ---------- 原库清洗：判断题尾巴残留（必须在查重集构建之前） ---------- */
+BANK.forEach(q => {
+  if (q.qt === '判断') q.s = q.s.replace(/s*A[.、．]s*正确s*B[.、．]s*错误.*$/, '').trim();
+});
 /* ---------- 陈述池 ---------- */
 const correctByKd = {}, wrongByKd = {}, correctByM = {}, wrongByM = {};
 function pushStmt(map, key, stmt) {
@@ -199,6 +203,10 @@ function wrongSingle(m, kd, wrong, corrects, e) {
 const MANUAL_FILL = {
   650: [
     { qt: '单选', s: '下列方式中，一般不能用于在WPS文字中插入图片的是（ ）。', o: [['A','使用“插入”菜单中的“图片”选项'],['B','直接从文件夹中拖动图片到文档中'],['C','复制图片后在文档中粘贴'],['D','使用“绘图工具”绘制曲线']], a: 'D', e: '插入图片的常用方式有：插入菜单、拖动、复制粘贴；“绘图工具”用于绘制形状曲线，不是插入图片的方式。' }
+  ],
+  400: [
+    { qt: '判断', s: 'TensorFlow 通过计算图优化和分布式计算支持高性能训练。', o: [['√','正确'],['×','错误']], a: '√', e: 'TensorFlow 的高性能来自计算图优化、硬件后端加速与分布式计算支持。' },
+    { qt: '判断', s: 'TensorFlow 的高性能完全依靠提升 CPU 主频获得。', o: [['√','正确'],['×','错误']], a: '×', e: '其高性能主要来自计算图优化、GPU/TPU 硬件加速与分布式计算，而非单纯提升主频。' }
   ],
   399: [
     { qt: '单选', s: '下列设备中，一般不被 TensorFlow 用于加速模型训练的是（ ）。', o: [['A','CPU'],['B','GPU'],['C','TPU'],['D','扫描仪']], a: 'D', e: 'TensorFlow 常用 CPU/GPU/TPU 进行训练与推理；扫描仪是输入设备，与模型训练加速无关。' }
@@ -347,7 +355,7 @@ BANK.forEach((q, idx) => {
 
   // 兜底链：说法单选(带序号) → 借池判断陈述体 → 原题剩余选项拼接判断
   let guard = 0;
-  while (made < 2 && guard < 26) {
+  while (made < 2 && guard < 60) {
     guard++;
     if (guard <= 4) {
       // 说法单选（带序号，唯一化）
@@ -410,7 +418,7 @@ let dupId = 0, dupStem = 0, badOpts = 0, noE = 0;
 const badDetail = [];
 NEW.forEach((q, i) => {
   const id = q.m + '-' + djb2(q.m + '|' + q.qt + '|' + q.s);
-  if (ids.has(id)) { dupId++; if (badDetail.length < 6) badDetail.push('dupID@' + i + ' ' + q.s.slice(0, 30)); }
+  if (ids.has(id)) { dupId++; if (badDetail.length < 6) { const first = NEW.find(x => x !== q && (x.m + '-' + djb2(x.m + '|' + x.qt + '|' + x.s)) === id); badDetail.push('dup@' + i + ' srcA=' + (first && first.src) + ' srcB=' + q.src + ' :: ' + q.s.slice(0, 40)); } }
   ids.add(id);
   const sk = q.m + '|' + q.qt + '|' + q.s;
   if (stems.has(sk)) { dupStem++; if (badDetail.length < 6) badDetail.push('dupStem@' + i + ' ' + q.s.slice(0, 30)); }

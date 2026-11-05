@@ -118,14 +118,14 @@ ${css}
         </div>
         <div class="tts-row">
           <span class="muted" style="flex:none">语速</span>
-          <input type="range" id="ttsRate" min="0.6" max="1.6" step="0.1" value="1">
-          <span class="muted" id="ttsRateVal" style="flex:none">1.0x</span>
+          <input type="range" id="ttsRate" min="0.6" max="1.6" step="0.1" value="1.1">
+          <span class="muted" id="ttsRateVal" style="flex:none">1.1x</span>
         </div>
         <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
           <div class="switch" style="flex:1;min-width:140px"><span style="font-size:13px;font-weight:700">音效</span><div class="sw" id="sfxSw"></div></div>
           <div class="switch" style="flex:1;min-width:170px"><span style="font-size:13px;font-weight:700">不重复点名</span><div class="sw" id="drawToggle"></div></div>
         </div>
-        <div class="hint">答题页每题都有「🎲 点名」：滚动抽取→请学生上台→可读题（当前音色）→答对自动播报带姓名的表扬（语库 ${320} 条）。</div>
+        <div class="hint">答题页每题都有「🎲 点名」：滚动抽取→请学生上台→可读题（当前音色）→答对自动播报带姓名的表扬（表扬语库 1000 条 + 鼓励语 500 条）。</div>
       </div>
       <div class="card" style="margin-top:13px">
         <div class="sec-t"><span class="dot"></span>学习档案（只存本机，不上传）</div>

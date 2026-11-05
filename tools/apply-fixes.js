@@ -1,0 +1,74 @@
+/* 审题修正应用器 v2：读 evidence/qbank-audit/fix-*.json → 应用 → 质检 → 写出
+ * 用法：node tools/apply-fixes.js */
+'use strict';
+const fs = require('fs');
+const path = require('path');
+
+global.window = {};
+eval(fs.readFileSync(path.join(__dirname, '..', 'src', 'data.js'), 'utf8'));
+const BANK = window.BANK;
+const META = window.BANK_META;
+
+// 汇总修正文件
+const dir = path.join(__dirname, '..', 'evidence', 'qbank-audit');
+const fixFiles = fs.readdirSync(dir).filter(f => /^fix-.*\.json$/.test(f));
+let fixes = [];
+for (const f of fixFiles) {
+  try {
+    const arr = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+    if (Array.isArray(arr)) fixes = fixes.concat(arr);
+  } catch (e) { console.error('跳过损坏文件', f); }
+}
+console.log('修正文件:', fixFiles.join(', '), '| 修正条数:', fixes.length);
+
+// 题面 key 索引（O(1) 冲突预检）
+const stemKeyOwner = {};
+BANK.forEach((o, oi) => { stemKeyOwner[o.m + '|' + o.qt + '|' + o.s] = oi; });
+
+let applied = 0, clashSkipped = 0;
+const log = [];
+for (const fx of fixes) {
+  const q = BANK[fx.i];
+  if (!q || !['a', 'e', 's'].includes(fx.field)) { log.push('跳过 i=' + fx.i); continue; }
+  const before = q[fx.field];
+  q[fx.field] = fx.fix;
+  // s 修正冲突预检：新题面与库内其他题相同 → 回退（教辅不允许同题面两道题）
+  if (fx.field === 's') {
+    const nk = q.m + '|' + q.qt + '|' + q.s;
+    if (stemKeyOwner[nk] !== undefined && stemKeyOwner[nk] !== fx.i) {
+      q[fx.field] = before;
+      clashSkipped++;
+      log.push('冲突跳过 i=' + fx.i + '（新题面与 #' + stemKeyOwner[nk] + ' 相同）');
+      continue;
+    }
+    stemKeyOwner[nk] = fx.i;
+  }
+  applied++;
+  log.push('应用 i=' + fx.i + ' [' + fx.field + '] ' + String(fx.issue || '').slice(0, 46));
+}
+console.log('应用:', applied, '| 冲突跳过:', clashSkipped);
+
+// 质检
+function djb2(str) { let h = 5381; for (let i = 0; i < str.length; i++) h = (((h << 5) + h) ^ str.charCodeAt(i)) >>> 0; return h.toString(36); }
+const ids = new Set(); let dupId = 0, noE = 0, badAns = 0;
+BANK.forEach(q => {
+  const id = q.m + '-' + djb2(q.m + '|' + q.qt + '|' + q.s);
+  if (ids.has(id)) dupId++; ids.add(id);
+  const ansOk = q.qt === '多选' ? q.a.split('').every(ch => q.o.some(o => o[0] === ch)) : q.o.some(o => o[0] === q.a);
+  if (!ansOk) badAns++;
+  if (!q.e || !q.e.trim()) noE++;
+});
+console.log('质检 → 重复ID:', dupId, '| 答案异常:', badAns, '| 缺解析:', noE);
+if (dupId || badAns || noE) {
+  console.error('!! 质检未通过，不写入。');
+  log.slice(0, 20).forEach(l => console.log('  ' + l));
+  process.exit(2);
+}
+
+const out = '// 学考冲刺通题库 ' + BANK.length + ' 题（含审题修正 applied=' + applied + ' clash=' + clashSkipped + '，见 evidence/qbank-audit/）\n'
+  + 'window.BANK_VER=\'20261106\';\n'
+  + 'window.BANK_META=' + JSON.stringify(META) + ';\n'
+  + 'window.BANK=' + JSON.stringify(BANK) + ';\n';
+fs.writeFileSync(path.join(__dirname, '..', 'src', 'data.js'), out, 'utf8');
+console.log('WROTE src/data.js');
+log.slice(0, 8).forEach(l => console.log('  ' + l));

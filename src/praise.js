@@ -1,7 +1,7 @@
 /* =====================================================================
  * 学考冲刺通 · 表扬语库（课堂互动）
- * {n} 为学生姓名占位符。手写 150 条 + 组合生成 160 条 = 310 条不重复。
- * 另含 10 条连胜特供、50 条答错鼓励语。
+ * {n} 为学生姓名占位符。手写 150 条 + 组合生成 840 条 = 1000 条不重复。
+ * 另含 10 条连胜特供；鼓励语 500 条（手写 50 + 组合 450）零重复。
  * ===================================================================== */
 (function (root) {
   'use strict';
@@ -280,19 +280,50 @@
       for (var j = 0; j < B.length; j++)
         for (var k = 0; k < C.length; k++)
           all.push('{n}，' + A[i] + '！' + B[j] + '，' + C[k] + '！');
-    comboCache = seededShuffle(all, 20261105).slice(0, 160); // 32×16×10=5120 取 160
+    comboCache = seededShuffle(all, 20261105).slice(0, 840); // 32×16×10=5120 取 840，总表扬 1000
     return comboCache;
   }
 
   function fill(tpl, name) { return tpl.split('{n}').join(name); }
 
+
+  /* ---------- 鼓励组合槽位（手写 50 独立 + 组合 450） ---------- */
+  var E1 = [
+    '这题确实有迷惑性', '一次失误说明不了什么', '这题很多同学都会犹豫', '这道题的坑藏得比较深',
+    '这个知识点确实不好记', '这种题型第一次见都会懵', '题干的信息量确实大', '这个错误很典型',
+    '这题的干扰项太像了', '紧张之下出错很正常', '这题考的角度比较偏', '刚才那题节奏太快了',
+    '这类题最容易想当然', '这题的表述确实绕', '谁看这题都会多想一步'
+  ];
+  var E2 = [
+    '但你的思路已经对了大半', '不过你已经比昨天强多了', '重要的是你敢于作答', '但你的审题能力在进步',
+    '不过你的基础并不差', '但你的努力大家看得见', '不过你已经掌握了方法', '但你的反应速度没问题',
+    '不过你的进步速度很快', '但你的态度就是满分', '不过这道题你也不是全错', '但你的直觉其实很准',
+    '不过你的知识网正在补全', '但你的进步曲线一直在涨', '不过你离正确答案只差一步'
+  ];
+  var E3 = [
+    '听解析把这个点补上', '把它收进错题本就是收获', '下一题找回状态', '看一遍解析就通了',
+    '把这个考点标记出来', '再刷两道类似的就稳了', '课后再巩固一遍就好', '记住这个坑就是赚到',
+    '接下来保持这个节奏', '下次遇到直接拿下'
+  ];
+  var comboEncCache = null;
+  function comboEncPool() {
+    if (comboEncCache) return comboEncCache;
+    var all = [];
+    for (var i = 0; i < E1.length; i++)
+      for (var j = 0; j < E2.length; j++)
+        for (var k = 0; k < E3.length; k++)
+          all.push('{n}，' + E1[i] + '，' + E2[j] + '，' + E3[k] + '。');
+    comboEncCache = seededShuffle(all, 20261106).slice(0, 450); // 15×15×10=2250 取 450，总鼓励 500
+    return comboEncCache;
+  }
   /* ---------- 对外接口 ---------- */
   var XK = {
     // 表扬总数（校验用）
     praiseCount: function () { return HAND.length + comboPool().length + STREAK.length; },
     // 全部去重校验用
     allPraiseTemplates: function () { return HAND.concat(comboPool(), STREAK); },
-    encourageCount: function () { return ENCOURAGE.length; },
+    encourageCount: function () { return ENCOURAGE.length + comboEncPool().length; },
+    allEncourageTemplates: function () { return ENCOURAGE.concat(comboEncPool()); },
     // 抽一条表扬：streak>=3 优先连胜特供
     pickPraise: function (name, streak) {
       var tpl;
@@ -305,7 +336,8 @@
       return fill(tpl, name || '这位同学');
     },
     pickEncourage: function (name) {
-      return fill(ENCOURAGE[Math.floor(Math.random() * ENCOURAGE.length)], name || '这位同学');
+      var pool = Math.random() < 0.5 ? ENCOURAGE : comboEncPool();
+      return fill(pool[Math.floor(Math.random() * pool.length)], name || '这位同学');
     }
   };
 

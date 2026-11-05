@@ -36,7 +36,7 @@
   function loadTtsPref() {
     try {
       TTS_PREF.voiceURI = localStorage.getItem('xkc.tts.voice') || '';
-      TTS_PREF.rate = parseFloat(localStorage.getItem('xkc.tts.rate')) || 1;
+      TTS_PREF.rate = parseFloat(localStorage.getItem('xkc.tts.rate')) || 1.1;
     } catch (e) { }
   }
   function saveTtsPref() {
@@ -198,21 +198,24 @@
     var dt = $('drawToggle'); if (dt) dt.classList.toggle('on', DRAW.noRepeat !== false);
     // 音色下拉
     var sel = $('ttsVoice');
-    if (sel && !sel.options.length) {
+    if (sel) {
       var vs = zhVoices();
-      vs.forEach(function (v) {
-        var o = document.createElement('option');
-        o.value = v.voiceURI;
-        o.textContent = v.name.replace(/Microsoft |Online \(Natural\)|- /g, '') + (v.localService ? '' : '（在线）');
-        sel.appendChild(o);
-      });
-      if (!vs.length) {
-        var o = document.createElement('option');
-        o.value = ''; o.textContent = '系统默认音色';
-        sel.appendChild(o);
+      if (vs.length) {
+        sel.innerHTML = '';
+        vs.forEach(function (v) {
+          var o = document.createElement('option');
+          o.value = v.voiceURI;
+          o.textContent = v.name.replace(/Microsoft |Online \(Natural\)|- /g, '') + (v.localService ? '' : '（在线）');
+          sel.appendChild(o);
+        });
       }
+      if (!sel.options.length) {
+        var o0 = document.createElement('option');
+        o0.value = ''; o0.textContent = '系统默认音色';
+        sel.appendChild(o0);
+      }
+      sel.value = TTS_PREF.voiceURI || (sel.options[0] ? sel.options[0].value : '');
     }
-    if (sel) sel.value = TTS_PREF.voiceURI || (sel.options[0] ? sel.options[0].value : '');
     var rv = $('ttsRateVal'); if (rv) rv.textContent = (TTS_PREF.rate || 1).toFixed(1) + 'x';
   }
   // 从云端班级拉名单（需教师密钥；支持 ?teacherkey= 一次性参数）
@@ -985,10 +988,9 @@
     renderSetup();
     renderClassroom();
     if ('speechSynthesis' in window) {
-      speechSynthesis.onvoiceschanged = function () {
-        var sel = $('ttsVoice');
-        if (sel && !sel.options.length) renderClassroom();
-      };
+      speechSynthesis.onvoiceschanged = function () { renderClassroom(); };
+      setTimeout(renderClassroom, 600);
+      setTimeout(renderClassroom, 1800);
     }
     // 教师页「把名单导入学生端」跳转：?teacherkey= 一次性消费
     try {
