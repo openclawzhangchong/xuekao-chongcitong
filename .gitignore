@@ -17,3 +17,7 @@ __pycache__/
 cloud/keys.json
 .wrangler/
 **/.wrangler/
+gen-output.txt
+apply-out.txt
+src/_patch_*.js
+tools/_patch_*.js
