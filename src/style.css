@@ -219,6 +219,8 @@ body.big .stat .v{font-size:26px}
   padding:8px 13px;font-size:13px;font-weight:700;cursor:pointer}
 .mini-btn:active{transform:translateY(1px)}
 
+.diff-badge{display:inline-block;background:#ecfeff;color:#0e7490;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid #a5f3fc}
+
 /* 点名遮罩 */
 .draw-mask{position:fixed;inset:0;background:rgba(23,12,52,.92);z-index:70;display:flex;
   flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}

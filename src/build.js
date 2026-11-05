@@ -115,6 +115,7 @@ ${css}
         <div class="tts-row">
           <select id="ttsVoice"></select>
           <button class="mini-btn" id="ttsTest">🔊 试听</button>
+          <div class="switch" style="flex:none"><span style="font-size:12px;font-weight:700">🎲 随机音色</span><div class="sw on" id="ttsRand"></div></div>
         </div>
         <div class="tts-row">
           <span class="muted" style="flex:none">语速</span>
@@ -225,6 +226,7 @@ ${css}
         <span id="qIdx">第 1 / 20 题</span>
         <span class="kd" id="qKd"></span>
         <span class="pick-badge hidden" id="pickBadge"></span>
+        <span class="diff-badge hidden" id="diffBadge"></span>
       </div>
       <div class="progress"><i id="progBar"></i></div>
     </div>

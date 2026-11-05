@@ -32,17 +32,19 @@
 
   /* ---------- 语音朗读（多音色） ---------- */
   var speaking = false;
-  var TTS_PREF = { voiceURI: '', rate: 1 };
+  var TTS_PREF = { voiceURI: '', rate: 1.1, rand: true };
   function loadTtsPref() {
     try {
       TTS_PREF.voiceURI = localStorage.getItem('xkc.tts.voice') || '';
       TTS_PREF.rate = parseFloat(localStorage.getItem('xkc.tts.rate')) || 1.1;
+      TTS_PREF.rand = localStorage.getItem('xkc.tts.rand') !== '0';
     } catch (e) { }
   }
   function saveTtsPref() {
     try {
       localStorage.setItem('xkc.tts.voice', TTS_PREF.voiceURI);
       localStorage.setItem('xkc.tts.rate', String(TTS_PREF.rate));
+      localStorage.setItem('xkc.tts.rand', TTS_PREF.rand ? '1' : '0');
     } catch (e) { }
   }
   function zhVoices() {
@@ -61,7 +63,13 @@
     if (!('speechSynthesis' in window)) return null;
     speechSynthesis.cancel();
     var u = new SpeechSynthesisUtterance(text);
-    var v = currentVoice();
+    var vs = zhVoices();
+    var v;
+    if (TTS_PREF.rand && vs.length > 1) {
+      v = vs[Math.floor(Math.random() * vs.length)]; // 每次随机音色（表扬/读题更有课堂氛围）
+    } else {
+      v = currentVoice();
+    }
     if (v) u.voice = v;
     u.lang = 'zh-CN';
     u.rate = opts.rate || TTS_PREF.rate || 1;
@@ -217,6 +225,7 @@
       sel.value = TTS_PREF.voiceURI || (sel.options[0] ? sel.options[0].value : '');
     }
     var rv = $('ttsRateVal'); if (rv) rv.textContent = (TTS_PREF.rate || 1).toFixed(1) + 'x';
+    var tr = $('ttsRand'); if (tr) tr.classList.toggle('on', TTS_PREF.rand === true);
   }
   // 从云端班级拉名单（需教师密钥；支持 ?teacherkey= 一次性参数）
   function fetchCloudRoster(key, silent) {
@@ -417,6 +426,11 @@
       $('ttsRateVal').textContent = TTS_PREF.rate.toFixed(1) + 'x';
       saveTtsPref();
     });
+    on('ttsRand', 'onclick', function () {
+      TTS_PREF.rand = !TTS_PREF.rand;
+      saveTtsPref();
+      renderClassroom();
+    });
     on('ttsTest', 'onclick', function () {
       XKS.unlock();
       speak('你好，我是学考冲刺通的朗读音色，马上开始读题。', { rate: TTS_PREF.rate });
@@ -498,6 +512,11 @@
     $('badge').textContent = q.qt;
     $('qIdx').textContent = '第 ' + (S.idx + 1) + ' / ' + total + ' 题';
     $('qKd').textContent = (mod.disp || '') + ' · ' + q.kd;
+    var diffEl = $('diffBadge');
+    if (diffEl) {
+      diffEl.classList.toggle('hidden', !q.difficulty);
+      diffEl.textContent = q.difficulty ? '⚡ ' + q.difficulty : '';
+    }
     $('progBar').style.width = ((S.idx + 1) / total * 100) + '%';
     // 点名学生绑定题号：翻到别的题自动失效
     if (PICK.qIdx !== S.idx) { PICK.name = ''; PICK.sid = ''; }

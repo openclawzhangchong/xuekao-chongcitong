@@ -89,13 +89,23 @@ cls.DATA = tempfile.mkdtemp(prefix="xkc_empty_")
 t("空数据教师页正常渲染", lambda: assert_eq("还没有学生数据" in cls.render_teacher(), True))
 t("空数据 CSV 只有表头", lambda: assert_eq(cls.render_csv(), "\ufeff学号,姓名,预估分,已覆盖考纲分,覆盖题数,累计作答,今日题数,活跃天数,待重练错题,最后活跃"))
 cls.DATA = real_data
-t("真实数据教师页出现学号", lambda: assert_eq("2025011" in cls.render_teacher(), True))
-
+import os as _os, json as _json, tempfile as _tf2
+_fixdir = _tf2.mkdtemp(prefix="xkc_fix_")
+_fixpath = _os.path.join(_fixdir, "2025099.json")
+with open(_fixpath, "w", encoding="utf-8") as _f:
+    _json.dump({"name": "测试学生", "updated": 1700000000000, "profile": {"answers": {"M1-a": {"a": 3, "w": 0, "k": 2}}, "days": {}, "history": []}}, _f, ensure_ascii=False)
+_data_backup = cls.DATA
+cls.DATA = _fixdir
+t("fixture 学生出现在教师页", lambda: assert_eq("2025099" in cls.render_teacher(), True))
+_os.remove(_fixpath)
+cls.DATA = _data_backup
+t("删除 fixture 后恢复", lambda: assert_eq("2025099" not in cls.render_teacher(), True))
 print("== 6. fmt_time 毫秒时间戳回归（Windows strftime 溢出缺陷） ==")
 import time as _t
 now_ms = _t.time() * 1000
 t("毫秒时间戳正常格式化", lambda: assert_eq(len(cls.fmt_time(now_ms)), 11))
 t("秒级误传也能容错", lambda: assert_eq(len(cls.fmt_time(_t.time())), 11))
+t("删除 fixture 后恢复", lambda: assert_eq("2025099" not in cls.render_teacher(), True))
 t("非法值返回 -", lambda: assert_eq(cls.fmt_time("abc"), "-"))
 t("负值返回 -", lambda: assert_eq(cls.fmt_time(-5), "-"))
 t("0 返回 -", lambda: assert_eq(cls.fmt_time(0), "-"))

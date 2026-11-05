@@ -222,8 +222,8 @@ t('null/非对象输入 → 返回 null 表示拒绝导入（不抛异常）', (
 });
 
 console.log('== 9. 真实题库结构回归 ==');
-t('题库 3714 题 / 9 模块 / 必填字段完整（解析/类比/提醒允许空串）', () => {
-  assert.strictEqual(BANK.length, 3714); // 原 1238 + 变式 2476
+t('题库 3999 题 / 9 模块 / 必填字段完整（解析/类比/提醒允许空串）', () => {
+  assert.strictEqual(BANK.length, 3999); // 3714 + 选择题扩容 285
   assert.strictEqual(META.length, 9);
   BANK.forEach(q => {
     ['m', 'kd', 'qt', 's', 'o', 'a'].forEach(k => assert.ok(q[k], '缺必填字段 ' + k));
@@ -234,7 +234,12 @@ t('题库 3714 题 / 9 模块 / 必填字段完整（解析/类比/提醒允许�
 t('模块总分合计 150', () => {
   assert.strictEqual(META.reduce((x, m) => x + m.score, 0), 150);
 });
-t('META 声明题数与实际一致', () => {
+t('gen4 扩容恰 285 道且全部为选择题带难度', () => {
+    const g4 = BANK.filter(q => (q.src || '').startsWith('gen4'));
+    assert.strictEqual(g4.length, 285);
+    g4.forEach(q => { assert.strictEqual(q.qt, '单选'); assert.ok(['基础', '进阶', '拔高'].includes(q.difficulty), '难度非法'); });
+  });
+  t('META 声明题数与实际一致', () => {
   META.forEach(m => {
     const n = BANK.filter(q => q.m === m.code).length;
     assert.strictEqual(n, m.n, m.code + ' META.n=' + m.n + ' 实际=' + n);

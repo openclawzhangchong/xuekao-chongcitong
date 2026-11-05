@@ -226,6 +226,8 @@ body.big .stat .v{font-size:26px}
   padding:8px 13px;font-size:13px;font-weight:700;cursor:pointer}
 .mini-btn:active{transform:translateY(1px)}
 
+.diff-badge{display:inline-block;background:#ecfeff;color:#0e7490;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid #a5f3fc}
+
 /* 点名遮罩 */
 .draw-mask{position:fixed;inset:0;background:rgba(23,12,52,.92);z-index:70;display:flex;
   flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
@@ -348,6 +350,7 @@ body.big .stat .v{font-size:26px}
         <div class="tts-row">
           <select id="ttsVoice"></select>
           <button class="mini-btn" id="ttsTest">🔊 试听</button>
+          <div class="switch" style="flex:none"><span style="font-size:12px;font-weight:700">🎲 随机音色</span><div class="sw on" id="ttsRand"></div></div>
         </div>
         <div class="tts-row">
           <span class="muted" style="flex:none">语速</span>
@@ -458,6 +461,7 @@ body.big .stat .v{font-size:26px}
         <span id="qIdx">第 1 / 20 题</span>
         <span class="kd" id="qKd"></span>
         <span class="pick-badge hidden" id="pickBadge"></span>
+        <span class="diff-badge hidden" id="diffBadge"></span>
       </div>
       <div class="progress"><i id="progBar"></i></div>
     </div>
@@ -1509,17 +1513,19 @@ ${data}
 
   /* ---------- 语音朗读（多音色） ---------- */
   var speaking = false;
-  var TTS_PREF = { voiceURI: '', rate: 1 };
+  var TTS_PREF = { voiceURI: '', rate: 1.1, rand: true };
   function loadTtsPref() {
     try {
       TTS_PREF.voiceURI = localStorage.getItem('xkc.tts.voice') || '';
       TTS_PREF.rate = parseFloat(localStorage.getItem('xkc.tts.rate')) || 1.1;
+      TTS_PREF.rand = localStorage.getItem('xkc.tts.rand') !== '0';
     } catch (e) { }
   }
   function saveTtsPref() {
     try {
       localStorage.setItem('xkc.tts.voice', TTS_PREF.voiceURI);
       localStorage.setItem('xkc.tts.rate', String(TTS_PREF.rate));
+      localStorage.setItem('xkc.tts.rand', TTS_PREF.rand ? '1' : '0');
     } catch (e) { }
   }
   function zhVoices() {
@@ -1538,7 +1544,13 @@ ${data}
     if (!('speechSynthesis' in window)) return null;
     speechSynthesis.cancel();
     var u = new SpeechSynthesisUtterance(text);
-    var v = currentVoice();
+    var vs = zhVoices();
+    var v;
+    if (TTS_PREF.rand && vs.length > 1) {
+      v = vs[Math.floor(Math.random() * vs.length)]; // 每次随机音色（表扬/读题更有课堂氛围）
+    } else {
+      v = currentVoice();
+    }
     if (v) u.voice = v;
     u.lang = 'zh-CN';
     u.rate = opts.rate || TTS_PREF.rate || 1;
@@ -1694,6 +1706,7 @@ ${data}
       sel.value = TTS_PREF.voiceURI || (sel.options[0] ? sel.options[0].value : '');
     }
     var rv = $('ttsRateVal'); if (rv) rv.textContent = (TTS_PREF.rate || 1).toFixed(1) + 'x';
+    var tr = $('ttsRand'); if (tr) tr.classList.toggle('on', TTS_PREF.rand === true);
   }
   // 从云端班级拉名单（需教师密钥；支持 ?teacherkey= 一次性参数）
   function fetchCloudRoster(key, silent) {
@@ -1894,6 +1907,11 @@ ${data}
       $('ttsRateVal').textContent = TTS_PREF.rate.toFixed(1) + 'x';
       saveTtsPref();
     });
+    on('ttsRand', 'onclick', function () {
+      TTS_PREF.rand = !TTS_PREF.rand;
+      saveTtsPref();
+      renderClassroom();
+    });
     on('ttsTest', 'onclick', function () {
       XKS.unlock();
       speak('你好，我是学考冲刺通的朗读音色，马上开始读题。', { rate: TTS_PREF.rate });
@@ -1975,6 +1993,11 @@ ${data}
     $('badge').textContent = q.qt;
     $('qIdx').textContent = '第 ' + (S.idx + 1) + ' / ' + total + ' 题';
     $('qKd').textContent = (mod.disp || '') + ' · ' + q.kd;
+    var diffEl = $('diffBadge');
+    if (diffEl) {
+      diffEl.classList.toggle('hidden', !q.difficulty);
+      diffEl.textContent = q.difficulty ? '⚡ ' + q.difficulty : '';
+    }
     $('progBar').style.width = ((S.idx + 1) / total * 100) + '%';
     // 点名学生绑定题号：翻到别的题自动失效
     if (PICK.qIdx !== S.idx) { PICK.name = ''; PICK.sid = ''; }
