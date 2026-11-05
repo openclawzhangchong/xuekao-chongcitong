@@ -5,6 +5,7 @@
 | 入口 | 网址 | 用途 |
 |---|---|---|
 | **☁️ 云端主站（推荐）** | **https://xuekao.jiuyeke.cn** | 学生手机/电脑直接打开，输学号+班级码刷题，成绩实时上云；老师看全班学情 |
+| **🌐 长期备用站（here.now）** | **https://coral-beacon-g4jx.here.now/** | 与主站同代码同步更新，**永久有效（expiresAt=null）**，已登记在 here-now 账户「学考冲刺通」文件夹 |
 | 🌐 备用站（here.now） | https://coral-beacon-g4jx.here.now/ | 同一份单文件前端，本机档案模式，双击级备用 |
 | 📱 学生扫码 | `evidence/qr-xuekao-cloud.png`（云端）/ `evidence/qr-xuekao.png`（备用站） | 打印贴周测卷角落即可 |
 
