@@ -222,8 +222,8 @@ t('null/非对象输入 → 返回 null 表示拒绝导入（不抛异常）', (
 });
 
 console.log('== 9. 真实题库结构回归 ==');
-t('题库 1238 题 / 9 模块 / 必填字段完整（解析/类比/提醒允许空串）', () => {
-  assert.strictEqual(BANK.length, 1238);
+t('题库 3714 题 / 9 模块 / 必填字段完整（解析/类比/提醒允许空串）', () => {
+  assert.strictEqual(BANK.length, 3714); // 原 1238 + 变式 2476
   assert.strictEqual(META.length, 9);
   BANK.forEach(q => {
     ['m', 'kd', 'qt', 's', 'o', 'a'].forEach(k => assert.ok(q[k], '缺必填字段 ' + k));

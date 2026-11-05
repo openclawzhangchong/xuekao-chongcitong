@@ -29,6 +29,15 @@ if (total150 !== 150) throw new Error('考纲总分异常: ' + total150);
   if (/<\/script/i.test(code)) throw new Error('内嵌脚本含 </script>，会破坏 HTML（脚本#' + i + '）');
 });
 
+const splitMode = process.argv.includes('--split');
+const outArg = process.argv.slice(2).find(a => !a.startsWith('--'));
+const out = outArg || path.join(SRC, '..', 'dist', '学考冲刺通.html');
+const SPLIT_HEAD = '<' + 'script>window.BANK_VER=\'20261106\';<' + '/script>\n' +
+  '<' + 'script src="data.js"><' + '/script>';
+const dataBlock = '<' + 'script>\n${data}\n<' + '/script>';
+const dataTag = splitMode ? SPLIT_HEAD : dataBlock;
+const bankVerJson = splitMode ? JSON.stringify('20261106') : '';
+const metaJson = splitMode ? JSON.stringify(window.BANK_META) : '';
 const tpl = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -278,9 +287,7 @@ ${praise}
 <script>
 ${sfx}
 </script>
-<script>
-${data}
-</script>
+${dataTag}
 <script>
 ${app}
 </script>
@@ -288,9 +295,13 @@ ${app}
 </html>
 `;
 
-const out = process.argv[2] || path.join(SRC, '..', 'dist', '学考冲刺通.html');
 fs.mkdirSync(path.dirname(out), { recursive: true });
-fs.writeFileSync(out, tpl, 'utf8');
+if (splitMode) {
+  fs.writeFileSync(path.join(path.dirname(out), 'data.js'), data, 'utf8');
+  fs.writeFileSync(out, tpl, 'utf8');
+} else {
+  fs.writeFileSync(out, tpl, 'utf8');
+}
 const kb = (fs.statSync(out).size / 1024).toFixed(0);
 console.log('BUILD OK →', out);
 console.log('大小:', kb, 'KB | 题库', window.BANK.length, '题 | ID唯一 ✓ | 考纲总分', total150, '✓');

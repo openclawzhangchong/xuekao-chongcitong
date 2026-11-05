@@ -546,6 +546,7 @@
       return;
     }
     S.curSel = [key];
+    if (S.mode !== 'practice') S.answers[S.idx] = { sel: S.curSel.slice(), judged: false };
     var all = $('qbody').querySelectorAll('.opt');
     all.forEach(function (o) { o.classList.remove('sel'); });
     el.classList.add('sel');
@@ -644,6 +645,7 @@
       if (!mine) { unans++; }
       else if (isRight) { right++; pm.a++; }
       else { wrong++; wrongs.push({ q: q, mine: mine }); }
+      XK.recordAnswer(P, q, !!isRight); // 模拟考成绩同样计入档案（未答记错，驱动错题本/诊断/预估分）
     });
 
     // 预估分曲线：模拟考记卷面分；练习记当次会话结束后的档案预估分
@@ -915,8 +917,12 @@
         body: JSON.stringify({ sid: CLS.sid, name: CLS.name, code: CLS.code, profile: P })
       }).then(function (r) {
         if (r.status === 401) {
-          if (!silent) alert('班级码不对：请点同步条上的「更换学号」重新填写（学号+班级码都要对）');
-          else promptSid();
+          // 班级码错误：每次页面会话只提醒一次，之后静默（避免刷题时反复弹窗）
+          if (!CLS.codeWarned) {
+            CLS.codeWarned = true;
+            if (silent) promptSid();
+            else alert('班级码不对：请点同步条上的「更换学号」重新填写（学号+班级码都要对）\n（本次会话不再重复提醒）');
+          }
           return;
         }
         if (!r.ok && !silent) alert('同步失败（' + r.status + '），成绩仍保存在本机');

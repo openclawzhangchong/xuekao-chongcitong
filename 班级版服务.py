@@ -264,6 +264,14 @@ class Handler(BaseHTTPRequestHandler):
                     self._send(200, f.read(), 'text/html; charset=utf-8')
             except OSError:
                 self._send(500, '找不到 site/index.html，请先 node src/build.js 并复制产物'.encode('utf-8'))
+        elif path == '/data.js':
+            # 拆分版题库文件（site/data.js）
+            p = os.path.join(SITE, 'data.js')
+            try:
+                with open(p, 'rb') as f:
+                    self._send(200, f.read(), 'application/javascript; charset=utf-8')
+            except OSError:
+                self._send(500, '找不到 site/data.js'.encode('utf-8'))
         elif path == '/api/hello':
             self._send(200, json.dumps({'mode': 'class'}).encode('utf-8'), 'application/json')
         elif path == '/api/students':

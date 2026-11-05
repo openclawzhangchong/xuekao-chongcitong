@@ -13,6 +13,8 @@ spec = importlib.util.spec_from_file_location(
 cls = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(cls)
 
+from datetime import date as _date
+TODAY = _date.today().isoformat()
 passed = failed = 0
 
 
@@ -71,7 +73,7 @@ t("脏 qid 忽略", lambda: assert_eq(cls.estimate({"XX-1": {"a": 9}}), (0, 0)))
 print("== 4. 学生统计行 ==")
 doc = {"name": "林静静", "updated": 1700000000000, "profile": {
     "answers": {"M1-a": {"a": 10, "w": 0, "k": 2}, "M1-b": {"a": 0, "w": 3, "k": 0}, "M2-c": {"a": 4, "w": 1, "k": 1}},
-    "days": {"2026-11-05": 12, "2026-11-04": 8}, "history": []}}
+    "days": {TODAY: 12, "2026-11-04": 8}, "history": []}}
 s = cls.student_stats("2025011", doc)
 t("预估分 = M1 (10/13)×15=11.5 + M2 (4/5)×15=12 → 23.5", lambda: assert_eq(s["score"], 23.5))
 t("待重练错题 = M1-b(连对0) + M2-c(连对1未满2) → 2", lambda: assert_eq(s["wrongPend"], 2))
