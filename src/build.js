@@ -32,8 +32,9 @@ if (total150 !== 150) throw new Error('考纲总分异常: ' + total150);
 const splitMode = process.argv.includes('--split');
 const outArg = process.argv.slice(2).find(a => !a.startsWith('--'));
 const out = outArg || path.join(SRC, '..', 'dist', '学考冲刺通.html');
-const SPLIT_HEAD = '<' + 'script>window.BANK_VER=\'20261106\';<' + '/script>\n' +
-  '<' + 'script src="data.js"><' + '/script>';
+const BUILD_STAMP = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 12);
+  const SPLIT_HEAD = '<' + 'script>window.BANK_VER=\'20261106\';<' + '/script>\n' +
+  '<' + 'script src="data.js?v=' + BUILD_STAMP + '"><' + '/script>';
 const dataBlock = '<' + 'script>\n${data}\n<' + '/script>';
 const dataTag = splitMode ? SPLIT_HEAD : dataBlock;
 const bankVerJson = splitMode ? JSON.stringify('20261106') : '';
