@@ -1,0 +1,143 @@
+{
+  "page": "file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html",
+  "viewport": "1366x768",
+  "loadMs": 311,
+  "results": [
+    {
+      "name": "A1 题库载入",
+      "ok": true,
+      "note": "BANK=3999，就绪耗时 311ms"
+    },
+    {
+      "name": "A2 首页六张入口卡",
+      "ok": true,
+      "note": "6/6"
+    },
+    {
+      "name": "A3 底部页签 5 个",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "A4 首页有预估分卡",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "B1 主题切换落盘",
+      "ok": true,
+      "note": "light → dark"
+    },
+    {
+      "name": "B2 切回浅色",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "C1 出题面板渲染",
+      "ok": true,
+      "note": "4 个选项"
+    },
+    {
+      "name": "C2 全组答完出报告",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "D1 模拟考入口可用",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "E1 错题本空态文案",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "E2 空错题点重练不崩",
+      "ok": true,
+      "note": "无新报错"
+    },
+    {
+      "name": "F1 诊断页渲染",
+      "ok": true,
+      "note": "canvas=0"
+    },
+    {
+      "name": "G1 投屏模式切换",
+      "ok": true,
+      "note": "big"
+    },
+    {
+      "name": "G2 退出投屏",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "H1 TTS 音色列表非空",
+      "ok": true,
+      "note": "3 个音色"
+    },
+    {
+      "name": "H2 名单清空生效",
+      "ok": true,
+      "note": "剩余 0 人"
+    },
+    {
+      "name": "I1 开赛出题",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "I2 左侧全对 10/10",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "I3 右侧低于左侧",
+      "ok": true,
+      "note": "R=0"
+    },
+    {
+      "name": "I4 结算弹层出现",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "I5 排行榜有参赛记录",
+      "ok": true,
+      "note": "3 行"
+    },
+    {
+      "name": "J1 擂台页打开",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "J2 打满 3 场（results=3）",
+      "ok": true,
+      "note": "实际 3，round=3"
+    },
+    {
+      "name": "J3 结算页出现且含擂主",
+      "ok": true,
+      "note": "settle=true"
+    },
+    {
+      "name": "J4 结算含未上台名单",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "K1 PK 战绩持久化",
+      "ok": true,
+      "note": "1 场"
+    },
+    {
+      "name": "K2 擂台 3 场持久化",
+      "ok": true,
+      "note": "results=3 擂主=宋政烨"
+    }
+  ],
+  "errors": []
+}
