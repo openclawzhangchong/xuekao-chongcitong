@@ -936,6 +936,7 @@ body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;backgroun
     <div class="dlg-actions">
       <button class="tbtn primary" id="rosterAdd">➕ 添加学生</button>
       <button class="tbtn" id="rosterImport">📥 批量导入</button>
+      <button class="tbtn" id="rosterReset">↩️ 恢复默认班级（25计算机01班）</button>
       <button class="tbtn" id="rosterClose">✕ 完成</button>
     </div>
   </div>
@@ -2822,6 +2823,47 @@ window.__PK_MOUNT = function () {
     impl: LocalStore
   };
 
+  /* ================= 默认班级（首次打开自动载入） ================= */
+  var DEFAULT_CLASS_NAME = '25计算机01班';
+  var DEFAULT_ROSTER = [
+    { sid: '2025001', name: '陈博杰' },
+    { sid: '2025002', name: '陈嘉伟' },
+    { sid: '2025003', name: '陈凯棋' },
+    { sid: '2025004', name: '陈晓璐' },
+    { sid: '2025005', name: '陈羽韩' },
+    { sid: '2025006', name: '陈紫欣' },
+    { sid: '2025007', name: '程伟杰' },
+    { sid: '2025008', name: '邓志' },
+    { sid: '2025009', name: '何静' },
+    { sid: '2025010', name: '黄凯杰' },
+    { sid: '2025011', name: '黄晓伟' },
+    { sid: '2025012', name: '李航' },
+    { sid: '2025013', name: '林静静' },
+    { sid: '2025014', name: '林烨凯' },
+    { sid: '2025015', name: '林泽豪' },
+    { sid: '2025016', name: '林志灵' },
+    { sid: '2025017', name: '凌峰' },
+    { sid: '2025018', name: '刘晨希' },
+    { sid: '2025019', name: '刘椿尧' },
+    { sid: '2025020', name: '刘智伟' },
+    { sid: '2025021', name: '倪皓轩' },
+    { sid: '2025022', name: '沈金龙' },
+    { sid: '2025023', name: '宋海龙' },
+    { sid: '2025024', name: '宋政烨' },
+    { sid: '2025025', name: '王依晨' },
+    { sid: '2025026', name: '翁晨辉' },
+    { sid: '2025027', name: '谢志豪' },
+    { sid: '2025028', name: '颜琦镔' },
+    { sid: '2025029', name: '叶睿晨' },
+    { sid: '2025030', name: '游子鹏' },
+    { sid: '2025031', name: '张亿乐' },
+    { sid: '2025032', name: '赵伟坤' },
+    { sid: '2025033', name: '郑杨鸿' },
+    { sid: '2025034', name: '郑子添' },
+    { sid: '2025035', name: '朱炫杰' },
+    { sid: '2025036', name: '朱紫寒' }
+  ];
+
   var K_ROSTER = 'pk.roster', K_MATCHES = 'pk.matches', K_CFG = 'pk.cfg';
 
   /* ================= 题库三通道 ================= */
@@ -2860,7 +2902,12 @@ window.__PK_MOUNT = function () {
   function saveCfg() { Store.save(K_CFG, CFG); }
 
   /* ================= 花名册 ================= */
-  var ROSTER = Store.load(K_ROSTER, []);
+  var ROSTER = Store.load(K_ROSTER, null);
+  if (!Array.isArray(ROSTER)) {
+    // 首次使用：载入内置默认班级
+    ROSTER = DEFAULT_ROSTER.slice();
+    Store.save(K_ROSTER, ROSTER);
+  }
   function saveRoster() { Store.save(K_ROSTER, ROSTER); }
   function parseRoster(text) {
     var out = [], seen = {};
@@ -3300,7 +3347,7 @@ window.__PK_MOUNT = function () {
         if (confirm('删除学生「' + ROSTER[i].name + '」？（历史成绩保留）')) { ROSTER.splice(i, 1); saveRoster(); renderRoster(); renderHome(); }
       };
     });
-    $('rosterCountLabel').textContent = '共 ' + ROSTER.length + ' 名学生';
+    $('rosterCountLabel').textContent = '共 ' + ROSTER.length + ' 名学生' + (ROSTER.length === DEFAULT_ROSTER.length ? '（' + DEFAULT_CLASS_NAME + '）' : '');
   }
 
   /* ================= 事件绑定 ================= */
@@ -3334,6 +3381,12 @@ window.__PK_MOUNT = function () {
       saveRoster(); renderRoster();
       $('pkRosterPaste').value = '';
       toast('批量导入完成，当前 ' + ROSTER.length + ' 人');
+    };
+    $('rosterReset').onclick = function () {
+      if (!confirm('恢复为默认班级「' + DEFAULT_CLASS_NAME + '」（' + DEFAULT_ROSTER.length + ' 人）？\n当前自定义名单将被替换。')) return;
+      ROSTER = DEFAULT_ROSTER.slice();
+      saveRoster(); renderRoster(); renderHome();
+      toast('已恢复默认班级：' + DEFAULT_CLASS_NAME + '（' + ROSTER.length + ' 人）');
     };
     $('btnCfg').onclick = function () {
       $('cfgPaste').value = '';
@@ -3391,8 +3444,9 @@ window.__PK_MOUNT = function () {
   // 刷新钩子（主站每次进入 PK 页调用）：重读存储 + 重渲染选人下拉
   window.__PK_REFRESH = function () {
     try {
-      var r = Store.load(K_ROSTER, []);
-      if (Array.isArray(r)) ROSTER = r;
+      var r = Store.load(K_ROSTER, null);
+      if (Array.isArray(r) && r.length) ROSTER = r;
+      else if (!Array.isArray(r)) { ROSTER = DEFAULT_ROSTER.slice(); Store.save(K_ROSTER, ROSTER); }
       var m = Store.load(K_MATCHES, []);
       if (Array.isArray(m)) MATCHES = m;
     } catch (e) { }
