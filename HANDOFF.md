@@ -67,7 +67,8 @@ cloud/
   keys.json        ← 班级码 + 教师密钥（已 gitignore，绝不入库）
 班级版服务.py       ← 局域网版服务（Python 标准库，端口 8953）
 tests/             ← 6 套单测（170 项，必须全绿）+ dom-stub.js 共用 DOM 桩
-tools/             ← 生成器与修正应用器
+tools/             ← 生成器、修正应用器与缺陷复扫闸门
+docs/              ← 开发方案文档（当前只有擂台赛，尚未开工）
 evidence/          ← 测试证据与截图
 site/              ← 线上部署目录（index.html + data.js 拆分版）
 dist/              ← 单文件构建产物
@@ -311,6 +312,9 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 - ✅ 设置弹窗的「默认题量/默认计时」不再与开赛面板撞 id（此前改了不生效）
 - ✅ 构建产物不再混入模板残留文本（build.js 已加残留守卫）
 - ✅ README 含 9 张页面截图
+- 📄 **擂台赛尚未开工**，方案已定稿在 `docs/擂台赛-开发方案.md`：与双人 PK 的硬隔离表
+  （id 前缀 `ar*`、独立存储 `pk.arena.*`、独立样式与语料）、配色/版式/TTS/文案差异化、
+  18 项测试清单、C1→C4 分步与回滚点。**动手前先回答文末 §12 的三个待定问题。**
 
 ---
 
