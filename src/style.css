@@ -177,13 +177,20 @@ body.big .qstem{font-size:28px}
 body.big .opt .ov{font-size:21px}
 body.big .opt{min-height:64px;padding:18px}
 body.big .score-hero .big{font-size:72px}
-body.big .grid4{grid-template-columns:repeat(4,1fr)}
+/* 窄屏投屏保持 2 列入口卡（4 列会把「模拟考」挤成逐字竖排）；宽屏横屏才开 4 列（见下方媒体块） */
 body.big .mods{grid-template-columns:1fr 1fr 1fr}
 body.big .card{padding:20px}
-body.big .h-title{font-size:22px}
+body.big .h-title{font-size:clamp(15px,4.2vw,22px);white-space:nowrap}
 body.big .stat .v{font-size:26px}
 /* 投屏按钮 on 态：点亮 = 点击有反馈 */
 .h-btn.on,.speak-btn.on{background:#fff;color:var(--pri-d);font-weight:700;box-shadow:0 0 0 2px rgba(255,255,255,.5) inset}
+
+/* 键盘可达（无障碍）：选项可 Tab 聚焦，回车/空格作答（主站与 PK 的选项元素同名 .opt） */
+.opt:focus-visible{outline:3px solid var(--pri,#7c3aed);outline-offset:2px}
+/* 首屏加载提示：拆分版 data.js（3MB）下载期间给反馈；app.js 启动即移除，15s 未就绪转超时文案 */
+.boot-tip{position:fixed;top:calc(env(safe-area-inset-top) + 66px);left:50%;transform:translateX(-50%);
+  z-index:99;background:var(--pri,#7c3aed);color:#fff;font-size:14px;font-weight:700;padding:9px 18px;
+  border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25);pointer-events:none;white-space:nowrap}
 
 .empty{ text-align:center;color:var(--mut);padding:30px 10px;font-size:14px}
 .ver-tag{margin:14px 0 4px;text-align:center;font-size:12px;color:#a78bda}
@@ -256,6 +263,7 @@ body.big .stat .v{font-size:26px}
   body.big .navbar { padding: 14px 28px calc(env(safe-area-inset-bottom) + 14px); max-width: 1280px; }
   body.big .navbar button { padding: 21px; font-size: 23px; }
   body.big header .h-title { font-size: 24px; }
+  body.big .grid4 { grid-template-columns: repeat(4, 1fr); }
   body.big .h-btn, body.big .speak-btn { font-size: 17px; padding: 10px 16px; }
   body.big .result { max-width: 1000px; margin: 0 auto; }
   body.big .stat .v { font-size: 30px; }

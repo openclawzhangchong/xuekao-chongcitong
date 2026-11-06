@@ -54,6 +54,7 @@ const tpl = `<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>学考冲刺通 · 信息技术基础（福建中职学考）</title>
+<link rel="icon" href="data:,">
 <style>
 ${themeCss}
 ${css}
@@ -62,6 +63,8 @@ ${arenaStyle}
 </style>
 </head>
 <body>
+<div id="bootTip" class="boot-tip">📚 正在加载题库，请稍候…</div>
+<script>setTimeout(function(){var t=document.getElementById('bootTip');if(t)t.textContent='⚠ 题库加载超时，请检查网络后刷新重试';},15000);</script>
 <div class="app">
 
   <!-- ============ 首页 ============ -->

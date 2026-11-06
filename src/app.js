@@ -598,6 +598,8 @@
       o.appendChild(key); o.appendChild(val);
       o.onclick = function () { onPick(q, op[0], o); };
       o.setAttribute('data-key', op[0]);
+      o.tabIndex = 0; o.setAttribute('role', 'button');
+      o.onkeydown = function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); o.click(); } };
       opts.appendChild(o);
     });
     body.appendChild(opts);
@@ -1047,6 +1049,8 @@
   }
 
   /* ---------- 启动 ---------- */
+  // 题库已就绪（脚本是顺序阻塞加载），先撤掉首屏「正在加载题库」提示
+  try { var bootTip = document.getElementById('bootTip'); if (bootTip && bootTip.parentNode) bootTip.parentNode.removeChild(bootTip); } catch (e) { }
   // 启动失败时兜底显示首页 + 错误横幅（不静默白屏）
   try {
     document.querySelectorAll('.tab').forEach(function (el) {
@@ -1057,18 +1061,12 @@
     renderHome();
     refreshBadges();
     showPanel('home');
-    $('verTag').textContent = '题库版本 ' + (window.BANK_VER || '') + ' · 共 ' + BANK.length + ' 题 · 考纲 150 分制';
+    $('verTag').textContent = '题库版本 ' + (window.BANK_VER || '') + ' · 共 ' + BANK.length + ' 题 · 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
     applyTheme(currentTheme());
-    loadBig();
     loadBig();
     loadTtsPref();
     try { DRAW.noRepeat = localStorage.getItem('xkc.draw.norepeat') !== '0'; } catch (e) { }
     loadRoster();
-    renderHome();
-    refreshBadges();
-    showPanel('home');
-    $('verTag').textContent = '题库版本 ' + (window.BANK_VER || '') + ' · 共 ' + BANK.length + ' 题 · 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
-    renderSetup();
     renderClassroom();
     if ('speechSynthesis' in window) {
       speechSynthesis.onvoiceschanged = function () { renderClassroom(); };

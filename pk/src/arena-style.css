@@ -164,3 +164,6 @@ body.arena-mode .app{max-width:none}
   .ar-champ-line{font-size:30px}
   .ar-go{font-size:26px}
 }
+
+/* 键盘可达（无障碍）：选项可 Tab 聚焦，回车/空格作答 */
+.ar-opt:focus-visible{outline:3px solid var(--ar-accent,#f59e0b);outline-offset:2px}

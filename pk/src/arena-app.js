@@ -279,6 +279,8 @@ window.__ARENA_MOUNT = function () {
       d.appendChild(k); d.appendChild(v);
       if (selNow.indexOf(o[0]) !== -1) d.classList.add('sel');
       d.setAttribute('data-key', o[0]);
+      d.tabIndex = 0; d.setAttribute('role', 'button');
+      d.onkeydown = function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); d.click(); } };
       d.onclick = function () { pickOpt(key, o[0]); };
       opts.appendChild(d);
     });
