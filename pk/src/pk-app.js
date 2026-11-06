@@ -713,6 +713,10 @@ window.__PK_MOUNT = function () {
     $('btnCfg').onclick = function () {
       $('cfgPaste').value = '';
       modsDraft = draftFromCfg(); renderCfgMods();
+      // 弹窗里的题量/计时是独立 id：开赛设置面板那对才是 startPK 读的，
+      // 同名会让 getElementById 只拿到面板那个，弹窗改的值永远不生效。
+      $('pkDlgCount').value = CFG.count;
+      $('pkDlgMinutes').value = CFG.minutes;
       try {
         var inp = $('cfgBankUrl');
         if (inp && !inp.value) inp.value = DEFAULT_BANK_URL;
@@ -731,11 +735,11 @@ window.__PK_MOUNT = function () {
     };
     $('cfgPasteApply').onclick = function () { pasteBank($('cfgPaste').value); };
     $('cfgSave').onclick = function () {
-      CFG.count = Math.max(1, Math.min(50, parseInt($('pkCfgCount').value, 10) || 10));
-      CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkCfgMinutes').value, 10) || 10));
+      CFG.count = Math.max(1, Math.min(50, parseInt($('pkDlgCount').value, 10) || 10));
+      CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkDlgMinutes').value, 10) || 10));
       var m = {}; for (var k in modsDraft) m[k] = modsDraft[k];
       CFG.mods = m;
-      saveCfg(); renderHome(); toast('已保存，本轮从 ' + bankPool().length + ' 题里抽');
+      saveCfg(); renderHome(); toast('已保存：' + CFG.count + ' 题 / ' + CFG.minutes + ' 分钟，本轮从 ' + bankPool().length + ' 题里抽');
       $('cfgMask').classList.add('hidden');
     };
     $('btnSnd').onclick = function () {

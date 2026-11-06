@@ -5,6 +5,8 @@
  */
 'use strict';
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const { mount, choose, answer, sampleBank, sampleRoster, fakeXKP } = require('./dom-stub');
 
 let passed = 0, failed = 0;
@@ -248,6 +250,39 @@ t('连击时走连胜表扬语', () => {
   for (let i = 0; i < 3; i++) answer(p, 'L', 0);
   const line = p.spoke.join('\n');
   assert.ok(/连对 3 题|连胜/.test(line), '3 连击没触发连胜表扬语：' + line);
+});
+
+console.log('== F 设置弹窗的题量/计时必须真的生效（模板不得有重复 id）==');
+t('pk-markup.html 里没有重复 id', () => {
+  const html = fs.readFileSync(path.join(__dirname, '..', 'pk', 'src', 'pk-markup.html'), 'utf8');
+  const ids = (html.match(/id="([^"]+)"/g) || []).map((s) => s.slice(4, -1));
+  const seen = {}, dup = [];
+  ids.forEach((i) => { if (seen[i]) dup.push(i); seen[i] = 1; });
+  assert.deepStrictEqual(Array.from(new Set(dup)), [], '重复 id 会让 getElementById 只拿到第一个：' + Array.from(new Set(dup)).join(', '));
+});
+t('在设置弹窗里改题量，下一局就按新题量抽', () => {
+  const p = mount({ roster: R36 });
+  p.$('btnCfg').onclick();
+  p.$('pkDlgCount').value = '3';
+  p.$('cfgSave').onclick();
+  startManual(p, '学生2', '学生5');
+  assert.strictEqual(p.test().pk().left.seq.length, 3, '弹窗改的题量没生效：' + p.test().pk().left.seq.length);
+});
+t('在设置弹窗里改计时，倒计时按新分钟数走', () => {
+  const p = mount({ roster: R36 });
+  p.$('btnCfg').onclick();
+  p.$('pkDlgMinutes').value = '2';
+  p.$('cfgSave').onclick();
+  startManual(p, '学生2', '学生5');
+  assert.strictEqual(p.$('pkTimer').textContent, '02:00', '弹窗改的计时没生效：' + p.$('pkTimer').textContent);
+});
+t('重开设置弹窗时回填的是已保存值', () => {
+  const p = mount({ roster: R36 });
+  p.$('btnCfg').onclick();
+  p.$('pkDlgCount').value = '7';
+  p.$('cfgSave').onclick();
+  p.$('btnCfg').onclick();
+  assert.strictEqual(p.$('pkDlgCount').value, '7', '弹窗没回填已保存题量：' + p.$('pkDlgCount').value);
 });
 
 console.log('\n结果: ' + passed + ' 通过, ' + failed + ' 失败');

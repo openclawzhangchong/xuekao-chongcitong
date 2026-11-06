@@ -66,7 +66,7 @@ cloud/
   wrangler.d1.toml ← D1 备用版配置
   keys.json        ← 班级码 + 教师密钥（已 gitignore，绝不入库）
 班级版服务.py       ← 局域网版服务（Python 标准库，端口 8953）
-tests/             ← 6 套单测（148 项，必须全绿）
+tests/             ← 6 套单测（152 项，必须全绿）
 tools/             ← 生成器与修正应用器
 evidence/          ← 测试证据与截图
 site/              ← 线上部署目录（index.html + data.js 拆分版）
@@ -80,11 +80,11 @@ dist/              ← 单文件构建产物
 ```bash
 cd "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通"
 
-# 1. 六套单测必须全绿（148 项）
+# 1. 六套单测必须全绿（152 项）
 node tests/engine.test.js              # 期望 32 通过
 node tests/classroom.test.js           # 期望 19 通过
 node tests/pk-pick.test.js             # 期望 11 通过（PK 选人：下拉能选中姓名）
-node tests/pk-features.test.js         # 期望 28 通过（领先条/随机匹配/章节过滤/抽题随机/表扬语）
+node tests/pk-features.test.js         # 期望 32 通过（领先条/随机匹配/章节过滤/抽题随机/表扬语/弹窗题量）
 node cloud/worker.test.js              # 期望 20 通过
 python -I tests/test_server_logic.py   # 期望 38 通过
 
@@ -284,10 +284,13 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 - ✅ 内置默认班级 25计算机01班（36 人）
 - ✅ 题库地址预置（无需用户填写）
 - ✅ 云端班级版（Cloudflare KV）+ 局域网版 + here.now 备用站
-- ✅ 6 套单测 148 项全绿
+- ✅ 6 套单测 152 项全绿
 - ✅ PK 选人下拉可正常选中姓名（含无编号学生）
 - ✅ PK 抽题改为真随机（此前每局固定做题库前 N 题，学生打两轮就背完了）
 - ✅ PK 新增：领先条居中放大 / 🎲 随机匹配+上台播报 / 设置里章节勾选 / 答对答错带姓名表扬语
+- ✅ PK 独立版（pk/dist/双人PK答题.html）修好：`${pkMarkup}` 此前从未被替换、且没人调用
+  `__PK_MOUNT()`，界面既缺又不动；pk-build.js 已加占位符/界面/挂载三道守卫
+- ✅ 设置弹窗的「默认题量/默认计时」不再与开赛面板撞 id（此前改了不生效）
 - ✅ 构建产物不再混入模板残留文本（build.js 已加残留守卫）
 - ✅ README 含 9 张页面截图
 

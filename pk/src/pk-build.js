@@ -9,6 +9,7 @@ const PK = path.join(__dirname);
 const ROOT = path.join(PK, '..', '..');
 
 const tpl = fs.readFileSync(path.join(PK, 'template.html'), 'utf8');
+const markup = fs.readFileSync(path.join(PK, 'pk-markup.html'), 'utf8');
 const themeCss = fs.readFileSync(path.join(ROOT, 'src', 'theme.css'), 'utf8');
 const sfxJs = fs.readFileSync(path.join(ROOT, 'src', 'sfx.js'), 'utf8');
 const praiseJs = fs.readFileSync(path.join(ROOT, 'src', 'praise.js'), 'utf8');
@@ -22,10 +23,18 @@ const pkAppJs = fs.readFileSync(path.join(PK, 'pk-app.js'), 'utf8');
 
 let out = tpl
   .replace('${pkStyle}', themeCss + '\n' + fs.readFileSync(path.join(PK, 'pk-style.css'), 'utf8'))
+  .replace('${pkMarkup}', markup)
   .replace('${sfxJs}', sfxJs)
   .replace('${praiseJs}', praiseJs)
   .replace('${bankJs}', dataJs)
   .replace('${pkAppJs}', pkAppJs);
+
+// 产物守卫：占位符漏替换 = 页面完全没有界面（曾踩过：${pkMarkup} 原样留在 body 里）
+const unreplaced = out.match(/\$\{[a-zA-Z]+\}/g);
+if (unreplaced) throw new Error('PK 构建有未替换的占位符：' + Array.from(new Set(unreplaced)).join(', '));
+if (!/class="pickrow"/.test(out) || !/id="pkSelL"/.test(out)) throw new Error('PK 构建产物缺少选人界面');
+// 独立版没有主站 app.js 帮它挂载，缺这行就是一片不动的静态界面
+if (!/__PK_MOUNT\(\)/.test(out)) throw new Error('PK 独立版缺少 __PK_MOUNT() 调用，界面不会初始化');
 
 const outPath = path.join(PK, '..', 'dist', '双人PK答题.html');
 fs.mkdirSync(path.dirname(outPath), { recursive: true });

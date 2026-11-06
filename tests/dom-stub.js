@@ -74,7 +74,11 @@ function makeElement(tag, reg) {
     }
   });
   if (!(el.tagName === 'SELECT')) {
-    el.value = '';
+    // 真实 input 的 value 永远是字符串：赋数字 7 读回来是 '7'
+    Object.defineProperty(el, 'value', {
+      get: () => _value,
+      set(v) { _value = String(v); }
+    });
     Object.defineProperty(el, 'textContent', {
       get: () => (el.children.length ? el.children.map((c) => c.textContent).join('') : _text),
       set(v) { _text = String(v); el.children = []; }
