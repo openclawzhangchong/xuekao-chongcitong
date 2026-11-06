@@ -42,9 +42,20 @@ const log = [];
 for (const fx of fixes) {
   const loc = locate(fx.i);
   const q = loc.q;
-  if (!q || !['a', 'e', 's'].includes(fx.field)) { log.push('跳过 i=' + fx.i + '（' + loc.via + '）'); continue; }
+  if (!q || !['a', 'e', 's', 'o'].includes(fx.field)) { log.push('跳过 i=' + fx.i + '（' + loc.via + '）'); continue; }
   const before = q[fx.field];
   q[fx.field] = fx.fix;
+  if (fx.field === 'o') {
+    let arr;
+    try { arr = JSON.parse(fx.fix); } catch (e) { log.push('跳过 i=' + fx.i + '（o 非法 JSON）'); continue; }
+    if (!Array.isArray(arr) || arr.length < 2) { log.push('跳过 i=' + fx.i + '（o 数组异常）'); continue; }
+    const okFmt = arr.every(o => Array.isArray(o) && o.length >= 1 && o[0]);
+    if (!okFmt) { log.push('跳过 i=' + fx.i + '（o 选项格式异常）'); continue; }
+    q.o = arr.map(o => [o[0], o[1] === undefined ? '' : o[1]]);
+    applied++;
+    log.push('o@' + fx.i + ' 选项数组替换（' + arr.length + ' 项）');
+    continue;
+  }
   // s 修正冲突预检：新题面与库内其他题相同 → 回退（教辅不允许同题面两道题）
   if (fx.field === 's') {
     const nk = q.m + '|' + q.qt + '|' + q.s;
