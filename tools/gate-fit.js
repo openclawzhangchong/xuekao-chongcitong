@@ -25,7 +25,9 @@ const H = parseInt(process.argv[3] || '768', 10);
 const N = parseInt(process.argv[4] || '200', 10);
 const SCROLL_MAX = parseFloat(process.env.GATE_SCROLL_MAX || '2');
 const FS_MIN_MEDIAN = parseFloat(process.env.GATE_FS_MIN || '20');
-const PAGE = 'file:///' + path.join(__dirname, '..', 'site', 'index.html').replace(/\\/g, '/');
+// 默认量本地拆分版；GATE_PAGE=https://… 可以直接量线上，验收「发出去的那一份」而不是本机那份
+const PAGE = process.env.GATE_PAGE ||
+  'file:///' + path.join(__dirname, '..', 'site', 'index.html').replace(/\\/g, '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /* 页面内执行：[which, 题目数组] → 逐题走真实渲染路径量一遍
@@ -115,6 +117,7 @@ function summarize(label, r) {
   const acRnd = await page.evaluate(measurePage, ['ar-champ', sets.rnd]);
   const acWorst = await page.evaluate(measurePage, ['ar-champ', sets.worst]);
 
+  console.log('量的地址 ' + PAGE);
   console.log('视口 ' + W + '×' + H + '（教室投屏）  题库 ' + (await page.evaluate(() => window.BANK.length)) + ' 题');
   const s = [summarize('PK 左栏·随机', pkRnd), summarize('PK 左栏·最长 20', pkWorst),
     summarize('擂台擂主席·随机', acRnd), summarize('擂台擂主席·最长 20', acWorst),
