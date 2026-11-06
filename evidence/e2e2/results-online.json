@@ -1,12 +1,12 @@
 {
   "page": "https://coral-beacon-g4jx.here.now/",
   "viewport": "1366x768",
-  "loadMs": 6869,
+  "loadMs": 3126,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3999，就绪耗时 6869ms"
+      "note": "BANK=3999，就绪耗时 3126ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -136,7 +136,7 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=黄晓伟"
+      "note": "results=3 擂主=林静静"
     }
   ],
   "errors": [
