@@ -143,9 +143,9 @@
     <div class="set-grid">
       <div class="set-item"><label>默认题量（1-50）</label><input id="pkCfgCount" value="10"></div>
       <div class="set-item"><label>默认计时（分钟）</label><input id="pkCfgMinutes" value="10"></div>
-      <div class="set-item set-full"><label>通道②：线上题库 JSON 地址（fetch 拉取）</label>
-        <input id="cfgBankUrl" placeholder="https://example.com/bank.json">
-        <div style="margin-top:8px"><button class="tbtn" id="cfgFetch">🌐 拉取题库</button></div>
+      <div class="set-item set-full"><label>通道②：线上题库地址（已预置，一般无需修改）</label>
+        <input id="cfgBankUrl" value="">
+        <div style="margin-top:8px"><button class="tbtn" id="cfgFetch">🌐 拉取题库</button><span class="muted" id="bankUrlHint" style="margin-left:10px"></span></div>
       </div>
       <div class="set-item set-full"><label>通道③：粘贴题库 JSON（兜底）</label>
         <textarea id="cfgPaste" placeholder='[{"s":"题干","o":[["A","选项"],["B","选项"]],"a":"A","e":"解析"} , ...]'></textarea>

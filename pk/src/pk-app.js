@@ -52,7 +52,7 @@ window.__PK_MOUNT = function () {
   // 通道②：fetch 线上 JSON
   function fetchBank(url) {
     return fetch(url).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function (j) { setBank(Array.isArray(j) ? j : j.BANK, '线上 ' + url); renderHome(); })
+      .then(function (j) { setBank(Array.isArray(j) ? j : (j.bank || j.BANK), '线上题库' + (j.ver ? ' ' + j.ver : '')); renderHome(); })
       .catch(function (e) { toast('拉取失败：' + e.message); });
   }
   // 通道③：粘贴 JSON
@@ -62,6 +62,14 @@ window.__PK_MOUNT = function () {
   }
 
   /* ================= 配置 ================= */
+  // 题库地址：默认同源 /api/bank（班级版/云端版都有）；纯静态打开时回退线上主站
+  var DEFAULT_BANK_URL = (function () {
+    try {
+      if (location.protocol === 'file:') return 'https://xuekao.jiuyeke.cn/api/bank';
+      return location.origin + '/api/bank';
+    } catch (e) { return 'https://xuekao.jiuyeke.cn/api/bank'; }
+  })();
+
   var CFG = Store.load(K_CFG, { count: 10, minutes: 10 });
   function saveCfg() { Store.save(K_CFG, CFG); }
 
@@ -543,6 +551,12 @@ window.__PK_MOUNT = function () {
     };
     $('btnCfg').onclick = function () {
       $('cfgPaste').value = '';
+      try {
+        var inp = $('cfgBankUrl');
+        if (inp && !inp.value) inp.value = DEFAULT_BANK_URL;
+        var hint = $('bankUrlHint');
+        if (hint) hint.textContent = '当前题库：' + bankInfo();
+      } catch (e) { }
       $('cfgMask').classList.remove('hidden');
     };
     $('cfgClose').onclick = function () { $('cfgMask').classList.add('hidden'); };
@@ -603,6 +617,22 @@ window.__PK_MOUNT = function () {
   document.addEventListener('click', function () { try { SFX.unlock(); } catch (e) { } }, { once: true });
   if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); } catch (e) { } }
   try { renderHome(); } catch (e) { if (window.console) console.error('[PK] init renderHome:', e); }
+  // 内嵌题库已可用；若设置了外部地址则静默尝试更新（失败忽略）
+  (function __PK_AUTOFETCH() {
+    try {
+      var inp = $('cfgBankUrl');
+      var url = (inp && inp.value) || DEFAULT_BANK_URL;
+      if (inp && !inp.value) inp.value = url;
+      // 纯静态（file://）不自动拉，避免无谓网络请求
+      if (location.protocol === 'file:') return;
+      fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+        if (j && (j.bank || Array.isArray(j))) {
+          var arr = j.bank || j;
+          if (Array.isArray(arr) && arr.length) { BANK = arr; try { renderHome(); } catch (e) { } }
+        }
+      }).catch(function () { });
+    } catch (e) { }
+  })();
   try { bind(); } catch (e) { if (window.console) console.error('[PK] bind:', e); }
   try { $('btnSnd').textContent = sndOn ? '🔊 音效开' : '🔇 音效关'; } catch (e) { }
 };

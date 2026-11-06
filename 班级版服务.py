@@ -274,6 +274,22 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(500, '找不到 site/data.js'.encode('utf-8'))
         elif path == '/api/hello':
             self._send(200, json.dumps({'mode': 'class'}).encode('utf-8'), 'application/json')
+        elif path == '/api/bank':
+            # 题库 JSON（供 PK 模块 fetch；从 site/data.js 现剥）
+            try:
+                with open(os.path.join(SITE, 'data.js'), encoding='utf-8') as f:
+                    text = f.read()
+                start = text.index('window.BANK=')
+                body = text[start + len('window.BANK='):text.rindex(';')]
+                bank = json.loads(body)
+                ver = ''
+                if "window.BANK_VER='" in text:
+                    ver = text.split("window.BANK_VER='")[1].split("'")[0]
+                payload = json.dumps({'ok': True, 'ver': ver, 'count': len(bank), 'bank': bank},
+                                     ensure_ascii=False)
+                self._send(200, payload.encode('utf-8'), 'application/json; charset=utf-8')
+            except (OSError, ValueError) as e:
+                self._send(500, json.dumps({'ok': False, 'err': str(e)[:120]}).encode('utf-8'), 'application/json')
         elif path == '/api/students':
             # 云端/局域网名单拉取（供学生端「课堂互动·从云端拉取」；仅本机，学生设备够不着）
             if not self._local_only():

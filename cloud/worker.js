@@ -226,6 +226,36 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    // ---- 题库 JSON（供 PK 模块等外部客户端 fetch；从打包的 data.js 现剥） ----
+    if (path === '/api/bank') {
+      try {
+        const res = await env.ASSETS.fetch(new Request(new URL('/data.js', url).toString(), request));
+        const text = await res.text();
+        const startIdx = text.indexOf('window.BANK=');
+        if (startIdx === -1) return json({ ok: false, err: 'bank_not_found' }, 500);
+        const from = startIdx + 'window.BANK='.length;
+        const endIdx = text.lastIndexOf(';');
+        const bank = JSON.parse(text.slice(from, endIdx));
+        const vm = text.match(/window\.BANK_VER='([^']+)'/);
+        const mm = text.match(/window\.BANK_META=(\[[^\n]*?\]);/);
+        return new Response(JSON.stringify({
+          ok: true,
+          ver: vm ? vm[1] : '',
+          count: bank.length,
+          meta: mm ? JSON.parse(mm[1]) : [],
+          bank: bank
+        }), {
+          headers: {
+            'content-type': 'application/json; charset=utf-8',
+            'access-control-allow-origin': '*',
+            'cache-control': 'public, max-age=3600'
+          }
+        });
+      } catch (e) {
+        return json({ ok: false, err: 'bank_parse_failed', detail: String(e).slice(0, 120) }, 500);
+      }
+    }
+
     // ---- 学生端探测 ----
     if (path === '/api/hello') {
       return json({ mode: 'class', label: 'cloud' });
