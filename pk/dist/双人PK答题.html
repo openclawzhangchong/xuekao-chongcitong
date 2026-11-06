@@ -616,6 +616,41 @@ body.pk-mode .app{max-width:none}
     return arr;
   }
 
+  /* ---------- 抽题池：双人 PK 与擂台赛共用 ----------
+   * 章节过滤规则：sel 缺失 = 不过滤；没有 m 字段的题（教师用「粘贴 JSON」导入的
+   * 自定义题库）永远保留，否则会被内置的 9 个章节码清空。
+   * pickFromBank 返回**题目对象数组**而不是下标——早先 PK 把随机结果丢掉、
+   * 改用 BANK 下标 0..n-1，导致每局都只做题库最前面 n 题。
+   * ================================================= */
+  function bankPool(bank, sel) {
+    var out = [];
+    for (var i = 0; i < bank.length; i++) {
+      var q = bank[i];
+      if (!q.m || !sel || sel[q.m] !== false) out.push(q);
+    }
+    return out;
+  }
+  function pickFromBank(bank, sel, n) {
+    var pool = bankPool(bank, sel);
+    return shuffle(pool).slice(0, Math.min(n, pool.length));
+  }
+
+  /* ---------- 一屏自适应的纯计算 ----------
+   * measure(fs) 由调用方提供（负责真实量高）。先逐级缩字号，缩到 min 仍塞不下
+   * 才交回 scroll=true —— 绝不能把字缩到看不见，也绝不能把题目切掉。
+   * avail 为 0 说明还没布局，此时不动字号。
+   * ====================================== */
+  function fitToBox(base, measure, min) {
+    var fs = base;
+    for (var i = 0; i <= 32; i++) {
+      var m = measure(fs);
+      if (!m || !m.avail || m.h <= m.avail + 2) return { fs: fs, scroll: false };
+      if (fs <= min) break;
+      fs = Math.max(min, fs - 1);
+    }
+    return { fs: fs, scroll: true };
+  }
+
   function todayStr(d) {
     var t = d ? new Date(d) : new Date();
     var m = t.getMonth() + 1, day = t.getDate();
@@ -819,6 +854,9 @@ body.pk-mode .app{max-width:none}
     judge: judge,
     qidOf: qidOf,
     cleanStem: cleanStem,
+    bankPool: bankPool,
+    pickFromBank: pickFromBank,
+    fitToBox: fitToBox,
     shuffle: shuffle,
     todayStr: todayStr,
     newProfile: newProfile,
@@ -1415,14 +1453,7 @@ window.__PK_MOUNT = function () {
     (window.BANK_META || []).forEach(function (m) { if (m && m.code) out.push(m.code); });
     return out;
   }
-  function poolOf(sel) {
-    var out = [];
-    for (var i = 0; i < BANK.length; i++) {
-      var q = BANK[i];
-      if (!q.m || !sel || sel[q.m] !== false) out.push(q);
-    }
-    return out;
-  }
+  function poolOf(sel) { return window.XK.bankPool(BANK, sel); }
   function bankPool() { return poolOf(CFG.mods); }
   function selectedModCount() {
     var codes = modCodes(), n = 0;
@@ -1528,11 +1559,7 @@ window.__PK_MOUNT = function () {
     return sel.slice().map(normAns).sort().join('') === normAns(q.a);
   }
   function shuffled(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  function pickQuestions(n) {
-    var pool = bankPool();
-    var idxs = shuffled(pool.length).slice(0, Math.min(n, pool.length));
-    return idxs.map(function (i) { return pool[i]; });
-  }
+  function pickQuestions(n) { return window.XK.pickFromBank(BANK, CFG.mods, n); }
 
   /* ================= 渲染：首页/选人 =================
    * option 的 value 用花名册下标：sid 允许为空（批量导入只填姓名），
@@ -1624,23 +1651,13 @@ window.__PK_MOUNT = function () {
    * 也绝不能把题目切掉。
    * =============================================== */
   var PKFS_MIN = 16;
-  function fitToBox(base, measure, min) {
-    var fs = base;
-    for (var i = 0; i <= 32; i++) {
-      var m = measure(fs);
-      if (!m || !m.avail || m.h <= m.avail + 2) return { fs: fs, scroll: false };
-      if (fs <= min) break;
-      fs = Math.max(min, fs - 1);
-    }
-    return { fs: fs, scroll: true };
-  }
   function fitSide(side) {
     var root = $(side === 'L' ? 'pkPanelL' : 'pkPanelR');
     if (!root || !root.scrollHeight) return;
     root.style.removeProperty('--pkfs');
     root.classList.remove('pkfit-scroll');
     var base = parseFloat(getComputedStyle(root).getPropertyValue('--pkfs')) || 23;
-    var res = fitToBox(base, function (fs) {
+    var res = window.XK.fitToBox(base, function (fs) {
       root.style.setProperty('--pkfs', fs + 'px');
       return { h: root.scrollHeight, avail: root.clientHeight };
     }, PKFS_MIN);
@@ -2107,7 +2124,7 @@ window.__PK_MOUNT = function () {
   /* 单测钩子：只暴露只读快照，不参与任何界面逻辑（tests/dom-stub.js 用） */
   window.__PK_TEST = {
     bankPool: bankPool,
-    fitToBox: fitToBox,
+    fitToBox: window.XK.fitToBox,
     PKFS_MIN: PKFS_MIN,
     cfg: function () { return CFG; },
     pk: function () { return PK; },

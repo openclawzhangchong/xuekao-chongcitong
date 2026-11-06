@@ -49,6 +49,41 @@
     return arr;
   }
 
+  /* ---------- 抽题池：双人 PK 与擂台赛共用 ----------
+   * 章节过滤规则：sel 缺失 = 不过滤；没有 m 字段的题（教师用「粘贴 JSON」导入的
+   * 自定义题库）永远保留，否则会被内置的 9 个章节码清空。
+   * pickFromBank 返回**题目对象数组**而不是下标——早先 PK 把随机结果丢掉、
+   * 改用 BANK 下标 0..n-1，导致每局都只做题库最前面 n 题。
+   * ================================================= */
+  function bankPool(bank, sel) {
+    var out = [];
+    for (var i = 0; i < bank.length; i++) {
+      var q = bank[i];
+      if (!q.m || !sel || sel[q.m] !== false) out.push(q);
+    }
+    return out;
+  }
+  function pickFromBank(bank, sel, n) {
+    var pool = bankPool(bank, sel);
+    return shuffle(pool).slice(0, Math.min(n, pool.length));
+  }
+
+  /* ---------- 一屏自适应的纯计算 ----------
+   * measure(fs) 由调用方提供（负责真实量高）。先逐级缩字号，缩到 min 仍塞不下
+   * 才交回 scroll=true —— 绝不能把字缩到看不见，也绝不能把题目切掉。
+   * avail 为 0 说明还没布局，此时不动字号。
+   * ====================================== */
+  function fitToBox(base, measure, min) {
+    var fs = base;
+    for (var i = 0; i <= 32; i++) {
+      var m = measure(fs);
+      if (!m || !m.avail || m.h <= m.avail + 2) return { fs: fs, scroll: false };
+      if (fs <= min) break;
+      fs = Math.max(min, fs - 1);
+    }
+    return { fs: fs, scroll: true };
+  }
+
   function todayStr(d) {
     var t = d ? new Date(d) : new Date();
     var m = t.getMonth() + 1, day = t.getDate();
@@ -252,6 +287,9 @@
     judge: judge,
     qidOf: qidOf,
     cleanStem: cleanStem,
+    bankPool: bankPool,
+    pickFromBank: pickFromBank,
+    fitToBox: fitToBox,
     shuffle: shuffle,
     todayStr: todayStr,
     newProfile: newProfile,

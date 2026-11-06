@@ -129,14 +129,7 @@ window.__PK_MOUNT = function () {
     (window.BANK_META || []).forEach(function (m) { if (m && m.code) out.push(m.code); });
     return out;
   }
-  function poolOf(sel) {
-    var out = [];
-    for (var i = 0; i < BANK.length; i++) {
-      var q = BANK[i];
-      if (!q.m || !sel || sel[q.m] !== false) out.push(q);
-    }
-    return out;
-  }
+  function poolOf(sel) { return window.XK.bankPool(BANK, sel); }
   function bankPool() { return poolOf(CFG.mods); }
   function selectedModCount() {
     var codes = modCodes(), n = 0;
@@ -242,11 +235,7 @@ window.__PK_MOUNT = function () {
     return sel.slice().map(normAns).sort().join('') === normAns(q.a);
   }
   function shuffled(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  function pickQuestions(n) {
-    var pool = bankPool();
-    var idxs = shuffled(pool.length).slice(0, Math.min(n, pool.length));
-    return idxs.map(function (i) { return pool[i]; });
-  }
+  function pickQuestions(n) { return window.XK.pickFromBank(BANK, CFG.mods, n); }
 
   /* ================= 渲染：首页/选人 =================
    * option 的 value 用花名册下标：sid 允许为空（批量导入只填姓名），
@@ -338,23 +327,13 @@ window.__PK_MOUNT = function () {
    * 也绝不能把题目切掉。
    * =============================================== */
   var PKFS_MIN = 16;
-  function fitToBox(base, measure, min) {
-    var fs = base;
-    for (var i = 0; i <= 32; i++) {
-      var m = measure(fs);
-      if (!m || !m.avail || m.h <= m.avail + 2) return { fs: fs, scroll: false };
-      if (fs <= min) break;
-      fs = Math.max(min, fs - 1);
-    }
-    return { fs: fs, scroll: true };
-  }
   function fitSide(side) {
     var root = $(side === 'L' ? 'pkPanelL' : 'pkPanelR');
     if (!root || !root.scrollHeight) return;
     root.style.removeProperty('--pkfs');
     root.classList.remove('pkfit-scroll');
     var base = parseFloat(getComputedStyle(root).getPropertyValue('--pkfs')) || 23;
-    var res = fitToBox(base, function (fs) {
+    var res = window.XK.fitToBox(base, function (fs) {
       root.style.setProperty('--pkfs', fs + 'px');
       return { h: root.scrollHeight, avail: root.clientHeight };
     }, PKFS_MIN);
@@ -821,7 +800,7 @@ window.__PK_MOUNT = function () {
   /* 单测钩子：只暴露只读快照，不参与任何界面逻辑（tests/dom-stub.js 用） */
   window.__PK_TEST = {
     bankPool: bankPool,
-    fitToBox: fitToBox,
+    fitToBox: window.XK.fitToBox,
     PKFS_MIN: PKFS_MIN,
     cfg: function () { return CFG; },
     pk: function () { return PK; },

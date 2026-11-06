@@ -292,5 +292,79 @@ t('qid 仍按原题干计算（清洗只影响显示，学生记录不断链）'
   assert.strictEqual(XK.qidOf(q), XK.qidOf({ m: q.m, qt: q.qt, s: q.s }));
 });
 
+console.log('== 11. 抽题池与一屏自适应纯函数（擂台赛与双人 PK 共用）==');
+function fakeBank() {
+  const b = [];
+  for (let i = 1; i <= 9; i++) for (let j = 0; j < 3; j++) b.push({ m: 'M' + i, s: 'M' + i + '题' + j, qt: '单选', a: 'A', o: [['A', 'x']], e: '解析' });
+  b.push({ s: '无章节1', qt: '单选', a: 'A', o: [['A', 'x']], e: '解析' });
+  b.push({ s: '无章节2', qt: '单选', a: 'A', o: [['A', 'x']], e: '解析' });
+  return b;
+}
+t('bankPool：sel 缺失 = 不过滤，返回整库', () => {
+  const b = fakeBank();
+  assert.strictEqual(XK.bankPool(b, null).length, b.length);
+  assert.strictEqual(XK.bankPool(b, undefined).length, b.length);
+});
+t('bankPool：没有 m 字段的题在任何过滤下都保留', () => {
+  const b = fakeBank();
+  const off = {};
+  for (let i = 1; i <= 9; i++) off['M' + i] = false;
+  const p = XK.bankPool(b, off);
+  assert.strictEqual(p.length, 2, '全关时应只剩无章节题，实际 ' + p.length);
+  assert.ok(p.every((q) => !q.m));
+});
+t('bankPool：只关 M4 → 池里没有 M4，其余 26 题都在', () => {
+  const p = XK.bankPool(fakeBank(), { M4: false });
+  assert.ok(!p.some((q) => q.m === 'M4'));
+  assert.strictEqual(p.length, 29 - 3);
+});
+t('pickFromBank：返回题目对象本身，不是下标', () => {
+  const b = fakeBank();
+  const got = XK.pickFromBank(b, null, 4);
+  assert.strictEqual(got.length, 4);
+  got.forEach((q) => assert.ok(typeof q === 'object' && q.s, '拿到的不是题目对象：' + JSON.stringify(q)));
+});
+t('pickFromBank：n 大于池 → 给满池且不重不漏', () => {
+  const b = fakeBank();
+  const got = XK.pickFromBank(b, { M4: false }, 999);
+  assert.strictEqual(got.length, 26, '应钳到池大小 26，实际 ' + got.length);
+  assert.strictEqual(new Set(got.map((q) => q.s)).size, 26, '有重复题目');
+});
+t('pickFromBank：多次调用不会每次都同一批（真随机）', () => {
+  const b = fakeBank();
+  const firsts = [];
+  for (let i = 0; i < 8; i++) firsts.push(XK.pickFromBank(b, null, 5)[0].s);
+  assert.ok(new Set(firsts).size > 1, '8 次首题完全相同：' + firsts[0]);
+});
+t('pickFromBank：空池返回空数组，不抛异常', () => {
+  const off = {};
+  for (let i = 1; i <= 9; i++) off['M' + i] = false;
+  assert.deepStrictEqual(XK.pickFromBank(fakeBank().filter((q) => q.m), off, 10), []);
+});
+t('pickFromBank：不改动传进来的题库数组', () => {
+  const b = fakeBank();
+  const before = b.map((q) => q.s).join('|');
+  XK.pickFromBank(b, null, 10);
+  assert.strictEqual(b.map((q) => q.s).join('|'), before, '抽题把原库顺序打乱了');
+});
+t('fitToBox：内容塞得下 → 原字号、不滚动', () => {
+  const r = XK.fitToBox(23, () => ({ h: 400, avail: 600 }), 16);
+  assert.deepStrictEqual(r, { fs: 23, scroll: false });
+});
+t('fitToBox：停在第一个够用的字号，不多缩', () => {
+  const r = XK.fitToBox(23, (fs) => ({ h: fs > 18 ? 700 : 600, avail: 620 }), 16);
+  assert.strictEqual(r.fs, 18);
+  assert.strictEqual(r.scroll, false);
+});
+t('fitToBox：缩到下限仍塞不下 → 下限字号 + 允许滚动', () => {
+  const r = XK.fitToBox(23, () => ({ h: 5000, avail: 300 }), 16);
+  assert.strictEqual(r.fs, 16, '绝不允许低于下限');
+  assert.strictEqual(r.scroll, true);
+});
+t('fitToBox：还没布局（avail=0）时不乱缩字号', () => {
+  const r = XK.fitToBox(23, () => ({ h: 900, avail: 0 }), 16);
+  assert.deepStrictEqual(r, { fs: 23, scroll: false });
+});
+
 console.log('\n结果: ' + passed + ' 通过, ' + failed + ' 失败');
 process.exit(failed ? 1 : 0);
