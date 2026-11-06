@@ -101,6 +101,7 @@ node tools/scan-defects.js
 
 # 1c. 投屏一屏闸门（无头 Edge 真渲染真题；随机题滚动率 >2% 或中位字号 <20px → 退出码 1）
 node tools/gate-fit.js                 # 默认 1366×768 抽 200 题；要更狠：node tools/gate-fit.js 1366 768 400
+#   量线上那一份：GATE_PAGE=https://xuekao.jiuyeke.cn/ node tools/gate-fit.js 1366 768 150
 
 # 2. 题库规模
 node -e "global.window={};eval(require('fs').readFileSync('src/data.js','utf8'));console.log(window.BANK.length)"
