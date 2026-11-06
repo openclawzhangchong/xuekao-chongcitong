@@ -8,6 +8,23 @@
   function esc(s) { return (s == null ? '' : String(s)).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   /* ---------- 档案 ---------- */
+  /* ---------- 主题（默认浅色） ---------- */
+  var THEME_KEY = 'xkc.theme';
+  function currentTheme() {
+    try { return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light'; } catch (e) { return 'light'; }
+  }
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    try { localStorage.setItem(THEME_KEY, t); } catch (e) { }
+    var ic = t === 'dark' ? '☀️' : '🌙';
+    var lb = t === 'dark' ? '浅色' : '深色';
+    document.querySelectorAll('[data-theme-toggle]').forEach(function (b) {
+      b.innerHTML = '<span class="tb-ic">' + ic + '</span><span class="tb-lb">' + lb + '</span>';
+      b.setAttribute('title', '切换到' + lb + '模式');
+    });
+  }
+  function toggleTheme() { applyTheme(currentTheme() === 'dark' ? 'light' : 'dark'); }
+
   var PKEY = 'xkc.profile.v1';
   var P = load();
   function load() {
@@ -388,6 +405,8 @@
     on('entCardDiag', 'onclick', function () { switchTab('diag'); });
     on('entCardSim', 'onclick', function () { startSession({ kind: 'sim' }); });
     on('entCardPk', 'onclick', function () { switchTab('pk'); });
+    document.querySelectorAll('[data-theme-toggle]').forEach(function (b) { b.onclick = toggleTheme; });
+    applyTheme(currentTheme());
     on('wrongStartBtn', 'onclick', function () { startSession({ kind: 'wrong' }); });
     on('weakTrainBtn', 'onclick', function () { startSession({ kind: 'weak' }); });
     // 学号弹窗（班级模式）
@@ -1012,6 +1031,7 @@
     refreshBadges();
     showPanel('home');
     $('verTag').textContent = '题库版本 ' + (window.BANK_VER || '') + ' · 共 ' + BANK.length + ' 题 · 考纲 150 分制';
+    applyTheme(currentTheme());
     loadBig();
     loadBig();
     loadTtsPref();

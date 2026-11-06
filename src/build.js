@@ -8,6 +8,7 @@ const path = require('path');
 const SRC = path.join(__dirname);
 const read = f => fs.readFileSync(path.isAbsolute(f) ? f : path.join(SRC, f), 'utf8');
 
+const themeCss = read('theme.css');
 const css = read('style.css');
 const engine = read('engine.js');
 const data = read('data.js');
@@ -50,6 +51,7 @@ const tpl = `<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>学考冲刺通 · 信息技术基础（福建中职学考）</title>
 <style>
+${themeCss}
 ${css}
 ${pkStyle}
 </style>
@@ -64,6 +66,7 @@ ${pkStyle}
         <div class="h-title">🎯 学考冲刺通</div>
         <div class="h-sub">信息技术基础 · 福建中职学考 150 分制</div>
       </div>
+      <button class="h-btn theme-btn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
       <button class="h-btn" id="bigBtnHome">🖥 课堂投屏</button>
     </header>
     <div class="wrap">

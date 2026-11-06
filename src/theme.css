@@ -1,0 +1,177 @@
+/* =====================================================================
+ * 统一主题层：浅色（默认）/ 深色 两套变量
+ * 主站与 PK 模块共用；切换方式：<html data-theme="light|dark">
+ * ===================================================================== */
+
+/* ---------- 浅色（默认） ---------- */
+:root,
+html[data-theme="light"] {
+  color-scheme: light;
+
+  /* 品牌色 */
+  --pri: #7c3aed;
+  --pri-d: #6d28d9;
+  --pri-l: #ede9fe;
+  --pri-ll: #f5f3ff;
+  --pri-grad: linear-gradient(135deg, #7c3aed, #9333ea);
+
+  /* 背景层级 */
+  --bg: #f5f4fa;
+  --bg-2: #ffffff;
+  --card: #ffffff;
+  --card-2: #f8f7fc;
+  --card-3: #f1eff8;
+  --line: #e5e1f0;
+  --line-2: #d8d3e8;
+
+  /* 文字 */
+  --txt: #1f2233;
+  --sub: #5c6577;
+  --mut: #8b93a5;
+
+  /* 语义色 */
+  --ok: #16a34a;
+  --ok-l: #dcfce7;
+  --ok-bg: rgba(22, 163, 74, .10);
+  --err: #dc2626;
+  --err-l: #fee2e2;
+  --err-bg: rgba(220, 38, 38, .08);
+  --warn: #d97706;
+  --warn-l: #fef3c7;
+  --gold: #d97706;
+  --gold-bg: rgba(217, 119, 6, .10);
+
+  /* PK 双方色 */
+  --l: #2563eb;
+  --l-l: #dbeafe;
+  --l-d: #1d4ed8;
+  --l-bg: rgba(37, 99, 235, .07);
+  --r: #dc2626;
+  --r-l: #fee2e2;
+  --r-d: #b91c1c;
+  --r-bg: rgba(220, 38, 38, .07);
+
+  /* 面板/遮罩 */
+  --panel-bg: #ffffff;
+  --panel-left-bg: linear-gradient(180deg, rgba(37, 99, 235, .06), transparent 30%), #ffffff;
+  --panel-right-bg: linear-gradient(180deg, rgba(220, 38, 38, .06), transparent 30%), #ffffff;
+  --topbar-bg: rgba(255, 255, 255, .96);
+  --mask-bg: rgba(31, 34, 51, .45);
+  --opt-bg: #ffffff;
+  --opt-hover: #f8f7fc;
+  --shadow-sm: 0 1px 3px rgba(31, 34, 51, .07);
+  --shadow-md: 0 6px 20px rgba(31, 34, 51, .10);
+  --shadow-lg: 0 18px 50px rgba(31, 34, 51, .18);
+
+  /* 句柄/滚动条 */
+  --scroll-thumb: #cfc9e0;
+
+
+  /* 语义区块 */
+  --purple-2: #a855f7;
+  --hero-grad: linear-gradient(160deg, #ffffff 0%, #f5f3ff 100%);
+  --ana-bg: #fffbeb; --ana-line: #fde68a; --ana-txt: #713f12;
+  --tip-bg: #eff6ff; --tip-line: #bfdbfe; --tip-txt: #1e40af;
+  --info-bg: #eef2ff; --info-line: #c7d2fe; --info-txt: #3730a3;
+  --praise-bg: linear-gradient(135deg, #fef3c7, #fde68a); --praise-line: #f59e0b; --praise-txt: #78350f;
+  --diff-bg: #ecfeff; --diff-line: #a5f3fc; --diff-txt: #0e7490;
+
+  /* 尺寸（沿用原主站） */
+  --r: 16px;
+  --fs: 16px;
+}
+
+/* ---------- 深色 ---------- */
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --pri: #a78bfa;
+  --pri-d: #8b5cf6;
+  --pri-l: rgba(167, 139, 250, .16);
+  --pri-ll: rgba(167, 139, 250, .08);
+  --pri-grad: linear-gradient(135deg, #7c3aed, #6d28d9);
+
+  --bg: #0b1120;
+  --bg-2: #0f172a;
+  --card: #151f33;
+  --card-2: #1b2740;
+  --card-3: #223050;
+  --line: #26324a;
+  --line-2: #33425e;
+
+  --txt: #e8eefb;
+  --sub: #9aa8c2;
+  --mut: #6b7a95;
+
+  --ok: #34d399;
+  --ok-l: rgba(52, 211, 153, .14);
+  --ok-bg: rgba(52, 211, 153, .10);
+  --err: #f87171;
+  --err-l: rgba(248, 113, 113, .14);
+  --err-bg: rgba(248, 113, 113, .10);
+  --warn: #fbbf24;
+  --warn-l: rgba(251, 191, 36, .14);
+  --gold: #fbbf24;
+  --gold-bg: rgba(251, 191, 36, .12);
+
+  --l: #60a5fa;
+  --l-l: rgba(96, 165, 250, .16);
+  --l-d: #3b82f6;
+  --l-bg: rgba(96, 165, 250, .08);
+  --r: #f87171;
+  --r-l: rgba(248, 113, 113, .16);
+  --r-d: #ef4444;
+  --r-bg: rgba(248, 113, 113, .08);
+
+  --panel-bg: #151f33;
+  --panel-left-bg: linear-gradient(180deg, rgba(96, 165, 250, .10), transparent 30%), #151f33;
+  --panel-right-bg: linear-gradient(180deg, rgba(248, 113, 113, .10), transparent 30%), #151f33;
+  --topbar-bg: rgba(11, 17, 32, .96);
+  --mask-bg: rgba(2, 6, 23, .78);
+  --opt-bg: #1b2740;
+  --opt-hover: #223050;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, .35);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, .40);
+  --shadow-lg: 0 18px 50px rgba(0, 0, 0, .55);
+
+  --scroll-thumb: #33425e;
+
+  --purple-2: #c084fc;
+  --hero-grad: linear-gradient(160deg, #151f33 0%, #1b2740 100%);
+  --ana-bg: rgba(251, 191, 36, .10); --ana-line: rgba(251, 191, 36, .35); --ana-txt: #fcd34d;
+  --tip-bg: rgba(96, 165, 250, .10); --tip-line: rgba(96, 165, 250, .35); --tip-txt: #93c5fd;
+  --info-bg: rgba(167, 139, 250, .10); --info-line: rgba(167, 139, 250, .30); --info-txt: #c4b5fd;
+  --praise-bg: linear-gradient(135deg, rgba(251,191,36,.18), rgba(245,158,11,.12)); --praise-line: #f59e0b; --praise-txt: #fcd34d;
+  --diff-bg: rgba(34, 211, 238, .12); --diff-line: rgba(34, 211, 238, .35); --diff-txt: #67e8f9;
+}
+
+/* ---------- 全局应用 ---------- */
+html { background: var(--bg); }
+body {
+  background: var(--bg);
+  color: var(--txt);
+  transition: background-color .25s ease, color .25s ease;
+}
+* { scrollbar-color: var(--scroll-thumb) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* 主题切换按钮 */
+.theme-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--line); background: var(--card); color: var(--txt);
+  border-radius: 10px; padding: 7px 12px; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: background .15s, border-color .15s;
+}
+.theme-btn:hover { background: var(--card-2); border-color: var(--line-2); }
+.theme-btn:active { transform: translateY(1px); }
+.theme-btn .tb-ic { font-size: 16px; line-height: 1; }
+
+/* 顶部栏内的主题按钮（主站 header 是紫色渐变，用半透明白） */
+header .theme-btn {
+  background: rgba(255, 255, 255, .18);
+  border-color: rgba(255, 255, 255, .28);
+  color: #fff;
+}
+header .theme-btn:hover { background: rgba(255, 255, 255, .30); }

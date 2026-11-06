@@ -8,6 +8,7 @@ const PK = path.join(__dirname);
 const ROOT = path.join(PK, '..', '..');
 
 const tpl = fs.readFileSync(path.join(PK, 'template.html'), 'utf8');
+const themeCss = fs.readFileSync(path.join(ROOT, 'src', 'theme.css'), 'utf8');
 const sfxJs = fs.readFileSync(path.join(ROOT, 'src', 'sfx.js'), 'utf8');
 const dataJs = fs.readFileSync(path.join(ROOT, 'src', 'data.js'), 'utf8');
 const pkAppJs = fs.readFileSync(path.join(PK, 'pk-app.js'), 'utf8');
@@ -18,7 +19,7 @@ const pkAppJs = fs.readFileSync(path.join(PK, 'pk-app.js'), 'utf8');
 });
 
 let out = tpl
-  .replace('${pkStyle}', fs.readFileSync(path.join(PK, 'pk-style.css'), 'utf8'))
+  .replace('${pkStyle}', themeCss + '\n' + fs.readFileSync(path.join(PK, 'pk-style.css'), 'utf8'))
   .replace('${sfxJs}', sfxJs)
   .replace('${bankJs}', dataJs)
   .replace('${pkAppJs}', pkAppJs);

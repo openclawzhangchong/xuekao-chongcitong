@@ -27,7 +27,7 @@
 
 | 双人对战（分屏独立答题） | 比赛结果（胜负 + 错题复盘） |
 |---|---|
-| ![PK对战](evidence/screenshots/06-pk-battle.png) | ![PK结果](evidence/screenshots/07-pk-result.png) |
+| ![PK对战](evidence/screenshots/09-pk-light.png) | ![PK结果](evidence/screenshots/07-pk-result.png) |
 | **总排行榜（参赛/胜场/总分/均分）** |  |
 | ![排行榜](evidence/screenshots/08-pk-leaderboard.png) |  |
 
@@ -39,6 +39,7 @@
 - **模拟考**：按考纲分值精确组卷 150 题（每题 1 分，累进分配保证总数精确），交卷出分
 - **朗读**：题干+选项中文语音朗读（Web Speech API）
 - **课堂投屏**：右上「🖥 课堂」按钮，PC 横屏大字号 + 选项双列，教室后排可读
+- **深色/浅色主题**：右上角一键切换（默认浅色），全站（含 PK 模块）统一配色，选择记忆在本机
 - **班级版教师端**：全班榜单（预估分/覆盖/今日/待重练错题/最后活跃）+ CSV 导出（Excel 双击即开）
 
 题库：**1238 题**（单选 834 / 判断 232 / 多选 172），每题带解析、生活类比、易错提醒，按 2026 考纲 9 模块组织。
