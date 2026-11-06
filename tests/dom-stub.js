@@ -207,6 +207,7 @@ function mount(opts) {
     Date, Math, JSON
   };
   win.document = document;
+  win.addEventListener = () => {};
   win.localStorage = ctx.localStorage;
   win.location = ctx.location;
   win.setTimeout = ctx.setTimeout;
@@ -214,6 +215,8 @@ function mount(opts) {
   win.clearInterval = ctx.clearInterval;
   win.confirm = ctx.confirm;
   vm.createContext(ctx);
+  // 真实 engine.js 先加载：pk-app.js 显示题干要用 XK.cleanStem（与线上同一份实现）
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'src', 'engine.js'), 'utf8'), ctx, { filename: 'engine.js' });
   vm.runInContext(fs.readFileSync(APP_PATH, 'utf8'), ctx, { filename: 'pk-app.js' });
   win.__PK_MOUNT();
 

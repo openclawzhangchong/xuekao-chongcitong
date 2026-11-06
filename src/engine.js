@@ -29,6 +29,18 @@
     return (q.m || 'M') + '-' + h.toString(36);
   }
 
+  /* 题面残留清洗：M3 有 64 题被生成器把整段「A. 选项B. 选项…」混写进了题干。
+   * 只用于显示——题库数据与 qid 都按原题干算，学生历史作答记录不断链。
+   * 保守规则：必须 A 标记之后还能看到 B 标记才截断，免得误伤「Ctrl+A」这类正文。 */
+  function cleanStem(s) {
+    if (!s) return '';
+    var txt = String(s);
+    var at = txt.search(/A[.、．]/);
+    if (at < 0) return txt;
+    if (!/B[.、．]/.test(txt.slice(at + 2))) return txt;
+    return txt.slice(0, at).replace(/\s+$/, '');
+  }
+
   function shuffle(arr) {
     for (var i = arr.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -239,6 +251,7 @@
     normalizeAns: normalizeAns,
     judge: judge,
     qidOf: qidOf,
+    cleanStem: cleanStem,
     shuffle: shuffle,
     todayStr: todayStr,
     newProfile: newProfile,

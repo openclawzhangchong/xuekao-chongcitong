@@ -101,7 +101,7 @@
     if (!('speechSynthesis' in window)) { alert('当前浏览器不支持朗读'); return; }
     if (speaking) { stopSpeak(); return; }
     var q = S.list[S.idx]; if (!q) return;
-    var parts = [q.s];
+    var parts = [XK.cleanStem(q.s)];
     q.o.forEach(function (op) { parts.push(op[0] + '，' + (op[1] || op[0])); });
     speaking = true; syncSpeakBtn();
     speak(parts.join('。'), {
@@ -285,6 +285,8 @@
   /* ---------- 面板切换 ---------- */
   var TABS = ['home', 'setup', 'wrong', 'diag', 'pk'];
   function showPanel(name) {
+    // PK 页要占满整屏（投屏两侧各一半），其余页保持 760px 居中列
+    document.body.classList.toggle('pk-mode', name === 'pk');
     TABS.forEach(function (t) {
       if (t === 'pk') return; // PK 容器 id 为 pkPage，单独处理
       var el = $(t); if (el) el.classList.add('hidden');
@@ -567,7 +569,7 @@
     S.judged = !!(saved && saved.judged);
 
     var body = $('qbody'); body.innerHTML = '';
-    var stem = document.createElement('div'); stem.className = 'qstem'; stem.textContent = q.s; body.appendChild(stem);
+    var stem = document.createElement('div'); stem.className = 'qstem'; stem.textContent = XK.cleanStem(q.s); body.appendChild(stem);
     var opts = document.createElement('div');
     opts.className = 'opts' + (q.qt === '判断' ? ' judge' : '');
     q.o.forEach(function (op) {
@@ -774,7 +776,7 @@
       r.wrongs.slice(0, 30).forEach(function (w) {
         var it = document.createElement('div'); it.className = 'wrong-item';
         it.innerHTML =
-          '<div class="ws">' + esc(w.q.s) + '</div>' +
+          '<div class="ws">' + esc(XK.cleanStem(w.q.s)) + '</div>' +
           (w.mine ? '<div class="wa">你的答案：<span class="mine">' + esc(w.mine) + '</span></div>' : '<div class="wa">你的答案：<span class="mine">（未作答）</span></div>') +
           '<div class="wa">正确答案：<span class="right">' + esc(w.q.a) + '</span></div>' +
           (w.q.e ? '<div class="we">解析：' + esc(w.q.e) + '</div>' : '');
@@ -831,7 +833,7 @@
       var rec = P.answers[XK.qidOf(q)];
       var it = document.createElement('div'); it.className = 'wrong-item';
       it.innerHTML =
-        '<div class="ws">' + esc(q.s) + '</div>' +
+        '<div class="ws">' + esc(XK.cleanStem(q.s)) + '</div>' +
         '<div class="wa">正确答案：<span class="right">' + esc(q.a) + '</span>' +
         '<span class="pill warn">连对 ' + (rec ? rec.k : 0) + '/2</span></div>' +
         (q.t ? '<div class="we">⚠ ' + esc(q.t) + '</div>' : '');

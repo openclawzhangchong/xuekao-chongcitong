@@ -285,6 +285,76 @@ t('重开设置弹窗时回填的是已保存值', () => {
   assert.strictEqual(p.$('pkDlgCount').value, '7', '弹窗没回填已保存题量：' + p.$('pkDlgCount').value);
 });
 
+console.log('== G 题干清洗：PK 面板与复盘都不显示残留选项列表 ==');
+const RESIDUE_BANK = [
+  { m: 'M3', qt: '单选', s: '在 WPS Office 中，电子表格的默认文件扩展名是（ ）A. xlsB. etC. xlsx D. docx',
+    o: [['A', 'xls'], ['B', 'et'], ['C', 'xlsx'], ['D', 'docx']], a: 'C', e: 'WPS 表格默认扩展名是 et。' },
+  { m: 'M3', qt: '判断', s: '可以通过拖拽填充柄来快速填充单元格内容。（ ）A. 正确B. 错误',
+    o: [['√', '正确'], ['×', '错误']], a: '√', e: '填充柄可以拖拽快速填充。' },
+  { m: 'M1', qt: '单选', s: '下列技术中，属于信息技术核心的是（ ）。',
+    o: [['A', '甲'], ['B', '乙']], a: 'A', e: '解析正常。' }
+];
+function startOne(p) {
+  p.$('pkCfgCount').value = '1';
+  startManual(p, '学生2', '学生5');
+}
+t('面板题干不再出现「A. …B. …」残留', () => {
+  const p = mount({ roster: R36, bank: [RESIDUE_BANK[0]] });
+  startOne(p);
+  const stem = p.$('LBody').children[0].textContent;
+  assert.ok(!/[A-D][.、．]/.test(stem), '残留原样显示：' + stem);
+  assert.strictEqual(stem, '在 WPS Office 中，电子表格的默认文件扩展名是（ ）');
+});
+t('判断题残留也被洗干净，只留陈述句', () => {
+  const p = mount({ roster: R36, bank: [RESIDUE_BANK[1]] });
+  startOne(p);
+  assert.strictEqual(p.$('LBody').children[0].textContent, '可以通过拖拽填充柄来快速填充单元格内容。（ ）');
+});
+t('本来干净的题干一字不改（清洗不误伤）', () => {
+  const p = mount({ roster: R36, bank: [RESIDUE_BANK[2]] });
+  startOne(p);
+  assert.strictEqual(p.$('LBody').children[0].textContent, '下列技术中，属于信息技术核心的是（ ）。');
+});
+t('答错后错题复盘里的题干也是干净的', () => {
+  const p = mount({ roster: R36, bank: [RESIDUE_BANK[0]] });
+  startOne(p);
+  answer(p, 'L', 0);                        // A 是错的（正确答案 C）
+  answer(p, 'r', 0);                        // 两侧都打完 → 弹成绩单
+  const rv = p.$('endReview').children.map((c) => c.textContent).join('\n');
+  assert.ok(/错题/.test(rv), '复盘没生成：' + rv.slice(0, 80));
+  assert.ok(!/[A-D][.、．]/.test(rv), '复盘题干残留：' + rv.slice(0, 120));
+});
+
+console.log('== H 一屏自适应：字号可缩但有硬下限，塞不下才滚动 ==');
+t('内容塞得下时保持基准字号、不滚动', () => {
+  const p = mount({ roster: R36 });
+  const r = p.test().fitToBox(23, () => ({ h: 400, avail: 600 }), 16);
+  assert.strictEqual(r.fs, 23);
+  assert.strictEqual(r.scroll, false);
+});
+t('内容超高时逐级缩小直到塞下', () => {
+  const p = mount({ roster: R36 });
+  // 每少 1px 高度少 18px：23px 时 900 > 620，缩到 8px 才够——但下限 16 会先拦住
+  const r = p.test().fitToBox(23, (fs) => ({ h: 900 - (23 - fs) * 18, avail: 620 }), 16);
+  assert.ok(r.fs <= 23 && r.fs >= 16, '字号越界：' + r.fs);
+  assert.strictEqual(r.fs, 16, '应当缩到下限为止，实际 ' + r.fs);
+  assert.strictEqual(r.scroll, true, '到下限仍塞不下时必须允许滚动');
+});
+t('刚好能塞进的内容停在第一个够用的字号，不多缩', () => {
+  const p = mount({ roster: R36 });
+  // 19px 及以上装不下，18px 及以下装得下 → 应停在 18
+  const r = p.test().fitToBox(23, (fs) => ({ h: fs > 18 ? 700 : 600, avail: 620 }), 16);
+  assert.strictEqual(r.fs, 18, '应停在 18px，实际 ' + r.fs);
+  assert.strictEqual(r.scroll, false);
+});
+t('下限就是 16px，绝不低于它', () => {
+  const p = mount({ roster: R36 });
+  assert.strictEqual(p.test().PKFS_MIN, 16);
+  const r = p.test().fitToBox(23, () => ({ h: 5000, avail: 300 }), 16);
+  assert.strictEqual(r.fs, 16, '字号被压到下限以下：' + r.fs);
+  assert.strictEqual(r.scroll, true);
+});
+
 console.log('\n结果: ' + passed + ' 通过, ' + failed + ' 失败');
 if (failed) console.log('\n未通过清单:\n  ' + fails.join('\n  '));
 process.exit(failed ? 1 : 0);

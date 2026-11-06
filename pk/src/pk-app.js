@@ -331,6 +331,37 @@ window.__PK_MOUNT = function () {
     tts('PK开始，' + L.name + '对战' + R.name + '，共' + CFG.count + '题，限时' + CFG.minutes + '分钟，祝两位好运！');
   }
 
+  /* ================= 一屏自适应 =================
+   * 投屏时两侧各占半屏，题目必须整屏可见：先按 1px 逐级缩字号，
+   * 缩到 PKFS_MIN 仍装不下才允许该侧内部滚动——绝不能把字缩到后排看不清，
+   * 也绝不能把题目切掉。
+   * =============================================== */
+  var PKFS_MIN = 16;
+  function fitToBox(base, measure, min) {
+    var fs = base;
+    for (var i = 0; i <= 32; i++) {
+      var m = measure(fs);
+      if (!m || !m.avail || m.h <= m.avail + 2) return { fs: fs, scroll: false };
+      if (fs <= min) break;
+      fs = Math.max(min, fs - 1);
+    }
+    return { fs: fs, scroll: true };
+  }
+  function fitSide(side) {
+    var root = $(side === 'L' ? 'pkPanelL' : 'pkPanelR');
+    if (!root || !root.scrollHeight) return;
+    root.style.removeProperty('--pkfs');
+    root.classList.remove('pkfit-scroll');
+    var base = parseFloat(getComputedStyle(root).getPropertyValue('--pkfs')) || 23;
+    var res = fitToBox(base, function (fs) {
+      root.style.setProperty('--pkfs', fs + 'px');
+      return { h: root.scrollHeight, avail: root.clientHeight };
+    }, PKFS_MIN);
+    root.style.setProperty('--pkfs', res.fs + 'px');
+    root.classList.toggle('pkfit-scroll', res.scroll);
+  }
+  function fitSides() { fitSide('L'); fitSide('r'); }
+
   /* ================= 面板渲染 ================= */
   function renderSide(side) {
     var P = side === 'L' ? PK.left : PK.right;
@@ -351,7 +382,7 @@ window.__PK_MOUNT = function () {
     $(side + 'Meta').innerHTML = '<span class="qtype">' + esc(q.qt || '') + '</span><span>第 ' + (i + 1) + ' / ' + P.seq.length + ' 题</span>' + (q.kd ? '<span>' + esc(q.kd) + '</span>' : '');
     var body = $(side + 'Body');
     body.innerHTML = '';
-    var stem = document.createElement('div'); stem.className = 'qstem'; stem.textContent = q.s; body.appendChild(stem);
+    var stem = document.createElement('div'); stem.className = 'qstem'; stem.textContent = window.XK.cleanStem(q.s); body.appendChild(stem);
     var opts = document.createElement('div'); opts.className = 'opts';
     var selNow = P.answered[i] ? P.answered[i].sel : [];
     q.o.forEach(function (o) {
@@ -371,6 +402,7 @@ window.__PK_MOUNT = function () {
     btn.disabled = P.locked || P.done || !selNow.length;
     btn.onclick = function () { submitSide(side); };
     body.appendChild(btn);
+    fitSide(side);
   }
   function pickOpt(side, key) {
     var P = side === 'L' ? PK.left : PK.right;
@@ -442,6 +474,7 @@ window.__PK_MOUNT = function () {
     }, 500);
     renderSideHeader(side);
     updateTop();
+    fitSide(side);
   }
   function nextSide(side) {
     var P = side === 'L' ? PK.left : PK.right;
@@ -559,7 +592,7 @@ window.__PK_MOUNT = function () {
       rv.appendChild(h);
       wrongs.forEach(function (w) {
         var d = document.createElement('div'); d.className = 'review-item';
-        d.innerHTML = '<div class="rs">' + esc(w.q.s) + '</div>' +
+        d.innerHTML = '<div class="rs">' + esc(window.XK.cleanStem(w.q.s)) + '</div>' +
           '<div class="ra">你的答案：<b style="color:#fca5a5">' + esc(w.sel.join('') || '未答') + '</b>　正确答案：<b>' + esc(w.q.a) + '</b></div>';
         rv.appendChild(d);
       });
@@ -775,6 +808,8 @@ window.__PK_MOUNT = function () {
   /* 单测钩子：只暴露只读快照，不参与任何界面逻辑（tests/dom-stub.js 用） */
   window.__PK_TEST = {
     bankPool: bankPool,
+    fitToBox: fitToBox,
+    PKFS_MIN: PKFS_MIN,
     cfg: function () { return CFG; },
     pk: function () { return PK; },
     picks: function () { return [pickL, pickR]; }
@@ -795,6 +830,7 @@ window.__PK_MOUNT = function () {
 
   // 初始化（逐项容错，单点失败不阻断后续）
   document.addEventListener('click', function () { try { SFX.unlock(); } catch (e) { } }, { once: true });
+  window.addEventListener('resize', function () { if (PK.state === 'running') fitSides(); });
   if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); } catch (e) { } }
   try { renderHome(); } catch (e) { if (window.console) console.error('[PK] init renderHome:', e); }
   // 内嵌题库已可用；若设置了外部地址则静默尝试更新（失败忽略）

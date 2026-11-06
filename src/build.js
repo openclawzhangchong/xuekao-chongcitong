@@ -29,7 +29,7 @@ if (window.BANK_META.length !== 9) throw new Error('模块数异常');
 const total150 = window.BANK_META.reduce((x, m) => x + m.score, 0);
 if (total150 !== 150) throw new Error('考纲总分异常: ' + total150);
 
-[engine, data, app].forEach((code, i) => {
+[engine, data, app, praise, sfx, pkApp].forEach((code, i) => {
   if (/<\/script/i.test(code)) throw new Error('内嵌脚本含 </script>，会破坏 HTML（脚本#' + i + '）');
 });
 

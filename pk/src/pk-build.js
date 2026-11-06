@@ -1,6 +1,7 @@
-/* PK 单文件构建：内嵌 sfx.js + praise.js + 题库 data.js + pk-app.js
+/* PK 单文件构建：内嵌 engine.js + sfx.js + praise.js + 题库 data.js + pk-app.js
  * 用法：node pk/src/pk-build.js（产物 pk/dist/双人PK答题.html → 复制桌面）
- * praise.js 必须嵌：pk-app.js 的答对/答错播报用 window.XKP 的带姓名表扬语。 */
+ * engine.js 必须嵌：pk-app.js 显示题干要用 XK.cleanStem 剥离残留的选项列表。
+ * praise.js 必须嵌：答对/答错播报用 window.XKP 的带姓名表扬语。 */
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -11,19 +12,21 @@ const ROOT = path.join(PK, '..', '..');
 const tpl = fs.readFileSync(path.join(PK, 'template.html'), 'utf8');
 const markup = fs.readFileSync(path.join(PK, 'pk-markup.html'), 'utf8');
 const themeCss = fs.readFileSync(path.join(ROOT, 'src', 'theme.css'), 'utf8');
+const engineJs = fs.readFileSync(path.join(ROOT, 'src', 'engine.js'), 'utf8');
 const sfxJs = fs.readFileSync(path.join(ROOT, 'src', 'sfx.js'), 'utf8');
 const praiseJs = fs.readFileSync(path.join(ROOT, 'src', 'praise.js'), 'utf8');
 const dataJs = fs.readFileSync(path.join(ROOT, 'src', 'data.js'), 'utf8');
 const pkAppJs = fs.readFileSync(path.join(PK, 'pk-app.js'), 'utf8');
 
 // 破坏性序列校验
-[dataJs, sfxJs, praiseJs, pkAppJs].forEach((code, i) => {
+[dataJs, engineJs, sfxJs, praiseJs, pkAppJs].forEach((code, i) => {
   if (/<\/script/i.test(code)) throw new Error('脚本 #' + i + ' 含 </script>，会破坏 HTML');
 });
 
 let out = tpl
   .replace('${pkStyle}', themeCss + '\n' + fs.readFileSync(path.join(PK, 'pk-style.css'), 'utf8'))
   .replace('${pkMarkup}', markup)
+  .replace('${engineJs}', engineJs)
   .replace('${sfxJs}', sfxJs)
   .replace('${praiseJs}', praiseJs)
   .replace('${bankJs}', dataJs)
@@ -40,11 +43,15 @@ const outPath = path.join(PK, '..', 'dist', '双人PK答题.html');
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
 fs.writeFileSync(outPath, out, 'utf8');
 
-// 校验：按页面里的顺序执行一遍，缺表扬语库直接失败（播报会在线上报错）
+// 校验：按页面里的顺序执行一遍，缺依赖直接失败（播报与题干清洗会在线上报错）
 global.window = {};
+eval(engineJs);
 eval(sfxJs);
 eval(praiseJs);
 eval(dataJs);
+if (typeof window.XK !== 'object' || typeof window.XK.cleanStem !== 'function') {
+  throw new Error('独立版 PK 缺少引擎 XK.cleanStem，题干残留会原样显示');
+}
 if (typeof window.XKP !== 'object' || typeof window.XKP.pickPraise !== 'function') {
   throw new Error('独立版 PK 没有可用的表扬语库 XKP，答对播报会报错');
 }

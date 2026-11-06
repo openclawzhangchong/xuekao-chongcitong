@@ -246,5 +246,51 @@ t('gen4 扩容恰 285 道且全部为选择题带难度', () => {
   });
 });
 
+console.log('== 10. 题干清洗 cleanStem（M3 生成器把选项列表混进了题干）==');
+t('全库恰好 64 道残留题被改动，其余 3935 题一字不改', () => {
+  const changed = BANK.filter(q => XK.cleanStem(q.s) !== q.s);
+  assert.strictEqual(changed.length, 64, '被改动的题数不是 64：' + changed.length);
+  assert.ok(changed.every(q => q.m === 'M3'), '改动溢出到 M3 之外');
+});
+t('64 题清洗后不再含选项标记，且必须是原题干的前缀', () => {
+  BANK.filter(q => XK.cleanStem(q.s) !== q.s).forEach(q => {
+    const c = XK.cleanStem(q.s);
+    assert.ok(!/[A-D][.、．]/.test(c), '仍残留选项标记：' + c);
+    assert.ok(q.s.startsWith(c) && c.length >= 8, '不是原题干前缀：' + c);
+  });
+});
+t('判断题残留清洗后剩下陈述句', () => {
+  const q = BANK.filter(x => x.qt === '判断' && x.s.indexOf('可以通过拖拽填充柄') === 0)[0];
+  assert.ok(q, '用例前提不成立：找不到该判断题');
+  assert.strictEqual(XK.cleanStem(q.s), '可以通过拖拽填充柄来快速填充单元格内容。（ ）');
+});
+t('单选题残留清洗后结尾括号还在', () => {
+  const q = BANK.filter(x => x.qt === '单选' && /（\s*）\s*A[.、．]/.test(x.s))[0];
+  assert.ok(q, '用例前提不成立：找不到该单选题');
+  assert.ok(/（\s*）$/.test(XK.cleanStem(q.s)), '结尾括号丢了：' + XK.cleanStem(q.s));
+});
+t('只出现一个 A. 不截断（保守规则：A. 之后必须还能看到 B.）', () => {
+  const s = '下列说法正确的是（ ）A. 只有一项标记';
+  assert.strictEqual(XK.cleanStem(s), s);
+});
+t('Ctrl+A、正文里的字母编号不误伤', () => {
+  ['使用（ ）快捷键可以全选，Ctrl+A 是最常用的。（ ）',
+   'A 和 B 两类存储中，属于外存的是（ ）',
+   '下列技术中，属于信息技术核心的是（ ）。'].forEach(s => {
+    assert.strictEqual(XK.cleanStem(s), s, '误伤：' + s);
+  });
+});
+t('空值安全：空串/null/undefined 返回空串', () => {
+  assert.strictEqual(XK.cleanStem(''), '');
+  assert.strictEqual(XK.cleanStem(null), '');
+  assert.strictEqual(XK.cleanStem(undefined), '');
+});
+t('qid 仍按原题干计算（清洗只影响显示，学生记录不断链）', () => {
+  const q = BANK.filter(x => XK.cleanStem(x.s) !== x.s)[0];
+  assert.notStrictEqual(XK.qidOf(q), XK.qidOf({ m: q.m, qt: q.qt, s: XK.cleanStem(q.s) }),
+    '用例前提：清洗后的题干本应算出不同 qid，否则这条测试没意义');
+  assert.strictEqual(XK.qidOf(q), XK.qidOf({ m: q.m, qt: q.qt, s: q.s }));
+});
+
 console.log('\n结果: ' + passed + ' 通过, ' + failed + ' 失败');
 process.exit(failed ? 1 : 0);

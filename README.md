@@ -113,10 +113,11 @@ npx wrangler deploy -c wrangler.d1.toml
 ## 构建与测试
 
 ```bash
-node tests/engine.test.js        # 前端引擎 32 项单测（判分/预估分对账/毕业规则/脏档案清洗）
+node tests/engine.test.js        # 前端引擎 40 项单测（判分/预估分对账/毕业规则/脏档案清洗/题干清洗）
 node tests/pk-pick.test.js       # PK 选人 11 项单测（下拉能选中姓名/左右互斥/选人后可开赛）
-node tests/pk-features.test.js   # PK 功能 32 项单测（领先条/随机匹配/章节过滤/抽题真随机/带姓名表扬语/弹窗题量生效）
+node tests/pk-features.test.js   # PK 功能 40 项单测（领先条/随机匹配/章节过滤/抽题真随机/带姓名表扬语/一屏自适应）
 python tests/test_server_logic.py  # 班级版服务 38 项单测（学号白名单/档案合并/榜单统计）
+node tools/scan-defects.js       # 题库四类缺陷复扫 + 基线对比（计数上升即失败）
 node src/build.js                # 构建：内嵌 engine+data+app+css → dist/学考冲刺通.html
 node src/deploy.js site <slug>   # 部署到 here.now（需 ~/.herenow/credentials）
 ```

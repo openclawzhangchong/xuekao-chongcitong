@@ -43,7 +43,33 @@ body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;backgroun
 .vs{font-size:24px;font-weight:900;color:var(--gold)}
 
 /* ---------- 分屏 ---------- */
-.arena{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px;align-items:start}
+.arena{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:14px;align-items:start;position:relative}
+/* 对战区中间一条竖分割线：投屏时两半一眼分开；窄屏堆叠时不需要，见下方媒体查询 */
+#pkArena::before{content:'';position:absolute;left:50%;top:14px;bottom:14px;width:2px;margin-left:-1px;
+  background:var(--line-2);border-radius:1px;pointer-events:none}
+/* 一屏自适应：字号由 --pkfs 驱动，fitSide() 逐级下调；缩到下限仍装不下才允许该侧滚动 */
+#pkArena{align-items:stretch}
+#pkArena .panel{--pkfs:23px;min-height:0;overflow:hidden}
+#pkArena .panel.pkfit-scroll{overflow:auto}
+#pkArena .qstem{font-size:var(--pkfs)}
+#pkArena .opt{min-height:calc(var(--pkfs) + 28px)}
+#pkArena .opt .v{font-size:calc(var(--pkfs) - 5px)}
+#pkArena .opt .k{font-size:calc(var(--pkfs) - 8px)}
+#pkArena .feedback{font-size:calc(var(--pkfs) - 7px)}
+#pkArena .submit-btn{font-size:calc(var(--pkfs) - 4px)}
+/* PK 页永远全宽（手机上也该全宽） */
+body.pk-mode .app{max-width:none}
+/* 「锁成一屏」只用于宽屏投屏/电脑：窄屏手机上顶栏会换行占掉大半高度，
+ * 若照样锁高，题面会被挤到只剩几十像素——所以窄屏回退成普通文档流滚动。 */
+@media (min-width:901px){
+  body.pk-mode .app{height:100vh;overflow:hidden}
+  body.pk-mode #pkPage{height:100%;display:flex;flex-direction:column;overflow:hidden}
+  body.pk-mode #pkArena{flex:1;min-height:0}
+  body.pk-mode #pkSetup{flex:1;min-height:0;overflow:auto}
+  body.pk-solo{height:100vh;overflow:hidden;display:flex;flex-direction:column}
+  body.pk-solo #pkArena{flex:1;min-height:0}
+  body.pk-solo #pkSetup{flex:1;min-height:0;overflow:auto}
+}
 .panel{border-radius:16px;padding:14px;border:3px solid var(--line);min-height:70vh;background:var(--panel-bg);box-shadow:var(--shadow-sm)}
 .panel.left{border-color:var(--l);background:var(--panel-left-bg)}
 .panel.right{border-color:var(--r);background:var(--panel-right-bg)}
@@ -148,6 +174,7 @@ body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;backgroun
 @media (max-width:900px){
   .arena{grid-template-columns:1fr}
   .panel{min-height:auto}
+  #pkArena::before{display:none}
 }
 @media (max-width:600px){
   .leadrow{min-height:38px}
@@ -163,4 +190,5 @@ body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;backgroun
   .timer{font-size:40px}
   .lead-tag{font-size:46px}
   .lead-tag .who{font-size:56px}
+  #pkArena .panel{--pkfs:27px}
 }
