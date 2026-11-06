@@ -70,7 +70,7 @@ cloud/
   wrangler.d1.toml ← D1 备用版配置
   keys.json        ← 班级码 + 教师密钥（已 gitignore，绝不入库）
 班级版服务.py       ← 局域网版服务（Python 标准库，端口 8953）
-tests/             ← 7 套单测（216 项，必须全绿）+ dom-stub.js 共用 DOM 桩
+tests/             ← 7 套单测（217 项，必须全绿）+ dom-stub.js 共用 DOM 桩
             ← 另有两道机器闸门：tools/scan-defects.js（题库缺陷计数）、tools/gate-fit.js（投屏一屏实测）
 tools/             ← 生成器、修正应用器与缺陷复扫闸门
 docs/              ← 开发方案文档（擂台赛方案已定稿并按 C1→C3 落地）
@@ -86,12 +86,12 @@ dist/              ← 单文件构建产物
 ```bash
 cd "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通"
 
-# 1. 七套单测必须全绿（216 项）
+# 1. 七套单测必须全绿（217 项）
 node tests/engine.test.js              # 期望 52 通过（第 10 节题干清洗 8 项 + 第 11 节擂台/PK 共用纯函数 12 项）
 node tests/classroom.test.js           # 期望 19 通过
 node tests/pk-pick.test.js             # 期望 11 通过（PK 选人：下拉能选中姓名）
 node tests/pk-features.test.js         # 期望 45 通过（领先条/随机匹配/章节过滤/抽题随机/表扬语/清洗/一屏自适应/回首页）
-node tests/arena.test.js               # 期望 31 通过（A 组 7 项防混淆 + B 组 21 项状态机 + C 组 3 项投屏一屏）
+node tests/arena.test.js               # 期望 32 通过（A 组 7 项防混淆 + B 组 21 项状态机 + C 组 4 项投屏一屏）
 node cloud/worker.test.js              # 期望 20 通过
 python -I tests/test_server_logic.py   # 期望 38 通过
 
@@ -313,7 +313,7 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 - ✅ 内置默认班级 25计算机01班（36 人）
 - ✅ 题库地址预置（无需用户填写）
 - ✅ 云端班级版（Cloudflare KV）+ 局域网版 + here.now 备用站
-- ✅ 7 套单测 216 项全绿（含擂台赛 31 项）
+- ✅ 7 套单测 217 项全绿（含擂台赛 32 项）
 - ✅ PK 选人下拉可正常选中姓名（含无编号学生）
 - ✅ PK 抽题改为真随机（此前每局固定做题库前 N 题，学生打两轮就背完了）
 - ✅ PK 新增：领先条居中放大 / 🎲 随机匹配+上台播报 / 开赛设置里「③ 出题章节」/ 答对答错带姓名表扬语
@@ -340,6 +340,8 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
   并切掉擂台候选卡片下沿。宽屏（≥901px）的 PK/擂台模式整条隐藏页签，退出改走顶栏「🏠 首页」
   （独立版没有宿主钩子，按钮自动隐藏）。手机上页签照旧。
 - ✅ 擂台打完一场后右席撤成「虚位以待」并清分数/题型行，避免「擂主 vs 擂主」同名错觉（B21）。
+- ✅ 云端班级版的「输入学号」自动弹窗不再盖住课堂屏：`pk-mode`/`arena-mode`/`big` 下不弹（本地 file:// 不是班级模式，
+  只有线上才复现得到）；学生端首页行为一字未改。闸门 = `tests/arena.test.js` C4。
 
 ---
 

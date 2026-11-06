@@ -3120,7 +3120,13 @@ window.BANK=[{"m":"M1","kd":"考点 1 · 信息技术的概念及典型应用","
         CLS.mode = 'class';
         CLS.label = j.label === 'cloud' ? 'cloud' : 'lan';
         renderClsBar();
-        if (!CLS.sid) setTimeout(promptSid, 600);
+        if (!CLS.sid) setTimeout(function () {
+          // 课堂屏（双人 PK / 擂台赛 / 课堂投屏）不是学生机：
+          // 老师正讲着课，中途弹「输入学号」会把擂台候选席整个盖住。
+          var bd = document.body.classList;
+          if (bd.contains('pk-mode') || bd.contains('arena-mode') || bd.contains('big')) return;
+          promptSid();
+        }, 600);
       } else { renderClsBar(); }
     }).catch(function () { renderClsBar(); });
   }

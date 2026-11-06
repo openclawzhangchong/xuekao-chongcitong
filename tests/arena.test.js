@@ -310,6 +310,14 @@ t('C3 擂台「🏠 首页」：接上宿主就真退出，没宿主就藏掉', 
   merged.$('arHome').onclick();
   assert.strictEqual(hit, 1, '点了「🏠 首页」没走退出钩子');
 });
+t('C4 课堂屏中途不许弹「输入学号」（线上实测它会盖住候选席）', () => {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'app.js'), 'utf8');
+  const m = src.match(/if \(!CLS\.sid\) setTimeout\(function \(\) \{[\s\S]{0,500}?\}, 600\);/);
+  assert.ok(m, '输学号弹窗的课堂屏守卫不见了（恢复成 setTimeout(promptSid, 600) 就会在投屏上盖住擂台）');
+  ['pk-mode', 'arena-mode', 'big'].forEach(function (c) {
+    assert.ok(m[0].indexOf(c) !== -1, '守卫没挡 ' + c);
+  });
+});
 
 console.log('\n结果: ' + passed + ' 通过, ' + failed + ' 失败');
 if (failed) console.log('\n未通过清单:\n  ' + fails.join('\n  '));
