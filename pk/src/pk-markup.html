@@ -2,7 +2,6 @@
 <div class="topbar">
   <div class="toprow">
     <div class="timer" id="pkTimer">10:00</div>
-    <div class="lead-tag" id="pkLeadTag">🏆 待开赛</div>
     <div class="spacer"></div>
     <button class="tbtn primary" id="btnStart">🚀 开始 PK</button>
     <button class="tbtn" id="btnReset" disabled>🔄 重置新一轮</button>
@@ -12,6 +11,7 @@
     <button class="tbtn" id="btnSnd">🔊 音效开</button>
     <button class="tbtn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
   </div>
+  <div class="leadrow"><div class="lead-tag tie" id="pkLeadTag">🏆 待开赛</div></div>
   <div class="scorebar">
     <div class="sl" id="pkBarL" style="width:50%">0</div>
     <div class="gap"></div>
@@ -23,6 +23,7 @@
     <span class="vs">VS</span>
     <label>右选手</label>
     <select class="r" id="pkSelR"></select>
+    <button class="tbtn" id="btnRand">🎲 随机匹配</button>
     <span class="muted" id="bankInfo"></span>
   </div>
 </div>
@@ -144,6 +145,14 @@
     <div class="set-grid">
       <div class="set-item"><label>默认题量（1-50）</label><input id="pkCfgCount" value="10"></div>
       <div class="set-item"><label>默认计时（分钟）</label><input id="pkCfgMinutes" value="10"></div>
+      <div class="set-item set-full"><label>出题章节（勾选后只从选中章节抽题；全勾 = 整个题库）</label>
+        <div class="pkmods" id="pkCfgMods"></div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="tbtn" id="pkModsAll">全选</button>
+          <button class="tbtn" id="pkModsNone">清空</button>
+          <span class="muted" id="pkModsCount"></span>
+        </div>
+      </div>
       <div class="set-item set-full"><label>通道②：线上题库地址（已预置，一般无需修改）</label>
         <input id="cfgBankUrl" value="">
         <div style="margin-top:8px"><button class="tbtn" id="cfgFetch">🌐 拉取题库</button><span class="muted" id="bankUrlHint" style="margin-left:10px"></span></div>

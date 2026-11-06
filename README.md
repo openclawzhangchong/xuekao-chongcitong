@@ -27,6 +27,8 @@
 
 ### ⚔️ 双人课堂 PK（已合并进主程序，底部 PK 页签）
 
+手动选人或点「🎲 随机匹配」当场抽两人（TTS 念名字请上台对战）；顶部领先条独立居中一行大字显示当前领先者；「⚙️ 设置」可按章节勾选抽题范围（默认 9 章全选 = 整个题库）；答对答错播报带姓名表扬语与鼓励语。
+
 | 双人对战（分屏独立答题） | 比赛结果（胜负 + 错题复盘） |
 |---|---|
 | ![PK对战](evidence/screenshots/09-pk-light.png) | ![PK结果](evidence/screenshots/07-pk-result.png) |
@@ -113,6 +115,7 @@ npx wrangler deploy -c wrangler.d1.toml
 ```bash
 node tests/engine.test.js        # 前端引擎 32 项单测（判分/预估分对账/毕业规则/脏档案清洗）
 node tests/pk-pick.test.js       # PK 选人 11 项单测（下拉能选中姓名/左右互斥/选人后可开赛）
+node tests/pk-features.test.js   # PK 功能 28 项单测（领先条/随机匹配/章节过滤/抽题真随机/带姓名表扬语）
 python tests/test_server_logic.py  # 班级版服务 38 项单测（学号白名单/档案合并/榜单统计）
 node src/build.js                # 构建：内嵌 engine+data+app+css → dist/学考冲刺通.html
 node src/deploy.js site <slug>   # 部署到 here.now（需 ~/.herenow/credentials）

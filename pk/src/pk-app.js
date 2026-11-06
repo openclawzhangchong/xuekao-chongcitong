@@ -81,7 +81,12 @@ window.__PK_MOUNT = function () {
 
   /* ================= 题库三通道 ================= */
   var BANK = (window.BANK || []).slice(); // 通道①：内嵌
-  function bankInfo() { return BANK.length + ' 题' + (window.BANK_VER ? '（' + window.BANK_VER + '）' : ''); }
+  function bankInfo() {
+    var base = BANK.length + ' 题' + (window.BANK_VER ? '（' + window.BANK_VER + '）' : '');
+    var pool = bankPool();
+    if (pool.length === BANK.length) return base;
+    return base + ' · 已选 ' + selectedModCount() + ' 章 ' + pool.length + ' 题';
+  }
   function setBank(arr, from) {
     if (!Array.isArray(arr) || !arr.length) throw new Error('题库为空或格式不对');
     arr.forEach(function (q, i) {
@@ -113,6 +118,36 @@ window.__PK_MOUNT = function () {
 
   var CFG = Store.load(K_CFG, { count: 10, minutes: 10 });
   function saveCfg() { Store.save(K_CFG, CFG); }
+
+  /* ================= 章节过滤 =================
+   * CFG.mods 缺失 = 不过滤，等于本功能上线前的抽题范围。
+   * 没有 m 字段的题（教师用「粘贴 JSON」导入的自定义题库）永远保留，
+   * 否则切到自定义题库会被 9 个内置章节码清空。
+   * ============================================ */
+  function modCodes() {
+    var out = [];
+    (window.BANK_META || []).forEach(function (m) { if (m && m.code) out.push(m.code); });
+    return out;
+  }
+  function poolOf(sel) {
+    var out = [];
+    for (var i = 0; i < BANK.length; i++) {
+      var q = BANK[i];
+      if (!q.m || !sel || sel[q.m] !== false) out.push(q);
+    }
+    return out;
+  }
+  function bankPool() { return poolOf(CFG.mods); }
+  function selectedModCount() {
+    var codes = modCodes(), n = 0;
+    for (var i = 0; i < codes.length; i++) if (!CFG.mods || CFG.mods[codes[i]] !== false) n++;
+    return n;
+  }
+  function modCountOf(code) {
+    var n = 0;
+    for (var i = 0; i < BANK.length; i++) if (BANK[i].m === code) n++;
+    return n;
+  }
 
   /* ================= 花名册 ================= */
   var ROSTER = Store.load(K_ROSTER, null);
@@ -208,8 +243,9 @@ window.__PK_MOUNT = function () {
   }
   function shuffled(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function pickQuestions(n) {
-    var idxs = shuffled(BANK.length).slice(0, Math.min(n, BANK.length));
-    return idxs.map(function (i) { return BANK[i]; });
+    var pool = bankPool();
+    var idxs = shuffled(pool.length).slice(0, Math.min(n, pool.length));
+    return idxs.map(function (i) { return pool[i]; });
   }
 
   /* ================= 渲染：首页/选人 =================
@@ -251,6 +287,19 @@ window.__PK_MOUNT = function () {
     $('pkCfgMinutes').value = CFG.minutes;
   }
 
+  /* ================= 随机匹配 =================
+   * 只把人填进两侧下拉并播报，不开赛：上台、讲两句、维持纪律的时机留给教师。
+   * ============================================ */
+  function randomMatch() {
+    if (PK.state === 'running') { toast('本轮进行中，先点「重置新一轮」再换人'); return; }
+    if (ROSTER.length < 2) { toast('花名册至少需要 2 人才能随机匹配'); return; }
+    var idx = shuffled(ROSTER.length);
+    pickL = ROSTER[idx[0]]; pickR = ROSTER[idx[1]];
+    renderHome();
+    toast('已随机匹配：' + pickL.name + ' vs ' + pickR.name);
+    tts('请' + pickL.name + '、' + pickR.name + '上台对战！');
+  }
+
   /* ================= 开始 PK ================= */
   function startPK() {
     var L = studentOfSelect($('pkSelL')), R = studentOfSelect($('pkSelR'));
@@ -261,9 +310,13 @@ window.__PK_MOUNT = function () {
     CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkCfgMinutes').value, 10) || 10));
     saveCfg();
     var qs = pickQuestions(CFG.count);
+    if (!qs.length) { toast('所选章节里没有题目，请在「⚙️ 设置」重新勾选章节'); return; }
+    if (qs.length < CFG.count) { toast('所选章节只有 ' + qs.length + ' 题，本轮按 ' + qs.length + ' 题进行'); }
     PK.left = sideObj('L', L.sid, L.name); PK.right = sideObj('r', R.sid, R.name);
-    PK.left.seq = qs.map(function (_, i) { return i; });
-    PK.right.seq = shuffled(qs.length); // 同一批题，各自乱序
+    // seq 存题目对象本身。早先存的是 BANK 下标 0..n-1，随机抽题结果被丢弃，
+    // 每局做的都是题库最前面 n 题（左右只是顺序不同）。
+    PK.left.seq = qs.slice();
+    PK.right.seq = shuffled(qs.length).map(function (i) { return qs[i]; }); // 同一批题，各自乱序
     PK.state = 'running';
     PK.durationSec = CFG.minutes * 60;
     PK.leftSec = PK.durationSec;
@@ -294,7 +347,7 @@ window.__PK_MOUNT = function () {
     $(side + 'ProgText').textContent = '已完成 ' + P.idx + ' / ' + P.seq.length + ' 题';
     if (P.done) { $(side + 'Body').innerHTML = '<div class="done-tag">🎉 已完成全部题目！等待对手…</div>'; return; }
     if (P.idx >= P.seq.length) { $(side + 'Body').innerHTML = '<div class="done-tag">🎉 已完成全部题目！</div>'; return; }
-    var q = BANK[P.seq[i]];
+    var q = P.seq[i];
     $(side + 'Meta').innerHTML = '<span class="qtype">' + esc(q.qt || '') + '</span><span>第 ' + (i + 1) + ' / ' + P.seq.length + ' 题</span>' + (q.kd ? '<span>' + esc(q.kd) + '</span>' : '');
     var body = $(side + 'Body');
     body.innerHTML = '';
@@ -322,7 +375,7 @@ window.__PK_MOUNT = function () {
   function pickOpt(side, key) {
     var P = side === 'L' ? PK.left : PK.right;
     if (P.locked || P.done) return;
-    var q = BANK[P.seq[P.idx]];
+    var q = P.seq[P.idx];
     var multi = q.qt === '多选';
     if (multi) {
       var i = P.answered[P.idx] ? P.answered[P.idx].sel.indexOf(key) : -1;
@@ -351,7 +404,7 @@ window.__PK_MOUNT = function () {
   function submitSide(side) {
     var P = side === 'L' ? PK.left : PK.right;
     if (P.locked || P.done || PK.state !== 'running') return;
-    var q = BANK[P.seq[P.idx]];
+    var q = P.seq[P.idx];
     var sel = (P.answered[P.idx] || { sel: [] }).sel.slice();
     if (!sel.length) return;
     var right = isCorrect(q, sel);
@@ -379,7 +432,7 @@ window.__PK_MOUNT = function () {
     fb.className = 'feedback show ' + (right ? 'ok' : 'err');
     fb.textContent = right ? '✅ 答对！' + (P.streak >= 2 ? '🔥' + P.streak + ' 连击' : '') : '❌ 答错咯，正确答案：' + q.a;
     if (right) SFX.correct(); else SFX.wrong();
-    tts(right ? '答对啦！' : '这题答错咯');
+    tts(right ? window.XKP.pickPraise(P.name, P.streak) : window.XKP.pickEncourage(P.name));
     var btn = $(side + 'Submit');
     btn.disabled = true; btn.textContent = '已提交';
     // 下一题按钮（延迟出按钮？直接改文案：提交后按钮变「下一题」）
@@ -413,14 +466,13 @@ window.__PK_MOUNT = function () {
   }
   function updateTop() {
     var L = PK.left.score, R = PK.right.score;
-    var total = Math.max(L + R, 1);
     $('pkBarL').style.width = Math.max(8, Math.round(L / Math.max(L + R, CFG.count) * 100)) + '%';
     $('pkBarL').textContent = L;
     $('pkBarR').textContent = R;
     var lt = $('pkLeadTag');
-    if (L === R) { lt.textContent = '🤝 平局 ' + L + ':' + R; lt.className = 'lead-tag tie'; }
-    else if (L > R) { lt.textContent = '🏆 领先：' + PK.left.name + '（' + L + ':' + R + '）'; lt.className = 'lead-tag'; }
-    else { lt.textContent = '🏆 领先：' + PK.right.name + '（' + R + ':' + L + '）'; lt.className = 'lead-tag'; }
+    if (L === R) { lt.className = 'lead-tag tie'; lt.innerHTML = '🤝 平局 <span class="who">' + L + ':' + R + '</span>'; }
+    else if (L > R) { lt.className = 'lead-tag'; lt.innerHTML = '🏆 领先：<span class="who">' + esc(PK.left.name) + '</span>（' + L + ':' + R + '）'; }
+    else { lt.className = 'lead-tag'; lt.innerHTML = '🏆 领先：<span class="who">' + esc(PK.right.name) + '</span>（' + R + ':' + L + '）'; }
   }
 
   /* ================= 计时 ================= */
@@ -499,7 +551,7 @@ window.__PK_MOUNT = function () {
       var wrongs = [];
       P.answered.forEach(function (a, i) {
         if (!a || a.right) return;
-        var q = BANK[P.seq[i]];
+        var q = P.seq[i];
         wrongs.push({ q: q, sel: a.sel });
       });
       if (!wrongs.length) return;
@@ -580,9 +632,49 @@ window.__PK_MOUNT = function () {
     $('rosterCountLabel').textContent = '共 ' + ROSTER.length + ' 名学生' + (ROSTER.length === DEFAULT_ROSTER.length ? '（' + DEFAULT_CLASS_NAME + '）' : '');
   }
 
+  /* ================= 章节勾选（设置弹窗） =================
+   * 弹窗里改的是草稿 modsDraft，点「保存默认值」才写进 CFG.mods——
+   * 跟题量/计时同一套规矩，点「✕ 关闭」不生效。
+   * ============================================ */
+  var modsDraft = null;
+  function draftFromCfg() {
+    var codes = modCodes(), d = {};
+    for (var i = 0; i < codes.length; i++) d[codes[i]] = !CFG.mods || CFG.mods[codes[i]] !== false;
+    return d;
+  }
+  function countOn(sel) {
+    var n = 0;
+    for (var k in sel) if (sel[k]) n++;
+    return n;
+  }
+  function renderCfgMods() {
+    var box = $('pkCfgMods'); box.innerHTML = '';
+    var codes = modCodes();
+    if (!codes.length) {
+      var tip = document.createElement('div');
+      tip.className = 'noMods';
+      tip.textContent = '当前题库没有章节信息，按整个题库抽题。';
+      box.appendChild(tip);
+    }
+    codes.forEach(function (code) {
+      var meta = (window.BANK_META || []).filter(function (m) { return m.code === code; })[0] || {};
+      var d = document.createElement('div');
+      d.className = 'pkmod' + (modsDraft[code] ? ' on' : '');
+      d.setAttribute('data-code', code);
+      var nm = document.createElement('span'); nm.className = 'mn'; nm.textContent = meta.disp || meta.name || code;
+      var mi = document.createElement('span'); mi.className = 'mi'; mi.textContent = modCountOf(code) + ' 题';
+      var ck = document.createElement('span'); ck.className = 'ck';
+      d.appendChild(nm); d.appendChild(mi); d.appendChild(ck);
+      d.onclick = function () { modsDraft[code] = !modsDraft[code]; renderCfgMods(); };
+      box.appendChild(d);
+    });
+    $('pkModsCount').textContent = '已选 ' + countOn(modsDraft) + ' 章 · 可抽 ' + poolOf(modsDraft).length + ' 题';
+  }
+
   /* ================= 事件绑定 ================= */
   function bind() {
     $('btnStart').onclick = startPK;
+    $('btnRand').onclick = randomMatch;
     $('btnReset').onclick = function () {
       if (PK.state === 'running' && !confirm('本轮还在进行中，确定重置？')) return;
       resetRound();
@@ -620,6 +712,7 @@ window.__PK_MOUNT = function () {
     };
     $('btnCfg').onclick = function () {
       $('cfgPaste').value = '';
+      modsDraft = draftFromCfg(); renderCfgMods();
       try {
         var inp = $('cfgBankUrl');
         if (inp && !inp.value) inp.value = DEFAULT_BANK_URL;
@@ -629,6 +722,8 @@ window.__PK_MOUNT = function () {
       $('cfgMask').classList.remove('hidden');
     };
     $('cfgClose').onclick = function () { $('cfgMask').classList.add('hidden'); };
+    $('pkModsAll').onclick = function () { for (var k in modsDraft) modsDraft[k] = true; renderCfgMods(); };
+    $('pkModsNone').onclick = function () { for (var k in modsDraft) modsDraft[k] = false; renderCfgMods(); };
     $('cfgFetch').onclick = function () {
       var u = $('cfgBankUrl').value.trim();
       if (!u) { toast('先填题库地址'); return; }
@@ -638,7 +733,9 @@ window.__PK_MOUNT = function () {
     $('cfgSave').onclick = function () {
       CFG.count = Math.max(1, Math.min(50, parseInt($('pkCfgCount').value, 10) || 10));
       CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkCfgMinutes').value, 10) || 10));
-      saveCfg(); renderHome(); toast('已保存');
+      var m = {}; for (var k in modsDraft) m[k] = modsDraft[k];
+      CFG.mods = m;
+      saveCfg(); renderHome(); toast('已保存，本轮从 ' + bankPool().length + ' 题里抽');
       $('cfgMask').classList.add('hidden');
     };
     $('btnSnd').onclick = function () {
@@ -670,6 +767,14 @@ window.__PK_MOUNT = function () {
     $('pkBarR').textContent = '0';
     renderHome();
   }
+
+  /* 单测钩子：只暴露只读快照，不参与任何界面逻辑（tests/dom-stub.js 用） */
+  window.__PK_TEST = {
+    bankPool: bankPool,
+    cfg: function () { return CFG; },
+    pk: function () { return PK; },
+    picks: function () { return [pickL, pickR]; }
+  };
 
   /* ================= 启动 ================= */
   // 刷新钩子（主站每次进入 PK 页调用）：重读存储 + 重渲染选人下拉

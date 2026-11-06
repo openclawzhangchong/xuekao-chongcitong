@@ -66,7 +66,7 @@ cloud/
   wrangler.d1.toml ← D1 备用版配置
   keys.json        ← 班级码 + 教师密钥（已 gitignore，绝不入库）
 班级版服务.py       ← 局域网版服务（Python 标准库，端口 8953）
-tests/             ← 5 套单测（120 项，必须全绿）
+tests/             ← 6 套单测（148 项，必须全绿）
 tools/             ← 生成器与修正应用器
 evidence/          ← 测试证据与截图
 site/              ← 线上部署目录（index.html + data.js 拆分版）
@@ -80,10 +80,11 @@ dist/              ← 单文件构建产物
 ```bash
 cd "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通"
 
-# 1. 五套单测必须全绿（120 项）
+# 1. 六套单测必须全绿（148 项）
 node tests/engine.test.js              # 期望 32 通过
 node tests/classroom.test.js           # 期望 19 通过
 node tests/pk-pick.test.js             # 期望 11 通过（PK 选人：下拉能选中姓名）
+node tests/pk-features.test.js         # 期望 28 通过（领先条/随机匹配/章节过滤/抽题随机/表扬语）
 node cloud/worker.test.js              # 期望 20 通过
 python -I tests/test_server_logic.py   # 期望 38 通过
 
@@ -238,9 +239,12 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 |---|---|
 | `xkc.profile.v1` | 学生档案（answers/days/history） |
 | `xkc.class.v1` | 学号+姓名+班级码 |
-| `xkc.roster` | PK 花名册 |
+| `xkc.roster` | 主站随机点名名单 |
 | `xkc.theme` | 主题（light/dark，默认 light） |
+| `pk.roster` | PK 花名册（选人区与「🎲 随机匹配」的数据源） |
+| `pk.cfg` | PK 开赛设置：题量 / 计时 / 章节勾选 `mods`（**字段缺失 = 不过滤**，等于章节功能上线前的行为） |
 | `pk.matches` | PK 比赛记录 |
+| `pk.snd` | PK 音效开关 |
 | `xkc.big` | 课堂投屏状态 |
 
 ---
@@ -262,7 +266,7 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 
 ## 九、工作方式要求
 
-1. **每次改题库后必须**：跑 5 套单测 → build → 抽样人工复核 → 部署 → 验证线上
+1. **每次改题库后必须**：跑 6 套单测 → build → 抽样人工复核 → 部署 → 验证线上
 2. **不确定的改动**：先小范围试（改 5 题看效果），确认无误再全量
 3. **遇到 bug**：先复现 → 定位根因 → 修 → 回归测试，不要猜
 4. **不要重写整个项目**：这是已上线的成熟项目，增量优化
@@ -280,8 +284,10 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 - ✅ 内置默认班级 25计算机01班（36 人）
 - ✅ 题库地址预置（无需用户填写）
 - ✅ 云端班级版（Cloudflare KV）+ 局域网版 + here.now 备用站
-- ✅ 5 套单测 120 项全绿
+- ✅ 6 套单测 148 项全绿
 - ✅ PK 选人下拉可正常选中姓名（含无编号学生）
+- ✅ PK 抽题改为真随机（此前每局固定做题库前 N 题，学生打两轮就背完了）
+- ✅ PK 新增：领先条居中放大 / 🎲 随机匹配+上台播报 / 设置里章节勾选 / 答对答错带姓名表扬语
 - ✅ 构建产物不再混入模板残留文本（build.js 已加残留守卫）
 - ✅ README 含 9 张页面截图
 
