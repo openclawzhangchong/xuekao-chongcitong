@@ -28,14 +28,16 @@ const FS_MIN_MEDIAN = parseFloat(process.env.GATE_FS_MIN || '20');
 const PAGE = 'file:///' + path.join(__dirname, '..', 'site', 'index.html').replace(/\\/g, '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-/* 页面内执行：[which, 题目数组] → 逐题走真实渲染路径量一遍 */
+/* 页面内执行：[which, 题目数组] → 逐题走真实渲染路径量一遍
+ * which: 'pk' = 双人 PK 左栏；'ar-champ' = 擂台擂主席；'ar-chal' = 擂台挑战者席 */
 function measurePage(arg) {
   var which = arg[0], qs = arg[1];
-  var AR = which === 'arena';
-  var rootId = AR ? 'arChalSeat' : 'pkPanelL';
-  var bodyId = AR ? 'arChalBody' : 'LBody';
+  var AR = which !== 'pk';
+  var key = which === 'ar-champ' ? 'champ' : 'chal';
+  var rootId = AR ? (key === 'champ' ? 'arChampSeat' : 'arChalSeat') : 'pkPanelL';
+  var bodyId = AR ? (key === 'champ' ? 'arChampBody' : 'arChalBody') : 'LBody';
   var T = AR ? window.__ARENA_TEST : window.__PK_TEST;
-  var sideObj = AR ? T.ar().right : T.pk().left;
+  var sideObj = AR ? (key === 'champ' ? T.ar().left : T.ar().right) : T.pk().left;
   var out = { n: 0, hist: {}, scroll: 0, worst: [], box: { w: 0, h: 0, bodyTop: 0, need: 0 } };
   qs.forEach(function (q) {
     var root = document.getElementById(rootId);
@@ -46,7 +48,7 @@ function measurePage(arg) {
     sideObj.answered = {};
     sideObj.locked = false;
     sideObj.done = false;
-    T.render(AR ? 'chal' : 'L');            // 真代码：renderSeat / renderSide → fitSeat / fitSide
+    T.render(AR ? key : 'L');              // 真代码：renderSeat / renderSide → fitSeat / fitSide
     out.n++;
     var fs = parseFloat(getComputedStyle(root).getPropertyValue(AR ? '--arfs' : '--pkfs'));
     var scrolled = root.classList.contains(AR ? 'ar-pkfit-scroll' : 'pkfit-scroll');
@@ -108,18 +110,23 @@ function summarize(label, r) {
   const cards = page.locator('#arPickList .ar-pick');
   await cards.nth(0).click(); await cards.nth(1).click();
   await page.click('#arGo'); await sleep(500);
-  const arRnd = await page.evaluate(measurePage, ['arena', sets.rnd]);
-  const arWorst = await page.evaluate(measurePage, ['arena', sets.worst]);
+  const arRnd = await page.evaluate(measurePage, ['ar-chal', sets.rnd]);
+  const arWorst = await page.evaluate(measurePage, ['ar-chal', sets.worst]);
+  const acRnd = await page.evaluate(measurePage, ['ar-champ', sets.rnd]);
+  const acWorst = await page.evaluate(measurePage, ['ar-champ', sets.worst]);
 
   console.log('视口 ' + W + '×' + H + '（教室投屏）  题库 ' + (await page.evaluate(() => window.BANK.length)) + ' 题');
   const s = [summarize('PK 左栏·随机', pkRnd), summarize('PK 左栏·最长 20', pkWorst),
+    summarize('擂台擂主席·随机', acRnd), summarize('擂台擂主席·最长 20', acWorst),
     summarize('擂台挑战者席·随机', arRnd), summarize('擂台挑战者席·最长 20', arWorst)];
 
   const bad = [];
   if (s[0].rate > SCROLL_MAX) bad.push('双人 PK 随机样本滚动率 ' + s[0].rate.toFixed(1) + '% > ' + SCROLL_MAX + '%');
-  if (s[2].rate > SCROLL_MAX) bad.push('擂台随机样本滚动率 ' + s[2].rate.toFixed(1) + '% > ' + SCROLL_MAX + '%');
+  if (s[2].rate > SCROLL_MAX) bad.push('擂台擂主席随机样本滚动率 ' + s[2].rate.toFixed(1) + '% > ' + SCROLL_MAX + '%');
+  if (s[4].rate > SCROLL_MAX) bad.push('擂台挑战者席随机样本滚动率 ' + s[4].rate.toFixed(1) + '% > ' + SCROLL_MAX + '%');
   if (s[0].med < FS_MIN_MEDIAN) bad.push('双人 PK 中位字号 ' + s[0].med + 'px < ' + FS_MIN_MEDIAN + 'px');
-  if (s[2].med < FS_MIN_MEDIAN) bad.push('擂台中位字号 ' + s[2].med + 'px < ' + FS_MIN_MEDIAN + 'px');
+  if (s[2].med < FS_MIN_MEDIAN) bad.push('擂台擂主席中位字号 ' + s[2].med + 'px < ' + FS_MIN_MEDIAN + 'px');
+  if (s[4].med < FS_MIN_MEDIAN) bad.push('擂台挑战者席中位字号 ' + s[4].med + 'px < ' + FS_MIN_MEDIAN + 'px');
   if (errors.length) bad.push('页面报错 ' + errors.length + ' 条：' + errors[0]);
   await browser.close();
   if (bad.length) { console.error('\n!! 一屏装不下：\n  ' + bad.join('\n  ')); process.exit(1); }

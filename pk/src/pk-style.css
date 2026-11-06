@@ -40,6 +40,9 @@ body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;backgroun
   border:2px solid var(--line);background:var(--card);color:var(--txt)}
 .pickrow select:focus{outline:none}
 .pickrow select.l{border-color:var(--l)} .pickrow select.r{border-color:var(--r)}
+/* 对战中折叠「选人」那一行（body.pk-running 由 pk-app 随状态维护）：
+ * 开赛后这两个下拉本来就改了不生效，留着只是吃掉 45px 题面高度。 */
+body.pk-running .topbar .pickrow{display:none}
 .vs{font-size:24px;font-weight:900;color:var(--gold)}
 
 /* ---------- 分屏 ---------- */

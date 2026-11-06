@@ -245,6 +245,14 @@ t('gen4 扩容恰 285 道且全部为选择题带难度', () => {
     assert.strictEqual(n, m.n, m.code + ' META.n=' + m.n + ' 实际=' + n);
   });
 });
+t('没有「选项里塞整段案例」的病态长选项（≥80 字即判病态）', () => {
+  // 生成器曾把题干案例复制进 4 个选项（最长 126 字/项），投屏缩到 16px 下限还装不下。
+  // v7 已清掉 9 题；这条闸门防止以后扩容再把这类题放进来。
+  const bad = BANK.filter(q => q.o.some(o => String(o[1] || '').length >= 80));
+  const max = Math.max.apply(null, BANK.map(q => Math.max.apply(null, q.o.map(o => String(o[1] || '').length))));
+  assert.deepStrictEqual(bad.map(q => q.s.slice(0, 24)), [], '有 ' + bad.length + ' 题选项超长（最长 ' + max + ' 字）');
+  assert.ok(max <= 76, '最长选项 ' + max + ' 字，超过已复核的 76 字上限');
+});
 
 console.log('== 10. 题干清洗 cleanStem（M3 生成器把选项列表混进了题干）==');
 t('全库恰好 64 道残留题被改动，其余 3935 题一字不改', () => {

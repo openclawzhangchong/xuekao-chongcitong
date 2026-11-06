@@ -291,6 +291,12 @@ window.__PK_MOUNT = function () {
   }
 
   /* ================= 开始 PK ================= */
+  /* 对战中把「选人」那一行折叠掉：45px 全还给题面（投屏实测最长题就差这几行）。
+   * 下拉在开赛后本来就不生效（要换人得先「重置新一轮」），留着只是占高度。 */
+  function syncStageClass() {
+    document.body.classList.toggle('pk-running', PK.state === 'running');
+  }
+
   function startPK() {
     var L = studentOfSelect($('pkSelL')), R = studentOfSelect($('pkSelR'));
     if (!L || !R) { toast('请先选择左右两名选手'); return; }
@@ -308,6 +314,7 @@ window.__PK_MOUNT = function () {
     PK.left.seq = qs.slice();
     PK.right.seq = shuffled(qs.length).map(function (i) { return qs[i]; }); // 同一批题，各自乱序
     PK.state = 'running';
+    syncStageClass();
     PK.durationSec = CFG.minutes * 60;
     PK.leftSec = PK.durationSec;
     PK.leftTs = Date.now();
@@ -523,6 +530,7 @@ window.__PK_MOUNT = function () {
   function endMatch(reason) {
     if (PK.state !== 'running') return;
     PK.state = 'finished';
+    syncStageClass();
     stopTimer();
     PK.left.done = true; PK.right.done = true;
     PK.left.locked = true; PK.right.locked = true;
@@ -787,6 +795,7 @@ window.__PK_MOUNT = function () {
   }
   function resetRound() {
     PK.state = 'idle';
+    syncStageClass();
     PK.left = null; PK.right = null;
     pickL = null; pickR = null;
     stopTimer();

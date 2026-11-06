@@ -402,6 +402,29 @@ t('「🏠 首页」：接上宿主就真退出，独立版自动藏掉（点了
   merged.$('btnHome').onclick();
   assert.strictEqual(hit, 1, '点了「🏠 首页」没走退出钩子');
 });
+/* 对战中折叠「选人」那一行 = 53px 题面高度（实测面板 508→561，随机题中位字号 21→23px）。
+ * 开赛后这两个下拉本来就改了不生效，留着只是占高度；收尾/重置必须还原，否则教师换不了人。 */
+t('开赛后 body 带 pk-running；点「重置新一轮」必须还原', () => {
+  const p = mount({ roster: R36 });
+  const body = p.win.document.body;
+  assert.ok(!body.classList.contains('pk-running'), '刚进页面就以为在打仗');
+  startManual(p, '学生1', '学生2');
+  assert.ok(body.classList.contains('pk-running'), '开赛后没打 pk-running 类');
+  p.$('btnReset').onclick();
+  assert.ok(!body.classList.contains('pk-running'), '重置后类没去掉，选人行永远回不来');
+});
+t('两边答完自动收尾时，pk-running 也必须去掉', () => {
+  const p = mount({ roster: R36 });
+  const body = p.win.document.body;
+  startManual(p, '学生1', '学生2');
+  for (let i = 0; i < 10; i++) { answer(p, 'L', 0); answer(p, 'r', 0); }   // 右栏 id 是小写 r
+  assert.strictEqual(p.test().pk().state, 'finished', '没走到收尾：' + p.test().pk().state);
+  assert.ok(!body.classList.contains('pk-running'), '打完了还锁着折叠，教师下一场换不了人');
+});
+t('折叠必须有 CSS 撑着：body.pk-running .topbar .pickrow{display:none}', () => {
+  assert.ok(/body\.pk-running\s+\.topbar\s+\.pickrow\s*\{\s*display\s*:\s*none/.test(PK_CSS),
+    'pk-app 打了类但样式没折叠规则 = 白打');
+});
 
 console.log('\n结果: ' + passed + ' 通过, ' + failed + ' 失败');
 if (failed) console.log('\n未通过清单:\n  ' + fails.join('\n  '));

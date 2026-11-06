@@ -20,8 +20,11 @@
 .ar-btn.primary{background:var(--ar-champ);border-color:var(--ar-champ);color:#fff}
 .ar-btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* ---------- 舞台：30% 擂主席 + 70% 挑战者席 ---------- */
-.ar-stage{display:grid;grid-template-columns:30% 1fr;gap:16px;padding:14px 16px;align-items:stretch;flex:1;min-height:0}
+/* ---------- 舞台：42% 擂主席 + 58% 挑战者席 ----------
+ * 原本 30/70 更「不像 PK」，但实测擂主席只有 400px：同一道题中位字号掉到 18px、
+ * 160 题里 3 题缩到 16px 下限还要滚动——被全班盯着的擂主反而字最小。42/58 仍不对称，
+ * 擂主席 560px 中位 21px、需滚动 0。 */
+.ar-stage{display:grid;grid-template-columns:42% 1fr;gap:16px;padding:14px 16px;align-items:stretch;flex:1;min-height:0}
 .ar-seat{border-radius:16px;padding:calc(var(--arfs) * .6) calc(var(--arfs) * .7);border:3px solid var(--line);min-height:0;overflow:hidden;
   display:flex;flex-direction:column;--arfs:22px}
 .ar-seat.ar-pkfit-scroll{overflow:auto}

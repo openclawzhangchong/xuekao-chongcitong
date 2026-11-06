@@ -511,6 +511,9 @@ body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;backgroun
   border:2px solid var(--line);background:var(--card);color:var(--txt)}
 .pickrow select:focus{outline:none}
 .pickrow select.l{border-color:var(--l)} .pickrow select.r{border-color:var(--r)}
+/* 对战中折叠「选人」那一行（body.pk-running 由 pk-app 随状态维护）：
+ * 开赛后这两个下拉本来就改了不生效，留着只是吃掉 45px 题面高度。 */
+body.pk-running .topbar .pickrow{display:none}
 .vs{font-size:24px;font-weight:900;color:var(--gold)}
 
 /* ---------- 分屏 ---------- */
@@ -713,8 +716,11 @@ body.pk-mode .app{max-width:none}
 .ar-btn.primary{background:var(--ar-champ);border-color:var(--ar-champ);color:#fff}
 .ar-btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* ---------- 舞台：30% 擂主席 + 70% 挑战者席 ---------- */
-.ar-stage{display:grid;grid-template-columns:30% 1fr;gap:16px;padding:14px 16px;align-items:stretch;flex:1;min-height:0}
+/* ---------- 舞台：42% 擂主席 + 58% 挑战者席 ----------
+ * 原本 30/70 更「不像 PK」，但实测擂主席只有 400px：同一道题中位字号掉到 18px、
+ * 160 题里 3 题缩到 16px 下限还要滚动——被全班盯着的擂主反而字最小。42/58 仍不对称，
+ * 擂主席 560px 中位 21px、需滚动 0。 */
+.ar-stage{display:grid;grid-template-columns:42% 1fr;gap:16px;padding:14px 16px;align-items:stretch;flex:1;min-height:0}
 .ar-seat{border-radius:16px;padding:calc(var(--arfs) * .6) calc(var(--arfs) * .7);border:3px solid var(--line);min-height:0;overflow:hidden;
   display:flex;flex-direction:column;--arfs:22px}
 .ar-seat.ar-pkfit-scroll{overflow:auto}
@@ -2164,7 +2170,7 @@ body.arena-mode .app{max-width:none}
 
 </script>
 <script>window.BANK_VER='20261106';</script>
-<script src="data.js?v=202611061614"></script>
+<script src="data.js?v=202611061655"></script>
 <script>
 /* =====================================================================
  * 学考冲刺通 · 应用层（依赖同页内嵌的 engine.js 与 data.js）
@@ -3559,6 +3565,12 @@ window.__PK_MOUNT = function () {
   }
 
   /* ================= 开始 PK ================= */
+  /* 对战中把「选人」那一行折叠掉：45px 全还给题面（投屏实测最长题就差这几行）。
+   * 下拉在开赛后本来就不生效（要换人得先「重置新一轮」），留着只是占高度。 */
+  function syncStageClass() {
+    document.body.classList.toggle('pk-running', PK.state === 'running');
+  }
+
   function startPK() {
     var L = studentOfSelect($('pkSelL')), R = studentOfSelect($('pkSelR'));
     if (!L || !R) { toast('请先选择左右两名选手'); return; }
@@ -3576,6 +3588,7 @@ window.__PK_MOUNT = function () {
     PK.left.seq = qs.slice();
     PK.right.seq = shuffled(qs.length).map(function (i) { return qs[i]; }); // 同一批题，各自乱序
     PK.state = 'running';
+    syncStageClass();
     PK.durationSec = CFG.minutes * 60;
     PK.leftSec = PK.durationSec;
     PK.leftTs = Date.now();
@@ -3791,6 +3804,7 @@ window.__PK_MOUNT = function () {
   function endMatch(reason) {
     if (PK.state !== 'running') return;
     PK.state = 'finished';
+    syncStageClass();
     stopTimer();
     PK.left.done = true; PK.right.done = true;
     PK.left.locked = true; PK.right.locked = true;
@@ -4055,6 +4069,7 @@ window.__PK_MOUNT = function () {
   }
   function resetRound() {
     PK.state = 'idle';
+    syncStageClass();
     PK.left = null; PK.right = null;
     pickL = null; pickR = null;
     stopTimer();

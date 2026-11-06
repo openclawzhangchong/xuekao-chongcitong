@@ -70,10 +70,11 @@ cloud/
   wrangler.d1.toml ← D1 备用版配置
   keys.json        ← 班级码 + 教师密钥（已 gitignore，绝不入库）
 班级版服务.py       ← 局域网版服务（Python 标准库，端口 8953）
-tests/             ← 7 套单测（217 项，必须全绿）+ dom-stub.js 共用 DOM 桩
+tests/             ← 7 套单测（221 项，必须全绿）+ dom-stub.js 共用 DOM 桩
             ← 另有两道机器闸门：tools/scan-defects.js（题库缺陷计数）、tools/gate-fit.js（投屏一屏实测）
 tools/             ← 生成器、修正应用器与缺陷复扫闸门
-docs/              ← 开发方案文档（擂台赛方案已定稿并按 C1→C3 落地）
+docs/              ← 开发方案文档（擂台赛方案 + 落地实况与返工数字）
+changelog.md     ← 更新日志（每批改动：改了什么/为什么/拿什么证明）
 evidence/          ← 测试证据与截图
 site/              ← 线上部署目录（index.html + data.js 拆分版）
 dist/              ← 单文件构建产物
@@ -86,11 +87,11 @@ dist/              ← 单文件构建产物
 ```bash
 cd "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通"
 
-# 1. 七套单测必须全绿（217 项）
-node tests/engine.test.js              # 期望 52 通过（第 10 节题干清洗 8 项 + 第 11 节擂台/PK 共用纯函数 12 项）
+# 1. 七套单测必须全绿（221 项）
+node tests/engine.test.js              # 期望 53 通过（第 10 节题干清洗 8 项 + 第 11 节共用纯函数 12 项 + 长选项闸门）
 node tests/classroom.test.js           # 期望 19 通过
 node tests/pk-pick.test.js             # 期望 11 通过（PK 选人：下拉能选中姓名）
-node tests/pk-features.test.js         # 期望 45 通过（领先条/随机匹配/章节过滤/抽题随机/表扬语/清洗/一屏自适应/回首页）
+node tests/pk-features.test.js         # 期望 48 通过（领先条/随机匹配/章节过滤/抽题随机/表扬语/清洗/一屏自适应/回首页/对战中折叠）
 node tests/arena.test.js               # 期望 32 通过（A 组 7 项防混淆 + B 组 21 项状态机 + C 组 4 项投屏一屏）
 node cloud/worker.test.js              # 期望 20 通过
 python -I tests/test_server_logic.py   # 期望 38 通过
@@ -106,12 +107,12 @@ node -e "global.window={};eval(require('fs').readFileSync('src/data.js','utf8'))
 # 期望 3999
 
 # 3. 构建可用
-node src/build.js                      # 单文件，期望 3231KB
-node src/build.js --split site/index.html   # 拆分版，期望 index 233KB + data.js 3071KB
+node src/build.js                      # 单文件，期望 3227KB
+node src/build.js --split site/index.html   # 拆分版，期望 index 234KB + data.js 2993KB
 ```
 
-**已完成的审题修正**：累计 2171 条（4 个批次 agent 审读 + gen4 核验 + v5 批 2-3 = 2095，
-加 v6 重复选项 6 条、v6 补解析 70 条），全部经 `tools/apply-v5fix.js` 质检后落库。
+**已完成的审题修正**：累计 2193 条（4 个批次 agent 审读 + gen4 核验 + v5 批 2-3 = 2095，
+加 v6 重复选项 6 条、v6 补解析 70 条、v7 病态长选项 22 条），全部经 `tools/apply-v5fix.js` 质检后落库。
 
 **四类已知缺陷的实测结论**（`node tools/scan-defects.js` 随时复算，别再引用旧数字）：
 
@@ -285,6 +286,7 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 | `tools/apply-fixes.js` | 应用 fix-*.json | 带题面映射+o 字段 |
 | `tools/apply-v5fix.js` | 应用 v5fix-*.json | 支持 a/e/s/o |
 | `tools/rescan-gen4.js` | 五项复扫 | — |
+| `tools/gen-v7fix.js` | 生成「选项里塞整段案例」的 9 题修正集 + 复核清单 + qid 映射 | 必须 3999 题库；会拒绝改坏答案字母映射 |
 | `tools/scan-defects.js` | 四类缺陷复扫 + 基线对比闸门 | `--save-baseline` 存基线，`--json` 机器可读 |
 | `tools/gate-fit.js` | 无头 Edge 真渲染真题，量「投屏一屏装不装得下」 | `[宽 高 抽样数]`，默认 1366 768 200；`GATE_SCROLL_MAX` / `GATE_FS_MIN` 调线 |
 | `tools/shot-arena.js` | PK 与擂台 5 张对比截图 + 布局数字 | 产物进 `evidence/arena-shots/`；`[宽 高]` 换分辨率 |
@@ -312,8 +314,17 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 - ✅ 统一主题系统（浅色默认/深色可切）
 - ✅ 内置默认班级 25计算机01班（36 人）
 - ✅ 题库地址预置（无需用户填写）
+- ✅ **v7 病态长选项修正 9 题**：选项里被生成器塞进整段案例（最长 126 字/项，四个选项只差结尾几字）。
+  案例移进题干、选项只留区分点；1581/1583 顺带修掉「两个选项都算错」的命题缺陷。
+  全库最长选项 126 → 76 字，≥80 字的题 9 → 0；**代价：8 题 qid 变了（3991/3999 不变）**，
+  旧→新映射在 `evidence/qbank-audit/v7-longopts-qidmap.json`。复核清单 `v7-longopts-review.md`。
+- ✅ **对战中折叠「选人」那一行**（`body.pk-running`）：开赛后那两个下拉改了也不生效，白占一行；
+  折叠后 PK 顶栏 226→173px、面板 508→**561px**、随机题中位字号 21→**23px（基准值）**。收尾/重置必须还原（3 条断言）。
+- ✅ 投屏一屏终态实测（`node tools/gate-fit.js 1366 768 400`）：随机 400 题 PK 与擂台**需滚动 0 题**，
+  全库最长 20 题也**需滚动 0 题**（返工前 85% / 100%）。
+- ✅ 新增 `changelog.md`（每批改动写「改了什么 / 为什么 / 拿什么证明」）。
 - ✅ 云端班级版（Cloudflare KV）+ 局域网版 + here.now 备用站
-- ✅ 7 套单测 217 项全绿（含擂台赛 32 项）
+- ✅ 7 套单测 221 项全绿（含擂台赛 32 项）
 - ✅ PK 选人下拉可正常选中姓名（含无编号学生）
 - ✅ PK 抽题改为真随机（此前每局固定做题库前 N 题，学生打两轮就背完了）
 - ✅ PK 新增：领先条居中放大 / 🎲 随机匹配+上台播报 / 开赛设置里「③ 出题章节」/ 答对答错带姓名表扬语
