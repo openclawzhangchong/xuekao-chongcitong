@@ -66,7 +66,7 @@ cloud/
   wrangler.d1.toml ← D1 备用版配置
   keys.json        ← 班级码 + 教师密钥（已 gitignore，绝不入库）
 班级版服务.py       ← 局域网版服务（Python 标准库，端口 8953）
-tests/             ← 4 套单测（109 项，必须全绿）
+tests/             ← 5 套单测（120 项，必须全绿）
 tools/             ← 生成器与修正应用器
 evidence/          ← 测试证据与截图
 site/              ← 线上部署目录（index.html + data.js 拆分版）
@@ -80,9 +80,10 @@ dist/              ← 单文件构建产物
 ```bash
 cd "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通"
 
-# 1. 四套单测必须全绿（109 项）
+# 1. 五套单测必须全绿（120 项）
 node tests/engine.test.js              # 期望 32 通过
 node tests/classroom.test.js           # 期望 19 通过
+node tests/pk-pick.test.js             # 期望 11 通过（PK 选人：下拉能选中姓名）
 node cloud/worker.test.js              # 期望 20 通过
 python -I tests/test_server_logic.py   # 期望 38 通过
 
@@ -261,7 +262,7 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 
 ## 九、工作方式要求
 
-1. **每次改题库后必须**：跑 4 套单测 → build → 抽样人工复核 → 部署 → 验证线上
+1. **每次改题库后必须**：跑 5 套单测 → build → 抽样人工复核 → 部署 → 验证线上
 2. **不确定的改动**：先小范围试（改 5 题看效果），确认无误再全量
 3. **遇到 bug**：先复现 → 定位根因 → 修 → 回归测试，不要猜
 4. **不要重写整个项目**：这是已上线的成熟项目，增量优化
@@ -279,7 +280,9 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 - ✅ 内置默认班级 25计算机01班（36 人）
 - ✅ 题库地址预置（无需用户填写）
 - ✅ 云端班级版（Cloudflare KV）+ 局域网版 + here.now 备用站
-- ✅ 4 套单测 109 项全绿
+- ✅ 5 套单测 120 项全绿
+- ✅ PK 选人下拉可正常选中姓名（含无编号学生）
+- ✅ 构建产物不再混入模板残留文本（build.js 已加残留守卫）
 - ✅ README 含 9 张页面截图
 
 ---
@@ -292,7 +295,7 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 cd "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通"
 
 # ① 单测全绿
-node tests/engine.test.js && node tests/classroom.test.js && node cloud/worker.test.js
+node tests/engine.test.js && node tests/classroom.test.js && node tests/pk-pick.test.js && node cloud/worker.test.js
 
 # ② 构建成功
 node src/build.js

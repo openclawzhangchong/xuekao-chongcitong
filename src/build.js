@@ -308,8 +308,6 @@ ${praise}
 ${sfx}
 </script>
 ${DATA_TAG}
-" + data + "
-</scr" + "ipt>")}
 <script>
 ${app}
 </script>
@@ -321,6 +319,12 @@ ${pkApp}
 `;
 
 fs.mkdirSync(path.dirname(out), { recursive: true });
+// 残留守卫：字符串拼接时代的片段一旦混进模板字面量，会被当成正文渲染到页面上
+const LEFTOVER = /"\s*\+\s*data\s*\+\s*"|<\/scr"\s*\+\s*"|<"\s*\+\s*"script/;
+if (LEFTOVER.test(tpl)) {
+  throw new Error('构建模板残留字符串拼接片段（会渲染成页面垃圾文本）:\n  ' +
+    tpl.split(String.fromCharCode(10)).filter(l => LEFTOVER.test(l)).join('\n  '));
+}
 if (splitMode) {
   fs.writeFileSync(path.join(path.dirname(out), 'data.js'), data, 'utf8');
   fs.writeFileSync(out, tpl, 'utf8');

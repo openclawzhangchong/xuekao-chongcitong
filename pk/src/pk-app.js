@@ -212,39 +212,56 @@ window.__PK_MOUNT = function () {
     return idxs.map(function (i) { return BANK[i]; });
   }
 
-  /* ================= 渲染：首页/选人 ================= */
-  function fillSelect(id, excludeSid, val) {
-    var sel = $(id);
+  /* ================= 渲染：首页/选人 =================
+   * option 的 value 用花名册下标：sid 允许为空（批量导入只填姓名），
+   * 若用 sid 当值会与占位符的空串撞车——无编号的学生既进不了下拉、也选不中。
+   * 已选学生用 pickL/pickR 持有花名册里的对象引用，花名册增删后按下标重新定位。
+   * =============================================== */
+  var pickL = null, pickR = null;
+  function studentOfSelect(sel) {
+    var at = parseInt(sel.value, 10);
+    return isNaN(at) ? null : (ROSTER[at] || null);
+  }
+  function rebind(student) {
+    if (!student) return null;
+    for (var i = 0; i < ROSTER.length; i++) {
+      if (ROSTER[i] === student) return student;
+      if (ROSTER[i].sid === student.sid && ROSTER[i].name === student.name) return ROSTER[i];
+    }
+    return null;
+  }
+  function fillSelect(sel, exclude, keep) {
     sel.innerHTML = '<option value="">— 选择选手 —</option>';
-    ROSTER.forEach(function (s) {
-      if (s.sid === excludeSid) return; // 两侧不能同一个人
+    ROSTER.forEach(function (s, i) {
+      if (s === exclude) return; // 两侧不能同一个人
       var o = document.createElement('option');
-      o.value = s.sid; o.textContent = (s.sid ? s.sid + ' · ' : '') + s.name;
+      o.value = String(i); o.textContent = (s.sid ? s.sid + ' · ' : '') + s.name;
       sel.appendChild(o);
     });
-    if (val) sel.value = val;
+    var at = keep ? ROSTER.indexOf(keep) : -1;
+    sel.value = at >= 0 ? String(at) : '';
   }
   function renderHome() {
     $('bankInfo').textContent = '题库：' + bankInfo();
-    fillSelect('pkSelL', $('pkSelR').value, PK.left && PK.left.sid);
-    fillSelect('pkSelR', $('pkSelL').value, PK.right && PK.right.sid);
+    pickL = rebind(pickL); pickR = rebind(pickR);
+    if (pickL && pickL === pickR) pickR = null; // 以左为准
+    fillSelect($('pkSelL'), pickR, pickL);
+    fillSelect($('pkSelR'), pickL, pickR);
     $('pkCfgCount').value = CFG.count;
     $('pkCfgMinutes').value = CFG.minutes;
   }
 
   /* ================= 开始 PK ================= */
   function startPK() {
-    var lSid = $('pkSelL').value, rSid = $('pkSelR').value;
-    if (!lSid || !rSid) { toast('请先选择左右两名选手'); return; }
-    var L = ROSTER.filter(function (s) { return s.sid === lSid; })[0];
-    var R = ROSTER.filter(function (s) { return s.sid === rSid; })[0];
-    if (!L || !R) { toast('选手不存在，请重新选择'); return; }
+    var L = studentOfSelect($('pkSelL')), R = studentOfSelect($('pkSelR'));
+    if (!L || !R) { toast('请先选择左右两名选手'); return; }
+    if (L === R) { toast('左右不能是同一个人，请重选'); return; }
     SFX.unlock();
     CFG.count = Math.max(1, Math.min(50, parseInt($('pkCfgCount').value, 10) || 10));
     CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkCfgMinutes').value, 10) || 10));
     saveCfg();
     var qs = pickQuestions(CFG.count);
-    PK.left = sideObj('L', lSid, L.name); PK.right = sideObj('r', rSid, R.name);
+    PK.left = sideObj('L', L.sid, L.name); PK.right = sideObj('r', R.sid, R.name);
     PK.left.seq = qs.map(function (_, i) { return i; });
     PK.right.seq = shuffled(qs.length); // 同一批题，各自乱序
     PK.state = 'running';
@@ -631,14 +648,15 @@ window.__PK_MOUNT = function () {
       if (sndOn) { SFX.unlock(); SFX.correct(); }
     };
     $('endClose').onclick = function () { $('endMask').classList.add('hidden'); resetRound(); };
-    $('pkSelL').onchange = renderHome;
-    $('pkSelR').onchange = renderHome;
+    $('pkSelL').onchange = function () { pickL = studentOfSelect($('pkSelL')); renderHome(); };
+    $('pkSelR').onchange = function () { pickR = studentOfSelect($('pkSelR')); renderHome(); };
     // 恢复音效开关文案
     $('btnSnd').textContent = sndOn ? '🔊 音效开' : '🔇 音效关';
   }
   function resetRound() {
     PK.state = 'idle';
     PK.left = null; PK.right = null;
+    pickL = null; pickR = null;
     stopTimer();
     $('endMask').classList.add('hidden');
     $('pkArena').classList.add('hidden');
