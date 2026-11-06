@@ -13,24 +13,23 @@
 
 ## 📸 界面一览
 
-| 首页（预估分 + 打卡 + 提分曲线） | 课堂互动（点名 / 音效 / 多音色朗读 / 表扬语库） |
+### 学考冲刺通（学生端）
+
+| 首页（预估分 + 打卡 + 提分曲线） | 答题页（完整辨析 + 难度徽章） |
 |---|---|
-| ![首页](evidence/screenshots/01-home.png) | ![课堂互动](evidence/screenshots/02-classroom-card.png) |
-| **答题页（完整辨析单选 + 难度徽章）** | **考点诊断（雷达图 + 薄弱考点）** |
-| ![答题页](evidence/screenshots/05-quiz.png) | ![考点诊断](evidence/screenshots/03-diagnosis.png) |
-| **错题本（连对 2 次毕业）** | **班级学情（教师端）** |
-| ![错题本](evidence/screenshots/04-wrongbook.png) | ![教师页](evidence/screenshots/e2e-10-cloud-teacher.png) |
+| ![首页](evidence/screenshots/01-home.png) | ![答题页](evidence/screenshots/05-quiz.png) |
+| **考点诊断（雷达图 + 薄弱考点）** | **错题本（连对 2 次毕业）** |
+| ![诊断](evidence/screenshots/03-diagnosis.png) | ![错题本](evidence/screenshots/04-wrongbook.png) |
+| **课堂互动（点名/音效/多音色朗读）** | **班级学情（教师端）** |
+| ![课堂互动](evidence/screenshots/02-classroom-card.png) | ![教师页](evidence/screenshots/e2e-10-cloud-teacher.png) |
 
+### ⚔️ 双人课堂 PK（已合并进主程序，底部 PK 页签）
 
-福建省中职学业水平考试《信息技术基础》**学生端智能刷题系统**。
-单文件 HTML，双击即用；可选「班级版」服务把成绩长久存到老师电脑。
-
-| 形态 | 适合场景 | 说明 |
-|---|---|---|
-| **☁️ 云端版** | 全校 / 回家也能刷 | **https://xuekao.jiuyeke.cn**，学号+班级码登录，档案上云（D1/KV），老师随时看榜单 |
-| **单文件** `学考冲刺通.html` | 学生自用 / 教师分发 | 题库内嵌（844KB），双击即用，档案存本机浏览器，支持 JSON 导出/导入换设备 |
-| **线上备用** here.now | 学生手机扫码 | **https://coral-beacon-g4jx.here.now/**，同单文件，本机档案模式 |
-| **班级版** `启动班级版.bat` | 教室局域网 | 老师电脑起服务，学生连同一 WiFi 输学号刷题，成绩实时汇总，老师本机看榜单、导出 CSV |
+| 双人对战（分屏独立答题） | 比赛结果（胜负 + 错题复盘） |
+|---|---|
+| ![PK对战](evidence/screenshots/06-pk-battle.png) | ![PK结果](evidence/screenshots/07-pk-result.png) |
+| **总排行榜（参赛/胜场/总分/均分）** |  |
+| ![排行榜](evidence/screenshots/08-pk-leaderboard.png) |  |
 
 ## 功能
 

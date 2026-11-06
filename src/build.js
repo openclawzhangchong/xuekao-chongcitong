@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const SRC = path.join(__dirname);
-const read = f => fs.readFileSync(path.join(SRC, f), 'utf8');
+const read = f => fs.readFileSync(path.isAbsolute(f) ? f : path.join(SRC, f), 'utf8');
 
 const css = read('style.css');
 const engine = read('engine.js');
@@ -14,6 +14,9 @@ const data = read('data.js');
 const app = read('app.js');
 const praise = read('praise.js');
 const sfx = read('sfx.js');
+const pkMarkup = fs.readFileSync(path.join(SRC, '..', 'pk', 'src', 'pk-markup.html'), 'utf8');
+const pkStyle = fs.readFileSync(path.join(SRC, '..', 'pk', 'src', 'pk-style.css'), 'utf8');
+const pkApp = fs.readFileSync(path.join(SRC, '..', 'pk', 'src', 'pk-app.js'), 'utf8');
 
 // ---- 构建期校验 ----
 global.window = {};
@@ -35,10 +38,11 @@ const out = outArg || path.join(SRC, '..', 'dist', '学考冲刺通.html');
 const BUILD_STAMP = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 12);
   const SPLIT_HEAD = '<' + 'script>window.BANK_VER=\'20261106\';<' + '/script>\n' +
   '<' + 'script src="data.js?v=' + BUILD_STAMP + '"><' + '/script>';
-const dataBlock = '<' + 'script>\n${data}\n<' + '/script>';
-const dataTag = splitMode ? SPLIT_HEAD : dataBlock;
 const bankVerJson = splitMode ? JSON.stringify('20261106') : '';
 const metaJson = splitMode ? JSON.stringify(window.BANK_META) : '';
+const DATA_TAG = splitMode
+  ? SPLIT_HEAD
+  : ['<script>', data, '</script>'].join(String.fromCharCode(10));
 const tpl = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -47,6 +51,7 @@ const tpl = `<!DOCTYPE html>
 <title>学考冲刺通 · 信息技术基础（福建中职学考）</title>
 <style>
 ${css}
+${pkStyle}
 </style>
 </head>
 <body>
@@ -89,6 +94,11 @@ ${css}
           <div class="ic">📕</div><div class="nm">错题本</div>
           <div class="ds">连对 2 次自动毕业</div>
           <span class="bd" id="entWrong">…</span>
+        </div>
+        <div class="entry" id="entCardPk">
+          <div class="ic">⚔️</div><div class="nm">双人 PK</div>
+          <div class="ds">同屏对战 · 课堂互动</div>
+          <span class="bd">花名册对战</span>
         </div>
         <div class="entry" id="entCardDiag">
           <div class="ic">📊</div><div class="nm">考点诊断</div>
@@ -245,11 +255,16 @@ ${css}
   </div>
 
   <!-- ============ 底部导航 ============ -->
+  <div id="pkPage" class="hidden">
+${pkMarkup}
+  </div>
+
   <div class="tabs" id="tabs">
     <button class="tab on" data-t="home"><span class="ti">🏠</span>首页</button>
     <button class="tab" data-t="setup"><span class="ti">📝</span>刷题</button>
     <button class="tab" data-t="wrong"><span class="ti">📕</span>错题<span id="badgeWrong" style="color:#dc2626;font-weight:800"></span></button>
     <button class="tab" data-t="diag"><span class="ti">📊</span>诊断<span id="badgeDiag" style="color:#d97706;font-weight:800"></span></button>
+    <button class="tab" data-t="pk"><span class="ti">⚔️</span>PK</button>
   </div>
 
   <!-- ============ 学号弹窗（班级模式） ============ -->
@@ -282,7 +297,6 @@ ${css}
 </div>
 <script>
 ${engine}
-${engine}
 </script>
 <script>
 ${praise}
@@ -290,9 +304,14 @@ ${praise}
 <script>
 ${sfx}
 </script>
-${dataTag}
+${DATA_TAG}
+" + data + "
+</scr" + "ipt>")}
 <script>
 ${app}
+</script>
+<script>
+${pkApp}
 </script>
 </body>
 </html>

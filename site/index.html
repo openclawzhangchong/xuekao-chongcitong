@@ -281,6 +281,156 @@ body.big .stat .v{font-size:26px}
 .pill.ok{background:var(--ok-l);color:var(--ok)}
 .pill.warn{background:#fef3c7;color:var(--warn)}
 
+/* =====================================================================
+ * 双人课堂 PK 答题 · 样式（投屏大屏优先）
+ * ===================================================================== */
+:root{
+  --l:#2563eb; --l-l:#dbeafe; --l-d:#1d4ed8;
+  --r:#dc2626; --r-l:#fee2e2; --r-d:#b91c1c;
+  --bg:#0f172a; --card:#1e293b; --card2:#273449; --line:#334155;
+  --txt:#f1f5f9; --sub:#94a3b8; --gold:#fbbf24; --ok:#22c55e; --err:#ef4444;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);font-size:17px;line-height:1.5}
+
+/* ---------- 顶部公共区 ---------- */
+.topbar{position:sticky;top:0;z-index:40;background:#0b1222;border-bottom:2px solid var(--line);
+  padding:10px 18px;display:flex;flex-direction:column;gap:8px}
+.toprow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.timer{font-size:34px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--txt);
+  background:var(--card);border:2px solid var(--line);border-radius:14px;padding:2px 18px;min-width:130px;text-align:center}
+.timer.warn{color:var(--gold);border-color:var(--gold)}
+.timer.critical{color:#fff;background:var(--err);border-color:var(--err);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.55}}
+.lead-tag{font-size:20px;font-weight:800;color:var(--gold);min-width:180px}
+.lead-tag.tie{color:var(--sub)}
+.spacer{flex:1}
+.tbtn{background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:10px;
+  padding:9px 15px;font-size:15px;font-weight:700;cursor:pointer}
+.tbtn:active{transform:translateY(1px)}
+.tbtn.primary{background:var(--l-d);border-color:var(--l-d)}
+.tbtn.danger{color:#fca5a5}
+.tbtn:disabled{opacity:.4;cursor:not-allowed}
+/* 分数对比条 */
+.scorebar{display:flex;height:26px;border-radius:13px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
+.scorebar .sl{background:var(--l);transition:width .4s;display:flex;align-items:center;padding-left:10px;font-weight:800;font-size:15px;min-width:44px}
+.scorebar .sr{background:var(--r);transition:width .4s;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font-weight:800;font-size:15px;min-width:44px;flex:1}
+.scorebar .gap{flex:1}
+/* 选人区 */
+.pickrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pickrow label{font-size:14px;color:var(--sub)}
+.pickrow select{flex:1;min-width:200px;padding:10px 12px;font-size:17px;font-weight:700;border-radius:11px;
+  border:2px solid var(--line);background:var(--card);color:var(--txt)}
+.pickrow select:focus{outline:none}
+.pickrow select.l{border-color:var(--l)} .pickrow select.r{border-color:var(--r)}
+.vs{font-size:24px;font-weight:900;color:var(--gold)}
+
+/* ---------- 分屏 ---------- */
+.arena{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px;align-items:start}
+.panel{border-radius:16px;padding:14px;border:3px solid var(--line);min-height:70vh}
+.panel.left{border-color:var(--l);background:linear-gradient(180deg,rgba(37,99,235,.10),transparent 30%),var(--card)}
+.panel.right{border-color:var(--r);background:linear-gradient(180deg,rgba(220,38,38,.10),transparent 30%),var(--card)}
+.panel.done{opacity:.75}
+.phead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.pname{font-size:22px;font-weight:900}
+.panel.left .pname{color:#93c5fd} .panel.right .pname{color:#fca5a5}
+.pscore{font-size:30px;font-weight:900;margin-left:auto}
+.panel.left .pscore{color:#93c5fd} .panel.right .pscore{color:#fca5a5}
+.streak{font-size:15px;font-weight:800;color:var(--gold);background:rgba(251,191,36,.12);
+  border:1px solid rgba(251,191,36,.4);border-radius:20px;padding:2px 12px}
+.streak.off{display:none}
+.progress{height:8px;background:var(--line);border-radius:6px;margin:6px 0 12px;overflow:hidden}
+.progress>i{display:block;height:100%;border-radius:6px;transition:width .3s}
+.panel.left .progress>i{background:var(--l)} .panel.right .progress>i{background:var(--r)}
+.qmeta{font-size:13px;color:var(--sub);margin-bottom:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.qtype{font-weight:800;color:var(--gold)}
+.qstem{font-size:23px;font-weight:700;line-height:1.55;margin:6px 0 16px;word-break:break-word;white-space:pre-wrap}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;background:var(--card2);border:2px solid var(--line);
+  border-radius:13px;padding:13px 15px;cursor:pointer;transition:.12s;min-height:52px}
+.opt:hover{border-color:var(--sub)}
+.opt .k{width:32px;height:32px;flex:none;border-radius:50%;border:2px solid var(--sub);display:flex;
+  align-items:center;justify-content:center;font-weight:800;font-size:15px;color:var(--sub)}
+.opt .v{flex:1;font-size:18px;line-height:1.45;word-break:break-word}
+.opt.sel{border-color:var(--gold);background:rgba(251,191,36,.08)}
+.opt.sel .k{background:var(--gold);border-color:var(--gold);color:#1f2937}
+.opt.correct{border-color:var(--ok);background:rgba(34,197,94,.10)}
+.opt.correct .k{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--err);background:rgba(239,68,68,.10)}
+.opt.wrong .k{background:var(--err);border-color:var(--err);color:#fff}
+.opt.dim{opacity:.5}
+.panel.locked .opt{cursor:not-allowed}
+.feedback{margin-top:12px;border-radius:12px;padding:10px 14px;font-weight:700;font-size:16px;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:rgba(34,197,94,.12);border:1px solid var(--ok);color:#86efac}
+.feedback.err{background:rgba(239,68,68,.10);border:1px solid var(--err);color:#fca5a5}
+.submit-btn{width:100%;margin-top:14px;padding:15px;font-size:19px;font-weight:900;border:none;
+  border-radius:13px;cursor:pointer;background:var(--gold);color:#1f2937}
+.submit-btn:disabled{opacity:.35;cursor:not-allowed}
+.submit-btn:not(:disabled):active{transform:translateY(1px)}
+.panel.done .done-tag{display:block}
+.done-tag{display:none;text-align:center;font-size:20px;font-weight:900;color:var(--gold);padding:20px 0}
+
+/* ---------- 弹窗 ---------- */
+.mask{position:fixed;inset:0;background:rgba(2,6,23,.78);z-index:60;display:flex;align-items:center;justify-content:center;padding:20px}
+.mask.hidden{display:none}
+.dialog{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;width:100%;max-width:860px;max-height:92vh;overflow-y:auto}
+.dlg-title{font-size:24px;font-weight:900;margin-bottom:16px;text-align:center}
+.win-line{text-align:center;font-size:30px;font-weight:900;color:var(--gold);margin-bottom:14px}
+.final-row{display:flex;gap:14px;justify-content:center;margin-bottom:16px}
+.final-card{flex:1;max-width:280px;border-radius:14px;padding:14px;text-align:center;border:2px solid var(--line)}
+.final-card.left{border-color:var(--l)} .final-card.right{border-color:var(--r)}
+.final-card .fn{font-size:16px;color:var(--sub)} .final-card .fs{font-size:44px;font-weight:900}
+.review-h{font-size:16px;font-weight:800;color:var(--sub);margin:14px 0 8px}
+.review-item{background:var(--card2);border-radius:10px;padding:10px 13px;margin-bottom:8px;font-size:14px}
+.review-item .rs{font-weight:700;margin-bottom:4px}
+.review-item .ra{color:var(--sub)}
+.review-item .ra b{color:var(--ok)}
+/* 排行榜表 */
+.lb-table{width:100%;border-collapse:collapse;font-size:15px}
+.lb-table th,.lb-table td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.lb-table th{color:var(--sub);font-size:13px}
+.lb-table tr:first-child td{color:var(--gold);font-weight:800}
+.lb-wrap{overflow-x:auto}
+/* 花名册 */
+.roster-table{width:100%;border-collapse:collapse;font-size:15px}
+.roster-table th,.roster-table td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left}
+.roster-table input{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--txt);
+  border-radius:7px;padding:6px 9px;font-size:14px}
+.rbtn{border:none;border-radius:7px;padding:5px 10px;cursor:pointer;font-size:13px;font-weight:700;margin-right:5px}
+.rbtn.del{background:rgba(239,68,68,.15);color:#fca5a5}
+.rbtn.save{background:rgba(34,197,94,.15);color:#86efac}
+.dlg-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center}
+.dlg-actions .tbtn{min-width:130px}
+/* 设置 */
+.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.set-item label{display:block;font-size:13px;color:var(--sub);margin-bottom:5px}
+.set-item input,.set-item textarea{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--txt);
+  border-radius:9px;padding:9px 11px;font-size:14px;font-family:inherit}
+.set-item textarea{min-height:90px;resize:vertical}
+.set-full{grid-column:1/-1}
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:80;background:var(--gold);
+  color:#1f2937;font-weight:800;padding:10px 22px;border-radius:12px;font-size:16px;display:none}
+.toast.show{display:block;animation:tin .3s}
+@keyframes tin{from{transform:translate(-50%,-16px);opacity:0}}
+.muted{color:var(--sub);font-size:13px}
+.hidden{display:none!important}
+/* 空态提示 */
+.hint-box{background:var(--card2);border:1px dashed var(--line);border-radius:12px;padding:16px;text-align:center;color:var(--sub)}
+/* 窄屏降级（上下分屏） */
+@media (max-width:900px){
+  .arena{grid-template-columns:1fr}
+  .panel{min-height:auto}
+}
+/* 大屏投屏增强 */
+@media (min-width:1600px){
+  body{font-size:19px}
+  .qstem{font-size:27px}
+  .opt .v{font-size:21px}
+  .timer{font-size:40px}
+}
+
 </style>
 </head>
 <body>
@@ -323,6 +473,11 @@ body.big .stat .v{font-size:26px}
           <div class="ic">📕</div><div class="nm">错题本</div>
           <div class="ds">连对 2 次自动毕业</div>
           <span class="bd" id="entWrong">…</span>
+        </div>
+        <div class="entry" id="entCardPk">
+          <div class="ic">⚔️</div><div class="nm">双人 PK</div>
+          <div class="ds">同屏对战 · 课堂互动</div>
+          <span class="bd">花名册对战</span>
         </div>
         <div class="entry" id="entCardDiag">
           <div class="ic">📊</div><div class="nm">考点诊断</div>
@@ -479,11 +634,175 @@ body.big .stat .v{font-size:26px}
   </div>
 
   <!-- ============ 底部导航 ============ -->
+  <div id="pkPage" class="hidden">
+<!-- 顶部公共区 -->
+<div class="topbar">
+  <div class="toprow">
+    <div class="timer" id="pkTimer">10:00</div>
+    <div class="lead-tag" id="pkLeadTag">🏆 待开赛</div>
+    <div class="spacer"></div>
+    <button class="tbtn primary" id="btnStart">🚀 开始 PK</button>
+    <button class="tbtn" id="btnReset" disabled>🔄 重置新一轮</button>
+    <button class="tbtn" id="btnLb">🏆 总排行榜</button>
+    <button class="tbtn" id="btnRoster">📋 管理花名册</button>
+    <button class="tbtn" id="btnCfg">⚙️ 设置</button>
+    <button class="tbtn" id="btnSnd">🔊 音效开</button>
+  </div>
+  <div class="scorebar">
+    <div class="sl" id="pkBarL" style="width:50%">0</div>
+    <div class="gap"></div>
+    <div class="sr" id="pkBarR">0</div>
+  </div>
+  <div class="pickrow">
+    <label>左选手</label>
+    <select class="l" id="pkSelL"></select>
+    <span class="vs">VS</span>
+    <label>右选手</label>
+    <select class="r" id="pkSelR"></select>
+    <span class="muted" id="bankInfo"></span>
+  </div>
+</div>
+
+<!-- 分屏竞技区 -->
+<div class="arena hidden" id="pkArena">
+  <div class="panel left" id="pkPanelL">
+    <div class="phead">
+      <span class="pname" id="LName">左选手</span>
+      <span class="streak off" id="LStreak">🔥 0 连击</span>
+      <span class="pscore" id="LScore">0</span>
+    </div>
+    <div class="progress"><i id="LProg" style="width:0%"></i></div>
+    <div class="muted" id="LProgText">已完成 0 / 0 题</div>
+    <div class="qmeta" id="LMeta"></div>
+    <div id="LBody"></div>
+  </div>
+  <div class="panel right" id="pkPanelR">
+    <div class="phead">
+      <span class="pname" id="rName">右选手</span>
+      <span class="streak off" id="rStreak">🔥 0 连击</span>
+      <span class="pscore" id="rScore">0</span>
+    </div>
+    <div class="progress"><i id="rProg" style="width:0%"></i></div>
+    <div class="muted" id="rProgText">已完成 0 / 0 题</div>
+    <div class="qmeta" id="rMeta"></div>
+    <div id="rBody"></div>
+  </div>
+</div>
+
+<!-- 选人首页提示（setup 态显示题量/计时说明） -->
+<div class="arena" id="pkSetup">
+  <div class="panel left" style="min-height:auto">
+    <div class="phead"><span class="pname">📋 开赛设置</span></div>
+    <div style="font-size:15px;line-height:2">
+      ① 上方选择左右两名选手（花名册可选，可点「管理花名册」增删）<br>
+      ② 题量：<input id="pkCfgCount" value="10" style="width:60px;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 9px;font-size:15px"> 题　计时：<input id="pkCfgMinutes" value="10" style="width:60px;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 9px;font-size:15px"> 分钟<br>
+      ③ 点右上「🚀 开始 PK」——两名选手各自独立答题，同批题目各自乱序<br>
+      ④ 每题 1 分，多选题全部选对才得分；先答完的一方等待对手，倒计时归零双侧锁卷
+    </div>
+  </div>
+  <div class="panel right" style="min-height:auto">
+    <div class="phead"><span class="pname">📖 玩法规则</span></div>
+    <div style="font-size:15px;line-height:2;color:var(--sub)">
+      · 左面板归左选手、右面板归右选手，互不干扰<br>
+      · 选答案 → 点「提交本题」→ 锁定不可改<br>
+      · 连续答对触发 🔥 连击荣誉标识<br>
+      · 倒计时最后 1 分钟变黄、10 秒变红闪烁<br>
+      · 全部结束后自动弹出成绩单与错题复盘，<br>　并计入 🏆 总排行榜<br>
+      · 打完一轮点「🔄 重置新一轮」换人再战
+    </div>
+  </div>
+</div>
+
+<!-- 结束弹窗 -->
+<div class="mask hidden" id="endMask">
+  <div class="dialog">
+    <div class="dlg-title">🏁 比赛结束</div>
+    <div class="win-line" id="endWin"></div>
+    <div class="final-row">
+      <div class="final-card left"><div class="fn" id="endLName">左</div><div class="fs" id="endLScore">0</div><div class="fn">左选手得分</div></div>
+      <div class="final-card right"><div class="fn" id="endRName">右</div><div class="fs" id="endRScore">0</div><div class="fn">右选手得分</div></div>
+    </div>
+    <div class="review-h">📖 错题复盘</div>
+    <div id="endReview"></div>
+    <div class="dlg-actions">
+      <button class="tbtn" id="endClose">🔄 重置新一轮</button>
+      <button class="tbtn" id="lbFromEnd">🏆 查看排行榜</button>
+    </div>
+  </div>
+</div>
+
+<!-- 排行榜弹窗 -->
+<div class="mask hidden" id="lbMask">
+  <div class="dialog">
+    <div class="dlg-title">🏆 总排行榜</div>
+    <div class="dlg-actions" style="margin:0 0 10px">
+      <button class="tbtn" id="lbSortScore">按总得分排序</button>
+      <button class="tbtn" id="lbSortWins">按胜场排序</button>
+      <span class="spacer"></span>
+      <button class="tbtn" id="lbClose">✕ 关闭</button>
+    </div>
+    <div class="lb-wrap">
+      <table class="lb-table">
+        <thead><tr><th>#</th><th>编号</th><th>姓名</th><th>参赛</th><th>胜场</th><th>总得分</th><th>平均分</th></tr></thead>
+        <tbody id="lbBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 花名册弹窗 -->
+<div class="mask hidden" id="pkRosterMask">
+  <div class="dialog">
+    <div class="dlg-title">📋 管理花名册 <span class="muted" id="rosterCountLabel"></span></div>
+    <table class="roster-table">
+      <thead><tr><th style="width:40px">#</th><th style="width:30%">编号</th><th>姓名</th><th style="width:150px">操作</th></tr></thead>
+      <tbody id="pkRosterBody"></tbody>
+    </table>
+    <div class="set-grid" style="margin-top:12px">
+      <div class="set-item"><label>新增学生：编号（可空）</label><input id="pkNewSid" placeholder="如 2025001"></div>
+      <div class="set-item"><label>姓名</label><input id="pkNewName" placeholder="学生姓名"></div>
+      <div class="set-item set-full"><label>批量导入（每行一条：编号,姓名 或 姓名）</label>
+        <textarea id="pkRosterPaste" placeholder="2025001,张三&#10;2025002,李四&#10;王五"></textarea></div>
+    </div>
+    <div class="dlg-actions">
+      <button class="tbtn primary" id="rosterAdd">➕ 添加学生</button>
+      <button class="tbtn" id="rosterImport">📥 批量导入</button>
+      <button class="tbtn" id="rosterClose">✕ 完成</button>
+    </div>
+  </div>
+</div>
+
+<!-- 设置弹窗（题库三通道） -->
+<div class="mask hidden" id="cfgMask">
+  <div class="dialog">
+    <div class="dlg-title">⚙️ 设置 · 题库对接</div>
+    <div class="set-grid">
+      <div class="set-item"><label>默认题量（1-50）</label><input id="pkCfgCount" value="10"></div>
+      <div class="set-item"><label>默认计时（分钟）</label><input id="pkCfgMinutes" value="10"></div>
+      <div class="set-item set-full"><label>通道②：线上题库 JSON 地址（fetch 拉取）</label>
+        <input id="cfgBankUrl" placeholder="https://example.com/bank.json">
+        <div style="margin-top:8px"><button class="tbtn" id="cfgFetch">🌐 拉取题库</button></div>
+      </div>
+      <div class="set-item set-full"><label>通道③：粘贴题库 JSON（兜底）</label>
+        <textarea id="cfgPaste" placeholder='[{"s":"题干","o":[["A","选项"],["B","选项"]],"a":"A","e":"解析"} , ...]'></textarea>
+        <div style="margin-top:8px"><button class="tbtn" id="cfgPasteApply">📥 应用粘贴题库</button></div>
+      </div>
+      <div class="set-item set-full"><label>当前题库</label><div class="muted" id="bankInfo2" style="font-size:14px"></div></div>
+    </div>
+    <div class="dlg-actions"><button class="tbtn primary" id="cfgSave">💾 保存默认值</button>
+      <button class="tbtn" id="cfgClose">✕ 关闭</button></div>
+  </div>
+</div>
+
+<div class="toast" id="pkToast"></div>
+  </div>
+
   <div class="tabs" id="tabs">
     <button class="tab on" data-t="home"><span class="ti">🏠</span>首页</button>
     <button class="tab" data-t="setup"><span class="ti">📝</span>刷题</button>
     <button class="tab" data-t="wrong"><span class="ti">📕</span>错题<span id="badgeWrong" style="color:#dc2626;font-weight:800"></span></button>
     <button class="tab" data-t="diag"><span class="ti">📊</span>诊断<span id="badgeDiag" style="color:#d97706;font-weight:800"></span></button>
+    <button class="tab" data-t="pk"><span class="ti">⚔️</span>PK</button>
   </div>
 
   <!-- ============ 学号弹窗（班级模式） ============ -->
@@ -515,268 +834,6 @@ body.big .stat .v{font-size:26px}
 
 </div>
 <script>
-/* =====================================================================
- * 学考冲刺通 · 核心引擎（纯逻辑，无 DOM 依赖，Node 可直接测试）
- * 口径：福建省中职《信息技术基础》学考 150 分制（9 模块考纲分值加权）
- * ===================================================================== */
-(function (root) {
-  'use strict';
-
-  /* ---------- 工具 ---------- */
-
-  // 答案规范化：大写 + 字母排序；判断题(√/×)原样保留
-  function normalizeAns(a) {
-    var s = (a == null ? '' : String(a)).trim().toUpperCase();
-    if (s === '√' || s === '×') return s;
-    return s.split('').sort().join('');
-  }
-
-  // 判分：sel(选项数组) 与标准答案严格一致才算对
-  function judge(q, sel) {
-    if (!sel || !sel.length) return false;
-    var mine = sel.slice().map(normalizeAns).sort().join('');
-    return mine === normalizeAns(q.a);
-  }
-
-  // 稳定题目 ID：djb2(m|qt|s)，重建题库时题干不变则 ID 不变
-  function qidOf(q) {
-    var str = (q.m || '') + '|' + (q.qt || '') + '|' + (q.s || '');
-    var h = 5381;
-    for (var i = 0; i < str.length; i++) h = (((h << 5) + h) ^ str.charCodeAt(i)) >>> 0;
-    return (q.m || 'M') + '-' + h.toString(36);
-  }
-
-  function shuffle(arr) {
-    for (var i = arr.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
-    }
-    return arr;
-  }
-
-  function todayStr(d) {
-    var t = d ? new Date(d) : new Date();
-    var m = t.getMonth() + 1, day = t.getDate();
-    return t.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
-  }
-
-  /* ---------- 学习档案 ---------- */
-
-  function newProfile() {
-    return { v: 1, answers: {}, days: {}, history: [], created: Date.now() };
-  }
-
-  // 记录一次作答：对 → 连对 +1（达到 2 毕业错题本）；错 → 连对清零
-  function recordAnswer(profile, q, correct, when) {
-    var id = qidOf(q);
-    var rec = profile.answers[id];
-    if (!rec) { rec = profile.answers[id] = { a: 0, w: 0, k: 0, t: 0 }; }
-    if (correct) { rec.a++; rec.k++; } else { rec.w++; rec.k = 0; }
-    rec.t = when || Date.now();
-    var d = todayStr(rec.t);
-    profile.days[d] = (profile.days[d] || 0) + 1;
-    return rec;
-  }
-
-  // 连续打卡天数（今天或昨天截止；断档即断签）
-  function streakDays(days) {
-    var best = 0;
-    var d = new Date();
-    if (!days[todayStr(d)]) d.setDate(d.getDate() - 1); // 今天还没刷，从昨天起算
-    while (days[todayStr(d)]) {
-      best++;
-      d.setDate(d.getDate() - 1);
-    }
-    return best;
-  }
-
-  // 错题本：错过的、且连对未满 2 次（毕业）的题
-  function isGraduated(rec) { return !!rec && rec.k >= 2; }
-  function wrongQueue(BANK, profile) {
-    var out = [];
-    BANK.forEach(function (q) {
-      var rec = profile.answers[qidOf(q)];
-      if (rec && rec.w > 0 && rec.k < 2) out.push(q);
-    });
-    return out;
-  }
-  function graduatedCount(BANK, profile) {
-    var n = 0;
-    BANK.forEach(function (q) {
-      var rec = profile.answers[qidOf(q)];
-      if (rec && rec.w > 0 && rec.k >= 2) n++;
-    });
-    return n;
-  }
-
-  /* ---------- 预估学考分（150 分制） ---------- */
-
-  // 模块正确率 × 考纲分值；未测模块不计入「已覆盖」
-  function moduleStats(BANK, META, profile) {
-    return META.map(function (m) {
-      var a = 0, w = 0;
-      BANK.forEach(function (q) {
-        if (q.m !== m.code) return;
-        var rec = profile.answers[qidOf(q)];
-        if (rec) { a += rec.a; w += rec.w; }
-      });
-      var n = a + w;
-      return { code: m.code, name: m.disp, score: m.score, n: n, a: a, w: w, acc: n ? a / n : null };
-    });
-  }
-
-  function estimateScore(BANK, META, profile) {
-    var stats = moduleStats(BANK, META, profile);
-    var score = 0, tested = 0;
-    stats.forEach(function (s) {
-      if (s.n > 0) { score += s.acc * s.score; tested += s.score; }
-    });
-    return {
-      score: Math.round(score * 10) / 10,
-      tested: tested,
-      total: META.reduce(function (x, m) { return x + m.score; }, 0),
-      per: stats
-    };
-  }
-
-  /* ---------- 考点诊断 ---------- */
-
-  // 考点粒度 (模块|考点) 统计
-  function spotStats(BANK, profile) {
-    var map = {};
-    BANK.forEach(function (q) {
-      var key = q.m + '|' + q.kd;
-      var s = map[key];
-      if (!s) { s = map[key] = { m: q.m, kd: q.kd, n: 0, a: 0, w: 0, qids: [] }; }
-      s.qids.push(qidOf(q));
-      var rec = profile.answers[qidOf(q)];
-      if (rec) { s.a += rec.a; s.w += rec.w; s.n = s.a + s.w; }
-    });
-    return Object.keys(map).map(function (k) { return map[k]; });
-  }
-
-  // 薄弱考点排序：正确率升序 × 样本量权重；完全没刷过的标记 null
-  function weakSpots(BANK, META, profile, topN) {
-    var modName = {};
-    META.forEach(function (m) { modName[m.code] = m.disp; });
-    var list = spotStats(BANK, profile).map(function (s) {
-      return {
-        m: s.m, kd: s.kd, disp: (modName[s.m] || '') + ' · ' + s.kd,
-        n: s.n, a: s.a, w: s.w, acc: s.n ? s.a / s.n : null, qids: s.qids
-      };
-    });
-    // 弱 = 刷过且正确率 < 0.7；没刷过 = 未探明（单独区分）
-    var weak = list.filter(function (s) { return s.n >= 2 && s.acc < 0.7; })
-      .sort(function (x, y) { return x.acc - y.acc || y.n - x.n; });
-    var unknown = list.filter(function (s) { return s.n === 0; });
-    return { weak: weak.slice(0, topN || 8), unknownCount: unknown.length, all: list };
-  }
-
-  // 弱项特训组题：错题本优先，再补薄弱考点的题，去重洗牌
-  function weakTraining(BANK, META, profile, n) {
-    var seen = {}, out = [];
-    wrongQueue(BANK, profile).forEach(function (q) {
-      var id = qidOf(q);
-      if (!seen[id]) { seen[id] = 1; out.push(q); }
-    });
-    weakSpots(BANK, META, profile, 20).weak.forEach(function (s) {
-      BANK.forEach(function (q) {
-        if (out.length >= n) return;
-        var id = qidOf(q);
-        if (!seen[id] && s.qids.indexOf(id) !== -1) { seen[id] = 1; out.push(q); }
-      });
-    });
-    shuffle(out);
-    return out.slice(0, n);
-  }
-
-  /* ---------- 模拟卷（150 分制考纲加权组卷） ---------- */
-
-  // 每模块按考纲分值抽同数量题（每题 1 分）：M1×15 … M8×8 … 共 150 题 150 分
-  // scale<1 出半卷等；用累进分配保证总题数精确等于 round(150×scale)
-  function buildSimPaper(BANK, META, opts) {
-    opts = opts || {};
-    var scale = opts.scale || 1; // scale<1 出半卷等
-    var paper = [];
-    var cumBefore = 0, cumAll = META.reduce(function (x, m) { return x + m.score; }, 0);
-    META.forEach(function (m) {
-      cumBefore += m.score;
-      var want = Math.round(cumBefore * scale) - Math.round((cumBefore - m.score) * scale);
-      if (want <= 0) return;
-      var pool = BANK.filter(function (q) { return q.m === m.code; });
-      shuffle(pool);
-      paper = paper.concat(pool.slice(0, Math.min(want, pool.length)));
-    });
-    return paper;
-  }
-
-  /* ---------- 档案导入导出校验 ---------- */
-
-  function validateProfile(obj) {
-    if (!obj || typeof obj !== 'object') return null;
-    var p = newProfile();
-    if (obj.answers && typeof obj.answers === 'object') {
-      Object.keys(obj.answers).forEach(function (k) {
-        var r = obj.answers[k];
-        if (!r || typeof r !== 'object') return;
-        var a = Math.max(0, Math.min(999, parseInt(r.a, 10) || 0));
-        var w = Math.max(0, Math.min(999, parseInt(r.w, 10) || 0));
-        var kk = Math.max(0, Math.min(2, parseInt(r.k, 10) || 0));
-        if (!a && !w) return;
-        p.answers[String(k).slice(0, 64)] = { a: a, w: w, k: kk, t: Number(r.t) || 0 };
-      });
-    }
-    if (obj.days && typeof obj.days === 'object') {
-      Object.keys(obj.days).forEach(function (d) {
-        // 格式 + 语义双重校验（拒绝 2026-13-99 这类假日期）
-        var mm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d);
-        if (mm) {
-          var y = +mm[1], mo = +mm[2], da = +mm[3];
-          var dt = new Date(y, mo - 1, da);
-          if (dt.getFullYear() === y && dt.getMonth() === mo - 1 && dt.getDate() === da) {
-            var n = parseInt(obj.days[d], 10);
-            if (n > 0) p.days[d] = Math.min(9999, n);
-          }
-        }
-      });
-    }
-    if (Array.isArray(obj.history)) {
-      p.history = obj.history.slice(-500).filter(function (h) {
-        return h && typeof h === 'object' && isFinite(h.score);
-      }).map(function (h) {
-        return { t: Number(h.t) || 0, score: Math.max(0, Math.min(150, +h.score)), tested: Math.max(0, Math.min(150, +h.tested || 0)), mode: String(h.mode || '').slice(0, 16) };
-      });
-    }
-    if (obj.created) p.created = Number(obj.created) || Date.now();
-    return p;
-  }
-
-  /* ---------- 导出 ---------- */
-  var XK = {
-    normalizeAns: normalizeAns,
-    judge: judge,
-    qidOf: qidOf,
-    shuffle: shuffle,
-    todayStr: todayStr,
-    newProfile: newProfile,
-    recordAnswer: recordAnswer,
-    streakDays: streakDays,
-    isGraduated: isGraduated,
-    wrongQueue: wrongQueue,
-    graduatedCount: graduatedCount,
-    moduleStats: moduleStats,
-    estimateScore: estimateScore,
-    spotStats: spotStats,
-    weakSpots: weakSpots,
-    weakTraining: weakTraining,
-    buildSimPaper: buildSimPaper,
-    validateProfile: validateProfile
-  };
-
-  if (typeof module !== 'undefined' && module.exports) module.exports = XK;
-  root.XK = XK;
-})(typeof window !== 'undefined' ? window : globalThis);
-
 /* =====================================================================
  * 学考冲刺通 · 核心引擎（纯逻辑，无 DOM 依赖，Node 可直接测试）
  * 口径：福建省中职《信息技术基础》学考 150 分制（9 模块考纲分值加权）
@@ -1476,7 +1533,9 @@ body.big .stat .v{font-size:26px}
 
 </script>
 <script>window.BANK_VER='20261106';</script>
-<script src="data.js?v=202611060021"></script>
+<script src="data.js?v=202611060256"></script>
+" + data + "
+</scr" + "ipt>")}
 <script>
 /* =====================================================================
  * 学考冲刺通 · 应用层（依赖同页内嵌的 engine.js 与 data.js）
@@ -1746,11 +1805,26 @@ body.big .stat .v{font-size:26px}
   }
 
   /* ---------- 面板切换 ---------- */
-  var TABS = ['home', 'setup', 'wrong', 'diag'];
+  var TABS = ['home', 'setup', 'wrong', 'diag', 'pk'];
   function showPanel(name) {
-    TABS.forEach(function (t) { $(t).classList.add('hidden'); });
-    ['quiz', 'result'].forEach(function (t) { $(t).classList.add('hidden'); });
-    $(name).classList.remove('hidden');
+    TABS.forEach(function (t) {
+      if (t === 'pk') return; // PK 容器 id 为 pkPage，单独处理
+      var el = $(t); if (el) el.classList.add('hidden');
+    });
+    var pkEl = document.getElementById('pkPage');
+    if (pkEl) pkEl.classList.add('hidden');
+    if (name === 'pk') {
+      if (pkEl) { pkEl.classList.remove('hidden'); }
+      if (window.__PK_MOUNT) window.__PK_MOUNT();
+      if (window.__PK_REFRESH) window.__PK_REFRESH();
+      var tb = document.getElementById('tabs'); if (tb) tb.classList.remove('hidden');
+      var nb = document.getElementById('navbar'); if (nb) nb.classList.add('hidden');
+      document.querySelectorAll('.tab').forEach(function (el) { el.classList.toggle('on', el.getAttribute('data-t') === 'pk'); });
+      window.scrollTo(0, 0);
+      return;
+    }
+    ['quiz', 'result'].forEach(function (t) { var el = $(t); if (el) el.classList.add('hidden'); });
+    var target = $(name); if (target) target.classList.remove('hidden');
     var inQuiz = (name === 'quiz' || name === 'result');
     $('tabs').classList.toggle('hidden', inQuiz);
     $('navbar').classList.toggle('hidden', !inQuiz);
@@ -1852,6 +1926,7 @@ body.big .stat .v{font-size:26px}
     on('entCardWrong', 'onclick', function () { switchTab('wrong'); });
     on('entCardDiag', 'onclick', function () { switchTab('diag'); });
     on('entCardSim', 'onclick', function () { startSession({ kind: 'sim' }); });
+    on('entCardPk', 'onclick', function () { switchTab('pk'); });
     on('wrongStartBtn', 'onclick', function () { startSession({ kind: 'wrong' }); });
     on('weakTrainBtn', 'onclick', function () { startSession({ kind: 'weak' }); });
     // 学号弹窗（班级模式）
@@ -2513,6 +2588,616 @@ body.big .stat .v{font-size:26px}
   }
 })();
 
+</script>
+<script>
+/* =====================================================================
+ * 双人课堂 PK 答题 · 应用逻辑
+ * 存储适配层：localStorage 实现（D1 预留同接口，见 Store 注释）
+ * ===================================================================== */
+window.__PK_MOUNT = function () {
+  'use strict';
+  if (window.__PK_MOUNTED) { window.__PK_REFRESH && window.__PK_REFRESH(); return; }
+  window.__PK_MOUNTED = true;
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return (s == null ? '' : String(s)).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* ================= 存储适配层 =================
+   * 页面逻辑只调用 Store.*，不直接触碰存储介质。
+   * 现实现：localStorage。后续迁移 D1 时，实现同接口的
+   * CloudflareStore（fetch /api/...）并 Store.use(CloudflareStore) 即可，
+   * 页面逻辑零改动。
+   * ============================================== */
+  var LocalStore = {
+    name: 'localStorage',
+    load: function (key, fallback) {
+      try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
+    },
+    save: function (key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { } }
+  };
+  /* D1 预留实现（接口签名与 LocalStore 完全一致，均为异步）：
+  var CloudflareStore = {
+    name: 'd1',
+    load: function (key, fb) { return fetch('/api/kv/' + key).then(r => r.json()).catch(() => fb); },
+    save: function (key, val) { return fetch('/api/kv/' + key, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(val) }); }
+  };
+  */
+  var Store = {
+    use: function (impl) { this.impl = impl; },
+    load: function (key, fb) { return this.impl.load(key, fb); },
+    save: function (key, val) { return this.impl.save(key, val); },
+    impl: LocalStore
+  };
+
+  var K_ROSTER = 'pk.roster', K_MATCHES = 'pk.matches', K_CFG = 'pk.cfg';
+
+  /* ================= 题库三通道 ================= */
+  var BANK = (window.BANK || []).slice(); // 通道①：内嵌
+  function bankInfo() { return BANK.length + ' 题' + (window.BANK_VER ? '（' + window.BANK_VER + '）' : ''); }
+  function setBank(arr, from) {
+    if (!Array.isArray(arr) || !arr.length) throw new Error('题库为空或格式不对');
+    arr.forEach(function (q, i) {
+      if (!q.s || !q.o || !q.a) throw new Error('第 ' + (i + 1) + ' 题缺少 s/o/a 字段');
+    });
+    BANK = arr;
+    toast('题库已切换：' + bankInfo() + '（来源：' + from + '）');
+  }
+  // 通道②：fetch 线上 JSON
+  function fetchBank(url) {
+    return fetch(url).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (j) { setBank(Array.isArray(j) ? j : j.BANK, '线上 ' + url); renderHome(); })
+      .catch(function (e) { toast('拉取失败：' + e.message); });
+  }
+  // 通道③：粘贴 JSON
+  function pasteBank(text) {
+    try { setBank(JSON.parse(text), '粘贴'); renderHome(); }
+    catch (e) { toast('粘贴内容不是合法 JSON'); }
+  }
+
+  /* ================= 配置 ================= */
+  var CFG = Store.load(K_CFG, { count: 10, minutes: 10 });
+  function saveCfg() { Store.save(K_CFG, CFG); }
+
+  /* ================= 花名册 ================= */
+  var ROSTER = Store.load(K_ROSTER, []);
+  function saveRoster() { Store.save(K_ROSTER, ROSTER); }
+  function parseRoster(text) {
+    var out = [], seen = {};
+    String(text || '').split(/\r?\n/).forEach(function (line) {
+      line = line.trim();
+      if (!line || line.charAt(0) === '#') return;
+      var p = line.split(/[,，\t ]+/);
+      var name = (p[p.length - 1] || '').trim(), sid = p.length > 1 ? p.slice(0, -1).join('').trim() : '';
+      if (!name || name.length > 24 || seen[name]) return;
+      seen[name] = 1;
+      out.push({ sid: sid, name: name });
+    });
+    return out;
+  }
+
+  /* ================= 比赛记录 ================= */
+  var MATCHES = Store.load(K_MATCHES, []);
+  function saveMatch(m) { MATCHES.push(m); Store.save(K_MATCHES, MATCHES.slice(-500)); }
+
+  /* ================= 音效 & TTS ================= */
+  var sndOn = Store.load('pk.snd', true);
+  var AC = null;
+  function ac() {
+    if (!sndOn) return null;
+    if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+    if (AC.state === 'suspended') { try { AC.resume(); } catch (e) { } }
+    return AC;
+  }
+  function tone(f, start, dur, type, vol) {
+    var c = ac(); if (!c) return;
+    try {
+      var o = c.createOscillator(), g = c.createGain();
+      o.type = type || 'triangle'; o.frequency.setValueAtTime(f, c.currentTime + start);
+      g.gain.setValueAtTime(0.0001, c.currentTime + start);
+      g.gain.exponentialRampToValueAtTime(vol || 0.18, c.currentTime + start + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + start + dur);
+      o.connect(g); g.connect(c.destination);
+      o.start(c.currentTime + start); o.stop(c.currentTime + start + dur + 0.05);
+    } catch (e) { }
+  }
+  var SFX = {
+    correct: function () { if (!sndOn) return; [523.25, 659.25, 783.99].forEach(function (f, i) { tone(f, i * 0.08, 0.15, 'triangle', 0.2); }); },
+    wrong: function () { if (!sndOn) return; tone(311.13, 0, 0.15, 'sine', 0.14); tone(233.08, 0.13, 0.24, 'sine', 0.13); },
+    finish: function () { if (!sndOn) return; [392, 523.25, 659.25, 783.99].forEach(function (f, i) { tone(f, i * 0.1, 0.28, 'triangle', 0.18); }); tone(1046.5, 0.44, 0.5, 'triangle', 0.2); },
+    unlock: function () { ac(); }
+  };
+  // TTS：随机中文音色（沿用学考冲刺通的音色策略）
+  function zhVoices() {
+    if (!('speechSynthesis' in window)) return [];
+    return speechSynthesis.getVoices().filter(function (v) { return /^zh/i.test(v.lang); });
+  }
+  function tts(text, cb) {
+    if (!sndOn || !('speechSynthesis' in window)) { if (cb) cb(); return; }
+    try {
+      speechSynthesis.cancel();
+      var vs = zhVoices();
+      var u = new SpeechSynthesisUtterance(text);
+      if (vs.length) u.voice = vs[Math.floor(Math.random() * vs.length)]; // 每次随机音色
+      u.lang = 'zh-CN'; u.rate = 1.1;
+      if (cb) u.onend = cb;
+      speechSynthesis.speak(u);
+    } catch (e) { if (cb) cb(); }
+  }
+  if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = function () { };
+
+  function toast(msg) {
+    var t = $('pkToast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+
+  /* ================= PK 状态机 ================= */
+  // state: idle → running → finished
+  var PK = {
+    state: 'idle',
+    left: null, right: null,   // {sid,name,seq:[题索引],idx,score,streak,answered:[],locked}
+    durationSec: 600, leftTs: 0,
+    timerId: null, leftSec: 0
+  };
+  function sideObj(side, sid, name) { return { side: side, sid: sid, name: name, seq: [], idx: 0, score: 0, streak: 0, answered: [], locked: false, done: false }; }
+
+  function normAns(a) { var s = (a == null ? '' : String(a)).trim().toUpperCase(); return (s === '√' || s === '×') ? s : s.split('').sort().join(''); }
+  function isCorrect(q, sel) {
+    if (!sel || !sel.length) return false;
+    return sel.slice().map(normAns).sort().join('') === normAns(q.a);
+  }
+  function shuffled(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function pickQuestions(n) {
+    var idxs = shuffled(BANK.length).slice(0, Math.min(n, BANK.length));
+    return idxs.map(function (i) { return BANK[i]; });
+  }
+
+  /* ================= 渲染：首页/选人 ================= */
+  function fillSelect(id, excludeSid, val) {
+    var sel = $(id);
+    sel.innerHTML = '<option value="">— 选择选手 —</option>';
+    ROSTER.forEach(function (s) {
+      if (s.sid === excludeSid) return; // 两侧不能同一个人
+      var o = document.createElement('option');
+      o.value = s.sid; o.textContent = (s.sid ? s.sid + ' · ' : '') + s.name;
+      sel.appendChild(o);
+    });
+    if (val) sel.value = val;
+  }
+  function renderHome() {
+    $('bankInfo').textContent = '题库：' + bankInfo();
+    fillSelect('pkSelL', $('pkSelR').value, PK.left && PK.left.sid);
+    fillSelect('pkSelR', $('pkSelL').value, PK.right && PK.right.sid);
+    $('pkCfgCount').value = CFG.count;
+    $('pkCfgMinutes').value = CFG.minutes;
+  }
+
+  /* ================= 开始 PK ================= */
+  function startPK() {
+    var lSid = $('pkSelL').value, rSid = $('pkSelR').value;
+    if (!lSid || !rSid) { toast('请先选择左右两名选手'); return; }
+    var L = ROSTER.filter(function (s) { return s.sid === lSid; })[0];
+    var R = ROSTER.filter(function (s) { return s.sid === rSid; })[0];
+    if (!L || !R) { toast('选手不存在，请重新选择'); return; }
+    SFX.unlock();
+    CFG.count = Math.max(1, Math.min(50, parseInt($('pkCfgCount').value, 10) || 10));
+    CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkCfgMinutes').value, 10) || 10));
+    saveCfg();
+    var qs = pickQuestions(CFG.count);
+    PK.left = sideObj('L', lSid, L.name); PK.right = sideObj('r', rSid, R.name);
+    PK.left.seq = qs.map(function (_, i) { return i; });
+    PK.right.seq = shuffled(qs.length); // 同一批题，各自乱序
+    PK.state = 'running';
+    PK.durationSec = CFG.minutes * 60;
+    PK.leftSec = PK.durationSec;
+    PK.leftTs = Date.now();
+    $('pkSetup').classList.add('hidden');
+    $('pkArena').classList.remove('hidden');
+    $('btnStart').disabled = true;
+    $('btnReset').disabled = false;
+    renderSide('L'); renderSide('r');
+    updateTop();
+    startTimer();
+    tts('PK开始，' + L.name + '对战' + R.name + '，共' + CFG.count + '题，限时' + CFG.minutes + '分钟，祝两位好运！');
+  }
+
+  /* ================= 面板渲染 ================= */
+  function renderSide(side) {
+    var P = side === 'L' ? PK.left : PK.right;
+    var root = $(side === 'L' ? 'pkPanelL' : 'pkPanelR');
+    var i = P.idx;
+    root.classList.toggle('locked', P.locked || P.done);
+    root.classList.toggle('done', P.done);
+    $(side + 'Name').textContent = P.name + (P.sid ? '（' + P.sid + '）' : '');
+    $(side + 'Score').textContent = P.score;
+    var st = $(side + 'Streak');
+    st.classList.toggle('off', P.streak < 2);
+    st.textContent = '🔥 ' + P.streak + ' 连击';
+    $(side + 'Prog').style.width = (P.seq.length ? Math.round(P.idx / P.seq.length * 100) : 0) + '%';
+    $(side + 'ProgText').textContent = '已完成 ' + P.idx + ' / ' + P.seq.length + ' 题';
+    if (P.done) { $(side + 'Body').innerHTML = '<div class="done-tag">🎉 已完成全部题目！等待对手…</div>'; return; }
+    if (P.idx >= P.seq.length) { $(side + 'Body').innerHTML = '<div class="done-tag">🎉 已完成全部题目！</div>'; return; }
+    var q = BANK[P.seq[i]];
+    $(side + 'Meta').innerHTML = '<span class="qtype">' + esc(q.qt || '') + '</span><span>第 ' + (i + 1) + ' / ' + P.seq.length + ' 题</span>' + (q.kd ? '<span>' + esc(q.kd) + '</span>' : '');
+    var body = $(side + 'Body');
+    body.innerHTML = '';
+    var stem = document.createElement('div'); stem.className = 'qstem'; stem.textContent = q.s; body.appendChild(stem);
+    var opts = document.createElement('div'); opts.className = 'opts';
+    var selNow = P.answered[i] ? P.answered[i].sel : [];
+    q.o.forEach(function (o) {
+      var d = document.createElement('div'); d.className = 'opt';
+      var k = document.createElement('div'); k.className = 'k'; k.textContent = o[0];
+      var v = document.createElement('div'); v.className = 'v'; v.textContent = (o[1] && o[1] !== o[0]) ? o[0] + '. ' + o[1] : o[0];
+      d.appendChild(k); d.appendChild(v);
+      if (selNow.indexOf(o[0]) !== -1) d.classList.add('sel');
+      d.setAttribute('data-key', o[0]);
+      d.onclick = function () { pickOpt(side, o[0]); };
+      opts.appendChild(d);
+    });
+    body.appendChild(opts);
+    var fb = document.createElement('div'); fb.className = 'feedback'; fb.id = side + 'Fb'; body.appendChild(fb);
+    var btn = document.createElement('button'); btn.className = 'submit-btn'; btn.id = side + 'Submit';
+    btn.textContent = selNow.length ? '提交本题' : '选择答案后提交';
+    btn.disabled = P.locked || P.done || !selNow.length;
+    btn.onclick = function () { submitSide(side); };
+    body.appendChild(btn);
+  }
+  function pickOpt(side, key) {
+    var P = side === 'L' ? PK.left : PK.right;
+    if (P.locked || P.done) return;
+    var q = BANK[P.seq[P.idx]];
+    var multi = q.qt === '多选';
+    if (multi) {
+      var i = P.answered[P.idx] ? P.answered[P.idx].sel.indexOf(key) : -1;
+      if (P.answered[P.idx]) {
+        var arr = P.answered[P.idx].sel;
+        var at = arr.indexOf(key);
+        if (at === -1) arr.push(key); else arr.splice(at, 1);
+      } else {
+        P.answered[P.idx] = { sel: [key] };
+      }
+    } else {
+      P.answered[P.idx] = { sel: [key] };
+    }
+    // 高亮
+    var selNow = P.answered[P.idx] ? P.answered[P.idx].sel : [];
+    var root = $(side === 'L' ? 'pkPanelL' : 'pkPanelR');
+    root.querySelectorAll('.opt').forEach(function (o) {
+      o.classList.toggle('sel', selNow.indexOf(o.getAttribute('data-key')) !== -1);
+    });
+    var btn = $(side + 'Submit');
+    btn.disabled = !selNow.length;
+    btn.textContent = '提交本题';
+  }
+
+  /* ================= 提交（锁定） ================= */
+  function submitSide(side) {
+    var P = side === 'L' ? PK.left : PK.right;
+    if (P.locked || P.done || PK.state !== 'running') return;
+    var q = BANK[P.seq[P.idx]];
+    var sel = (P.answered[P.idx] || { sel: [] }).sel.slice();
+    if (!sel.length) return;
+    var right = isCorrect(q, sel);
+    P.locked = true;
+    P.answered[P.idx] = { sel: sel, right: right };
+    if (right) { P.score++; P.streak++; } else { P.streak = 0; }
+    // 判定反馈
+    var root = $(side === 'L' ? 'pkPanelL' : 'pkPanelR');
+    root.querySelectorAll('.opt').forEach(function (o) {
+      var k = o.getAttribute('data-key');
+      o.classList.add('dim');
+      if (normAns(q.a).indexOf(normAns(k)) !== -1 && normAns(q.a).indexOf(k) !== -1 || (q.qt === '多选' ? q.a.split('').indexOf(k) !== -1 : k === normAns(q.a))) {
+        // 简化：正确项高亮
+      }
+    });
+    // 正确/错误标记
+    root.querySelectorAll('.opt').forEach(function (o) {
+      var k = o.getAttribute('data-key');
+      var isAnsKey = (q.qt === '多选') ? q.a.split('').indexOf(k) !== -1 : (normAns(k) === normAns(q.a));
+      if (isAnsKey) { o.classList.remove('dim'); o.classList.add('correct'); }
+      else if (sel.indexOf(k) !== -1) { o.classList.remove('dim'); o.classList.add('wrong'); }
+    });
+    root.classList.add('locked');
+    var fb = $(side + 'Fb');
+    fb.className = 'feedback show ' + (right ? 'ok' : 'err');
+    fb.textContent = right ? '✅ 答对！' + (P.streak >= 2 ? '🔥' + P.streak + ' 连击' : '') : '❌ 答错咯，正确答案：' + q.a;
+    if (right) SFX.correct(); else SFX.wrong();
+    tts(right ? '答对啦！' : '这题答错咯');
+    var btn = $(side + 'Submit');
+    btn.disabled = true; btn.textContent = '已提交';
+    // 下一题按钮（延迟出按钮？直接改文案：提交后按钮变「下一题」）
+    setTimeout(function () {
+      btn.disabled = false; btn.textContent = '下一题 →';
+      btn.onclick = function () { nextSide(side); };
+    }, 500);
+    renderSideHeader(side);
+    updateTop();
+  }
+  function nextSide(side) {
+    var P = side === 'L' ? PK.left : PK.right;
+    P.locked = false;
+    P.idx++;
+    if (P.idx >= P.seq.length) {
+      P.done = true; P.locked = true;
+      renderSide(side);
+      checkAllDone();
+      return;
+    }
+    renderSide(side);
+  }
+  function renderSideHeader(side) {
+    var P = side === 'L' ? PK.left : PK.right;
+    $(side + 'Score').textContent = P.score;
+    var st = $(side + 'Streak');
+    st.classList.toggle('off', P.streak < 2);
+    st.textContent = '🔥 ' + P.streak + ' 连击';
+    $(side + 'Prog').style.width = (P.seq.length ? Math.round(P.idx / P.seq.length * 100) : 0) + '%';
+    $(side + 'ProgText').textContent = '已完成 ' + P.idx + ' / ' + P.seq.length + ' 题';
+  }
+  function updateTop() {
+    var L = PK.left.score, R = PK.right.score;
+    var total = Math.max(L + R, 1);
+    $('pkBarL').style.width = Math.max(8, Math.round(L / Math.max(L + R, CFG.count) * 100)) + '%';
+    $('pkBarL').textContent = L;
+    $('pkBarR').textContent = R;
+    var lt = $('pkLeadTag');
+    if (L === R) { lt.textContent = '🤝 平局 ' + L + ':' + R; lt.className = 'lead-tag tie'; }
+    else if (L > R) { lt.textContent = '🏆 领先：' + PK.left.name + '（' + L + ':' + R + '）'; lt.className = 'lead-tag'; }
+    else { lt.textContent = '🏆 领先：' + PK.right.name + '（' + R + ':' + L + '）'; lt.className = 'lead-tag'; }
+  }
+
+  /* ================= 计时 ================= */
+  function startTimer() {
+    stopTimer();
+    updateTimerDisplay();
+    PK.timerId = setInterval(function () {
+      PK.leftSec--;
+      updateTimerDisplay();
+      if (PK.leftSec <= 0) { stopTimer(); timeUp(); }
+    }, 1000);
+  }
+  function stopTimer() { if (PK.timerId) { clearInterval(PK.timerId); PK.timerId = null; } }
+  function updateTimerDisplay() {
+    var s = Math.max(0, PK.leftSec), m = Math.floor(s / 60), ss = s % 60;
+    var t = $('pkTimer');
+    t.textContent = (m < 10 ? '0' : '') + m + ':' + (ss < 10 ? '0' : '') + ss;
+    t.classList.toggle('warn', s <= 60 && s > 10);
+    t.classList.toggle('critical', s <= 10);
+  }
+  function timeUp() {
+    if (PK.state !== 'running') return;
+    PK.left.locked = true; PK.right.locked = true;
+    toast('⏰ 时间到！两侧锁卷');
+    endMatch('timeup');
+  }
+  function checkAllDone() {
+    if (PK.left.done && PK.right.done) { endMatch('both'); return; }
+    if (PK.left.done || PK.right.done) {
+      toast('🎉 ' + (PK.left.done ? PK.left.name : PK.right.name) + ' 已完成！另一方继续作答');
+    }
+  }
+
+  /* ================= 结束 ================= */
+  function endMatch(reason) {
+    if (PK.state !== 'running') return;
+    PK.state = 'finished';
+    stopTimer();
+    PK.left.done = true; PK.right.done = true;
+    PK.left.locked = true; PK.right.locked = true;
+    renderSide('L'); renderSide('r');
+    var L = PK.left, R = PK.right;
+    var winner = L.score > R.score ? 'L' : (R.score > L.score ? 'R' : 'tie');
+    var dur = Math.round((Date.now() - PK.leftTs) / 1000);
+    saveMatch({
+      ts: Date.now(), qcount: L.seq.length, durationSec: dur, reason: reason,
+      left: { sid: L.sid, name: L.name, score: L.score, answered: L.idx, streakMax: 0 },
+      right: { sid: R.sid, name: R.name, score: R.score, answered: R.idx, streakMax: 0 },
+      winner: winner
+    });
+    renderEnd(winner, reason);
+    SFX.finish();
+    var line;
+    if (winner === 'tie') line = '比赛结束，左边选手' + L.name + '得分' + L.score + '分，右边选手' + R.name + '得分' + R.score + '分，两人分数相同，平局！大家都很棒！';
+    else {
+      var w = winner === 'L' ? L : R, l2 = winner === 'L' ? R : L;
+      line = '比赛结束，左边选手' + L.name + '得分' + L.score + '分，右边选手' + R.name + '得分' + R.score + '分。' + w.name + '选手更厉害！' + l2.name + '选手继续加油！';
+    }
+    setTimeout(function () { tts(line); }, 600);
+  }
+
+  /* ================= 结束弹窗 ================= */
+  function renderEnd(winner, reason) {
+    var L = PK.left, R = PK.right;
+    var winLine = winner === 'tie' ? '🤝 平局！' : ('🏆 ' + (winner === 'L' ? L.name : R.name) + ' 获胜！');
+    $('endWin').textContent = winLine;
+    $('endLScore').textContent = L.score;
+    $('endRScore').textContent = R.score;
+    $('endLName').textContent = L.name;
+    $('endRName').textContent = R.name;
+    // 错题复盘
+    var rv = $('endReview');
+    rv.innerHTML = '';
+    [['L', L], ['r', R]].forEach(function (pair) {
+      var side = pair[0], P = pair[1];
+      var wrongs = [];
+      P.answered.forEach(function (a, i) {
+        if (!a || a.right) return;
+        var q = BANK[P.seq[i]];
+        wrongs.push({ q: q, sel: a.sel });
+      });
+      if (!wrongs.length) return;
+      var h = document.createElement('div'); h.className = 'review-h'; h.textContent = '📕 ' + P.name + ' 的错题（' + wrongs.length + '）';
+      rv.appendChild(h);
+      wrongs.forEach(function (w) {
+        var d = document.createElement('div'); d.className = 'review-item';
+        d.innerHTML = '<div class="rs">' + esc(w.q.s) + '</div>' +
+          '<div class="ra">你的答案：<b style="color:#fca5a5">' + esc(w.sel.join('') || '未答') + '</b>　正确答案：<b>' + esc(w.q.a) + '</b></div>';
+        rv.appendChild(d);
+      });
+    });
+    if (!rv.children.length) rv.innerHTML = '<div class="muted" style="text-align:center;padding:10px">🎉 双方都没有错题！</div>';
+    $('endMask').classList.remove('hidden');
+    $('btnStart').disabled = false;
+  }
+
+  /* ================= 排行榜 ================= */
+  function aggregate() {
+    var map = {};
+    MATCHES.forEach(function (m) {
+      [['L', m.left, m.right], ['r', m.right, m.left]].forEach(function (p) {
+        var sid = p[1].sid, name = p[1].name;
+        if (!sid) return;
+        var s = map[sid] = map[sid] || { sid: sid, name: name, games: 0, wins: 0, score: 0 };
+        s.games++; s.score += p[1].score;
+        if (m.winner === p[0]) s.wins++;
+        if (!s.name && name) s.name = name;
+      });
+    });
+    return Object.keys(map).map(function (k) { return map[k]; });
+  }
+  function renderLeaderboard(sortBy) {
+    var list = aggregate();
+    var sb = sortBy || 'score';
+    list.sort(function (a, b) { return b[sb] - a[sb] || b.wins - a.wins; });
+    var tb = $('lbBody'); tb.innerHTML = '';
+    if (!list.length) { tb.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center;padding:18px">还没有比赛记录——完成一场 PK 后这里会出现排行榜</td></tr>'; return; }
+    list.forEach(function (s, i) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + (i + 1) + '</td><td>' + esc(s.sid) + '</td><td>' + esc(s.name) + '</td><td>' + s.games + '</td><td>' + s.wins + '</td><td><b>' + s.score + '</b></td><td>' + (s.games ? (s.score / s.games).toFixed(1) : '0') + '</td>';
+      tb.appendChild(tr);
+    });
+  }
+
+  /* ================= 花名册管理 ================= */
+  var rosterEditing = null; // 正在编辑的行索引
+  function renderRoster() {
+    var tb = $('pkRosterBody'); tb.innerHTML = '';
+    ROSTER.forEach(function (s, i) {
+      var tr = document.createElement('tr');
+      if (rosterEditing === i) {
+        tr.innerHTML = '<td>' + (i + 1) + '</td>' +
+          '<td><input id="reSid" value="' + esc(s.sid) + '"></td>' +
+          '<td><input id="reName" value="' + esc(s.name) + '"></td>' +
+          '<td><button class="rbtn save" id="reSave">保存</button></td>';
+        tb.appendChild(tr);
+        $('reSave').onclick = function () {
+          var sid = $('reSid').value.trim().slice(0, 20), name = $('reName').value.trim().slice(0, 24);
+          if (!name) { toast('姓名不能为空'); return; }
+          ROSTER[i] = { sid: sid, name: name };
+          rosterEditing = null; saveRoster(); renderRoster(); renderHome();
+        };
+      } else {
+        tr.innerHTML = '<td>' + (i + 1) + '</td><td>' + esc(s.sid) + '</td><td>' + esc(s.name) + '</td>' +
+          '<td><button class="rbtn save" data-edit="' + i + '">编辑</button><button class="rbtn del" data-del="' + i + '">删除</button></td>';
+        tb.appendChild(tr);
+      }
+    });
+    if (!ROSTER.length) tb.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center;padding:14px">花名册为空——手动添加或批量粘贴导入</td></tr>';
+    tb.querySelectorAll('[data-edit]').forEach(function (b) { b.onclick = function () { rosterEditing = parseInt(b.getAttribute('data-edit'), 10); renderRoster(); }; });
+    tb.querySelectorAll('[data-del]').forEach(function (b) {
+      b.onclick = function () {
+        var i = parseInt(b.getAttribute('data-del'), 10);
+        if (confirm('删除学生「' + ROSTER[i].name + '」？（历史成绩保留）')) { ROSTER.splice(i, 1); saveRoster(); renderRoster(); renderHome(); }
+      };
+    });
+    $('rosterCountLabel').textContent = '共 ' + ROSTER.length + ' 名学生';
+  }
+
+  /* ================= 事件绑定 ================= */
+  function bind() {
+    $('btnStart').onclick = startPK;
+    $('btnReset').onclick = function () {
+      if (PK.state === 'running' && !confirm('本轮还在进行中，确定重置？')) return;
+      resetRound();
+    };
+    $('btnLb').onclick = function () { renderLeaderboard('score'); $('lbMask').classList.remove('hidden'); };
+    $('lbClose').onclick = function () { $('lbMask').classList.add('hidden'); };
+    $('lbFromEnd').onclick = function () { renderLeaderboard('score'); $('endMask').classList.add('hidden'); $('lbMask').classList.remove('hidden'); };
+    $('lbSortScore').onclick = function () { renderLeaderboard('score'); };
+    $('lbSortWins').onclick = function () { renderLeaderboard('wins'); };
+    $('btnRoster').onclick = function () { rosterEditing = null; renderRoster(); $('pkRosterMask').classList.remove('hidden'); };
+    $('rosterClose').onclick = function () { $('pkRosterMask').classList.add('hidden'); renderHome(); };
+    $('rosterAdd').onclick = function () {
+      var sid = $('pkNewSid').value.trim().slice(0, 20), name = $('pkNewName').value.trim().slice(0, 24);
+      if (!name) { toast('姓名不能为空'); return; }
+      if (ROSTER.some(function (s) { return s.name === name; })) { toast('已有同名学生'); return; }
+      ROSTER.push({ sid: sid, name: name });
+      saveRoster(); renderRoster();
+      $('pkNewSid').value = ''; $('pkNewName').value = '';
+    };
+    $('rosterImport').onclick = function () {
+      var list = parseRoster($('pkRosterPaste').value);
+      if (!list.length) { toast('没有解析出有效名单'); return; }
+      list.forEach(function (s) {
+        if (!ROSTER.some(function (x) { return x.name === s.name; })) ROSTER.push(s);
+      });
+      saveRoster(); renderRoster();
+      $('pkRosterPaste').value = '';
+      toast('批量导入完成，当前 ' + ROSTER.length + ' 人');
+    };
+    $('btnCfg').onclick = function () {
+      $('cfgPaste').value = '';
+      $('cfgMask').classList.remove('hidden');
+    };
+    $('cfgClose').onclick = function () { $('cfgMask').classList.add('hidden'); };
+    $('cfgFetch').onclick = function () {
+      var u = $('cfgBankUrl').value.trim();
+      if (!u) { toast('先填题库地址'); return; }
+      fetchBank(u);
+    };
+    $('cfgPasteApply').onclick = function () { pasteBank($('cfgPaste').value); };
+    $('cfgSave').onclick = function () {
+      CFG.count = Math.max(1, Math.min(50, parseInt($('pkCfgCount').value, 10) || 10));
+      CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkCfgMinutes').value, 10) || 10));
+      saveCfg(); renderHome(); toast('已保存');
+      $('cfgMask').classList.add('hidden');
+    };
+    $('btnSnd').onclick = function () {
+      sndOn = !sndOn;
+      Store.save('pk.snd', sndOn);
+      $('btnSnd').textContent = sndOn ? '🔊 音效开' : '🔇 音效关';
+      if (sndOn) { SFX.unlock(); SFX.correct(); }
+    };
+    $('endClose').onclick = function () { $('endMask').classList.add('hidden'); resetRound(); };
+    $('pkSelL').onchange = renderHome;
+    $('pkSelR').onchange = renderHome;
+    // 恢复音效开关文案
+    $('btnSnd').textContent = sndOn ? '🔊 音效开' : '🔇 音效关';
+  }
+  function resetRound() {
+    PK.state = 'idle';
+    PK.left = null; PK.right = null;
+    stopTimer();
+    $('endMask').classList.add('hidden');
+    $('pkArena').classList.add('hidden');
+    $('pkSetup').classList.remove('hidden');
+    $('btnStart').disabled = false;
+    $('btnReset').disabled = true;
+    $('pkTimer').textContent = '10:00';
+    $('pkTimer').className = 'timer';
+    $('pkLeadTag').textContent = '🏆 待开赛';
+    $('pkBarL').style.width = '50%'; $('pkBarL').textContent = '0';
+    $('pkBarR').textContent = '0';
+    renderHome();
+  }
+
+  /* ================= 启动 ================= */
+  // 刷新钩子（主站每次进入 PK 页调用）：重读存储 + 重渲染选人下拉
+  window.__PK_REFRESH = function () {
+    try {
+      var r = Store.load(K_ROSTER, []);
+      if (Array.isArray(r)) ROSTER = r;
+      var m = Store.load(K_MATCHES, []);
+      if (Array.isArray(m)) MATCHES = m;
+    } catch (e) { }
+    try { renderHome(); } catch (e) { if (window.console) console.error('[PK] renderHome:', e); }
+  };
+
+  // 初始化（逐项容错，单点失败不阻断后续）
+  document.addEventListener('click', function () { try { SFX.unlock(); } catch (e) { } }, { once: true });
+  if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); } catch (e) { } }
+  try { renderHome(); } catch (e) { if (window.console) console.error('[PK] init renderHome:', e); }
+  try { bind(); } catch (e) { if (window.console) console.error('[PK] bind:', e); }
+  try { $('btnSnd').textContent = sndOn ? '🔊 音效开' : '🔇 音效关'; } catch (e) { }
+};
 </script>
 </body>
 </html>

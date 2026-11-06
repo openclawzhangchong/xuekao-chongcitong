@@ -2,8 +2,10 @@
  * 双人课堂 PK 答题 · 应用逻辑
  * 存储适配层：localStorage 实现（D1 预留同接口，见 Store 注释）
  * ===================================================================== */
-(function () {
+window.__PK_MOUNT = function () {
   'use strict';
+  if (window.__PK_MOUNTED) { window.__PK_REFRESH && window.__PK_REFRESH(); return; }
+  window.__PK_MOUNTED = true;
   var $ = function (id) { return document.getElementById(id); };
   function esc(s) { return (s == null ? '' : String(s)).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
@@ -131,7 +133,7 @@
   if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = function () { };
 
   function toast(msg) {
-    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    var t = $('pkToast'); t.textContent = msg; t.classList.add('show');
     clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, 2200);
   }
 
@@ -170,22 +172,22 @@
   }
   function renderHome() {
     $('bankInfo').textContent = '题库：' + bankInfo();
-    fillSelect('selL', $('selR').value, PK.left && PK.left.sid);
-    fillSelect('selR', $('selL').value, PK.right && PK.right.sid);
-    $('cfgCount').value = CFG.count;
-    $('cfgMinutes').value = CFG.minutes;
+    fillSelect('pkSelL', $('pkSelR').value, PK.left && PK.left.sid);
+    fillSelect('pkSelR', $('pkSelL').value, PK.right && PK.right.sid);
+    $('pkCfgCount').value = CFG.count;
+    $('pkCfgMinutes').value = CFG.minutes;
   }
 
   /* ================= 开始 PK ================= */
   function startPK() {
-    var lSid = $('selL').value, rSid = $('selR').value;
+    var lSid = $('pkSelL').value, rSid = $('pkSelR').value;
     if (!lSid || !rSid) { toast('请先选择左右两名选手'); return; }
     var L = ROSTER.filter(function (s) { return s.sid === lSid; })[0];
     var R = ROSTER.filter(function (s) { return s.sid === rSid; })[0];
     if (!L || !R) { toast('选手不存在，请重新选择'); return; }
     SFX.unlock();
-    CFG.count = Math.max(1, Math.min(50, parseInt($('cfgCount').value, 10) || 10));
-    CFG.minutes = Math.max(1, Math.min(60, parseInt($('cfgMinutes').value, 10) || 10));
+    CFG.count = Math.max(1, Math.min(50, parseInt($('pkCfgCount').value, 10) || 10));
+    CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkCfgMinutes').value, 10) || 10));
     saveCfg();
     var qs = pickQuestions(CFG.count);
     PK.left = sideObj('L', lSid, L.name); PK.right = sideObj('r', rSid, R.name);
@@ -195,8 +197,8 @@
     PK.durationSec = CFG.minutes * 60;
     PK.leftSec = PK.durationSec;
     PK.leftTs = Date.now();
-    $('setup').classList.add('hidden');
-    $('arena').classList.remove('hidden');
+    $('pkSetup').classList.add('hidden');
+    $('pkArena').classList.remove('hidden');
     $('btnStart').disabled = true;
     $('btnReset').disabled = false;
     renderSide('L'); renderSide('r');
@@ -208,7 +210,7 @@
   /* ================= 面板渲染 ================= */
   function renderSide(side) {
     var P = side === 'L' ? PK.left : PK.right;
-    var root = $(side === 'L' ? 'panelL' : 'panelR');
+    var root = $(side === 'L' ? 'pkPanelL' : 'pkPanelR');
     var i = P.idx;
     root.classList.toggle('locked', P.locked || P.done);
     root.classList.toggle('done', P.done);
@@ -265,7 +267,7 @@
     }
     // 高亮
     var selNow = P.answered[P.idx] ? P.answered[P.idx].sel : [];
-    var root = $(side === 'L' ? 'panelL' : 'panelR');
+    var root = $(side === 'L' ? 'pkPanelL' : 'pkPanelR');
     root.querySelectorAll('.opt').forEach(function (o) {
       o.classList.toggle('sel', selNow.indexOf(o.getAttribute('data-key')) !== -1);
     });
@@ -286,7 +288,7 @@
     P.answered[P.idx] = { sel: sel, right: right };
     if (right) { P.score++; P.streak++; } else { P.streak = 0; }
     // 判定反馈
-    var root = $(side === 'L' ? 'panelL' : 'panelR');
+    var root = $(side === 'L' ? 'pkPanelL' : 'pkPanelR');
     root.querySelectorAll('.opt').forEach(function (o) {
       var k = o.getAttribute('data-key');
       o.classList.add('dim');
@@ -341,10 +343,10 @@
   function updateTop() {
     var L = PK.left.score, R = PK.right.score;
     var total = Math.max(L + R, 1);
-    $('barL').style.width = Math.max(8, Math.round(L / Math.max(L + R, CFG.count) * 100)) + '%';
-    $('barL').textContent = L;
-    $('barR').textContent = R;
-    var lt = $('leadTag');
+    $('pkBarL').style.width = Math.max(8, Math.round(L / Math.max(L + R, CFG.count) * 100)) + '%';
+    $('pkBarL').textContent = L;
+    $('pkBarR').textContent = R;
+    var lt = $('pkLeadTag');
     if (L === R) { lt.textContent = '🤝 平局 ' + L + ':' + R; lt.className = 'lead-tag tie'; }
     else if (L > R) { lt.textContent = '🏆 领先：' + PK.left.name + '（' + L + ':' + R + '）'; lt.className = 'lead-tag'; }
     else { lt.textContent = '🏆 领先：' + PK.right.name + '（' + R + ':' + L + '）'; lt.className = 'lead-tag'; }
@@ -363,7 +365,7 @@
   function stopTimer() { if (PK.timerId) { clearInterval(PK.timerId); PK.timerId = null; } }
   function updateTimerDisplay() {
     var s = Math.max(0, PK.leftSec), m = Math.floor(s / 60), ss = s % 60;
-    var t = $('timer');
+    var t = $('pkTimer');
     t.textContent = (m < 10 ? '0' : '') + m + ':' + (ss < 10 ? '0' : '') + ss;
     t.classList.toggle('warn', s <= 60 && s > 10);
     t.classList.toggle('critical', s <= 10);
@@ -475,7 +477,7 @@
   /* ================= 花名册管理 ================= */
   var rosterEditing = null; // 正在编辑的行索引
   function renderRoster() {
-    var tb = $('rosterBody'); tb.innerHTML = '';
+    var tb = $('pkRosterBody'); tb.innerHTML = '';
     ROSTER.forEach(function (s, i) {
       var tr = document.createElement('tr');
       if (rosterEditing === i) {
@@ -519,24 +521,24 @@
     $('lbFromEnd').onclick = function () { renderLeaderboard('score'); $('endMask').classList.add('hidden'); $('lbMask').classList.remove('hidden'); };
     $('lbSortScore').onclick = function () { renderLeaderboard('score'); };
     $('lbSortWins').onclick = function () { renderLeaderboard('wins'); };
-    $('btnRoster').onclick = function () { rosterEditing = null; renderRoster(); $('rosterMask').classList.remove('hidden'); };
-    $('rosterClose').onclick = function () { $('rosterMask').classList.add('hidden'); renderHome(); };
+    $('btnRoster').onclick = function () { rosterEditing = null; renderRoster(); $('pkRosterMask').classList.remove('hidden'); };
+    $('rosterClose').onclick = function () { $('pkRosterMask').classList.add('hidden'); renderHome(); };
     $('rosterAdd').onclick = function () {
-      var sid = $('newSid').value.trim().slice(0, 20), name = $('newName').value.trim().slice(0, 24);
+      var sid = $('pkNewSid').value.trim().slice(0, 20), name = $('pkNewName').value.trim().slice(0, 24);
       if (!name) { toast('姓名不能为空'); return; }
       if (ROSTER.some(function (s) { return s.name === name; })) { toast('已有同名学生'); return; }
       ROSTER.push({ sid: sid, name: name });
       saveRoster(); renderRoster();
-      $('newSid').value = ''; $('newName').value = '';
+      $('pkNewSid').value = ''; $('pkNewName').value = '';
     };
     $('rosterImport').onclick = function () {
-      var list = parseRoster($('rosterPaste').value);
+      var list = parseRoster($('pkRosterPaste').value);
       if (!list.length) { toast('没有解析出有效名单'); return; }
       list.forEach(function (s) {
         if (!ROSTER.some(function (x) { return x.name === s.name; })) ROSTER.push(s);
       });
       saveRoster(); renderRoster();
-      $('rosterPaste').value = '';
+      $('pkRosterPaste').value = '';
       toast('批量导入完成，当前 ' + ROSTER.length + ' 人');
     };
     $('btnCfg').onclick = function () {
@@ -551,8 +553,8 @@
     };
     $('cfgPasteApply').onclick = function () { pasteBank($('cfgPaste').value); };
     $('cfgSave').onclick = function () {
-      CFG.count = Math.max(1, Math.min(50, parseInt($('cfgCount').value, 10) || 10));
-      CFG.minutes = Math.max(1, Math.min(60, parseInt($('cfgMinutes').value, 10) || 10));
+      CFG.count = Math.max(1, Math.min(50, parseInt($('pkCfgCount').value, 10) || 10));
+      CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkCfgMinutes').value, 10) || 10));
       saveCfg(); renderHome(); toast('已保存');
       $('cfgMask').classList.add('hidden');
     };
@@ -563,8 +565,8 @@
       if (sndOn) { SFX.unlock(); SFX.correct(); }
     };
     $('endClose').onclick = function () { $('endMask').classList.add('hidden'); resetRound(); };
-    $('selL').onchange = renderHome;
-    $('selR').onchange = renderHome;
+    $('pkSelL').onchange = renderHome;
+    $('pkSelR').onchange = renderHome;
     // 恢复音效开关文案
     $('btnSnd').textContent = sndOn ? '🔊 音效开' : '🔇 音效关';
   }
@@ -573,22 +575,34 @@
     PK.left = null; PK.right = null;
     stopTimer();
     $('endMask').classList.add('hidden');
-    $('arena').classList.add('hidden');
-    $('setup').classList.remove('hidden');
+    $('pkArena').classList.add('hidden');
+    $('pkSetup').classList.remove('hidden');
     $('btnStart').disabled = false;
     $('btnReset').disabled = true;
-    $('timer').textContent = '10:00';
-    $('timer').className = 'timer';
-    $('leadTag').textContent = '🏆 待开赛';
-    $('barL').style.width = '50%'; $('barL').textContent = '0';
-    $('barR').textContent = '0';
+    $('pkTimer').textContent = '10:00';
+    $('pkTimer').className = 'timer';
+    $('pkLeadTag').textContent = '🏆 待开赛';
+    $('pkBarL').style.width = '50%'; $('pkBarL').textContent = '0';
+    $('pkBarR').textContent = '0';
     renderHome();
   }
 
   /* ================= 启动 ================= */
-  document.addEventListener('click', function () { SFX.unlock(); }, { once: true });
+  // 刷新钩子（主站每次进入 PK 页调用）：重读存储 + 重渲染选人下拉
+  window.__PK_REFRESH = function () {
+    try {
+      var r = Store.load(K_ROSTER, []);
+      if (Array.isArray(r)) ROSTER = r;
+      var m = Store.load(K_MATCHES, []);
+      if (Array.isArray(m)) MATCHES = m;
+    } catch (e) { }
+    try { renderHome(); } catch (e) { if (window.console) console.error('[PK] renderHome:', e); }
+  };
+
+  // 初始化（逐项容错，单点失败不阻断后续）
+  document.addEventListener('click', function () { try { SFX.unlock(); } catch (e) { } }, { once: true });
   if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); } catch (e) { } }
-  renderHome();
-  bind();
-  $('btnSnd').textContent = sndOn ? '🔊 音效开' : '🔇 音效关';
-})();
+  try { renderHome(); } catch (e) { if (window.console) console.error('[PK] init renderHome:', e); }
+  try { bind(); } catch (e) { if (window.console) console.error('[PK] bind:', e); }
+  try { $('btnSnd').textContent = sndOn ? '🔊 音效开' : '🔇 音效关'; } catch (e) { }
+};

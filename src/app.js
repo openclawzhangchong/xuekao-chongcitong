@@ -266,11 +266,26 @@
   }
 
   /* ---------- 面板切换 ---------- */
-  var TABS = ['home', 'setup', 'wrong', 'diag'];
+  var TABS = ['home', 'setup', 'wrong', 'diag', 'pk'];
   function showPanel(name) {
-    TABS.forEach(function (t) { $(t).classList.add('hidden'); });
-    ['quiz', 'result'].forEach(function (t) { $(t).classList.add('hidden'); });
-    $(name).classList.remove('hidden');
+    TABS.forEach(function (t) {
+      if (t === 'pk') return; // PK 容器 id 为 pkPage，单独处理
+      var el = $(t); if (el) el.classList.add('hidden');
+    });
+    var pkEl = document.getElementById('pkPage');
+    if (pkEl) pkEl.classList.add('hidden');
+    if (name === 'pk') {
+      if (pkEl) { pkEl.classList.remove('hidden'); }
+      if (window.__PK_MOUNT) window.__PK_MOUNT();
+      if (window.__PK_REFRESH) window.__PK_REFRESH();
+      var tb = document.getElementById('tabs'); if (tb) tb.classList.remove('hidden');
+      var nb = document.getElementById('navbar'); if (nb) nb.classList.add('hidden');
+      document.querySelectorAll('.tab').forEach(function (el) { el.classList.toggle('on', el.getAttribute('data-t') === 'pk'); });
+      window.scrollTo(0, 0);
+      return;
+    }
+    ['quiz', 'result'].forEach(function (t) { var el = $(t); if (el) el.classList.add('hidden'); });
+    var target = $(name); if (target) target.classList.remove('hidden');
     var inQuiz = (name === 'quiz' || name === 'result');
     $('tabs').classList.toggle('hidden', inQuiz);
     $('navbar').classList.toggle('hidden', !inQuiz);
@@ -372,6 +387,7 @@
     on('entCardWrong', 'onclick', function () { switchTab('wrong'); });
     on('entCardDiag', 'onclick', function () { switchTab('diag'); });
     on('entCardSim', 'onclick', function () { startSession({ kind: 'sim' }); });
+    on('entCardPk', 'onclick', function () { switchTab('pk'); });
     on('wrongStartBtn', 'onclick', function () { startSession({ kind: 'wrong' }); });
     on('weakTrainBtn', 'onclick', function () { startSession({ kind: 'weak' }); });
     // 学号弹窗（班级模式）
