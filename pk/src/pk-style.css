@@ -162,6 +162,14 @@ body.pk-mode .app{max-width:none}
 .pkmod.on{border-color:var(--pri);background:var(--pri-ll)}
 .pkmod.on .ck{background:var(--pri);border-color:var(--pri)}
 .pkmods .noMods{grid-column:1/-1;color:var(--sub);font-size:13px}
+/* 开赛设置面板里的章节选择区（与题量/计时同级，一眼可见、点了就生效） */
+.modpick{margin:10px 0 6px;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:10px 0}
+.modpick-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:800;font-size:15px;margin-bottom:9px}
+.modpick-h .muted{font-weight:700;font-size:13px}
+.modpick-quick{margin-left:auto;display:flex;gap:6px}
+.modpick-quick .tbtn{padding:5px 12px;font-size:13px}
+.modpick-note{margin-top:8px;font-size:12px;color:var(--sub)}
+.modpick .pkmods{grid-template-columns:1fr 1fr}
 .toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:80;background:var(--gold);
   color:#1f2937;font-weight:800;padding:10px 22px;border-radius:12px;font-size:16px;display:none}
 .toast.show{display:block;animation:tin .3s}

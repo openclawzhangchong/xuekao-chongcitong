@@ -617,6 +617,14 @@ body.pk-mode .app{max-width:none}
 .pkmod.on{border-color:var(--pri);background:var(--pri-ll)}
 .pkmod.on .ck{background:var(--pri);border-color:var(--pri)}
 .pkmods .noMods{grid-column:1/-1;color:var(--sub);font-size:13px}
+/* 开赛设置面板里的章节选择区（与题量/计时同级，一眼可见、点了就生效） */
+.modpick{margin:10px 0 6px;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:10px 0}
+.modpick-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:800;font-size:15px;margin-bottom:9px}
+.modpick-h .muted{font-weight:700;font-size:13px}
+.modpick-quick{margin-left:auto;display:flex;gap:6px}
+.modpick-quick .tbtn{padding:5px 12px;font-size:13px}
+.modpick-note{margin-top:8px;font-size:12px;color:var(--sub)}
+.modpick .pkmods{grid-template-columns:1fr 1fr}
 .toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:80;background:var(--gold);
   color:#1f2937;font-weight:800;padding:10px 22px;border-radius:12px;font-size:16px;display:none}
 .toast.show{display:block;animation:tin .3s}
@@ -914,10 +922,20 @@ body.pk-mode .app{max-width:none}
   <div class="panel left" style="min-height:auto">
     <div class="phead"><span class="pname">📋 开赛设置</span></div>
     <div style="font-size:15px;line-height:2">
-      ① 上方选择左右两名选手（花名册可选，可点「管理花名册」增删）<br>
-      ② 题量：<input id="pkCfgCount" value="10" style="width:60px;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 9px;font-size:15px"> 题　计时：<input id="pkCfgMinutes" value="10" style="width:60px;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 9px;font-size:15px"> 分钟<br>
-      ③ 点右上「🚀 开始 PK」——两名选手各自独立答题，同批题目各自乱序<br>
-      ④ 每题 1 分，多选题全部选对才得分；先答完的一方等待对手，倒计时归零双侧锁卷
+      ① 上方选择左右两名选手（花名册可选，可点「管理花名册」增删，或点「🎲 随机匹配」当场抽两人）<br>
+      ② 题量：<input id="pkCfgCount" value="10" style="width:60px;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 9px;font-size:15px"> 题　计时：<input id="pkCfgMinutes" value="10" style="width:60px;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 9px;font-size:15px"> 分钟
+    </div>
+    <div class="modpick">
+      <div class="modpick-h">③ 出题章节
+        <span class="muted" id="pkModsCount"></span>
+        <span class="modpick-quick"><button class="tbtn" id="pkModsAll">全选</button> <button class="tbtn" id="pkModsNone">清空</button></span>
+      </div>
+      <div class="pkmods" id="pkCfgMods"></div>
+      <div class="modpick-note">点一下即生效，不用保存。全勾＝整个题库；一都不勾就不能开赛。</div>
+    </div>
+    <div style="font-size:15px;line-height:2">
+      ④ 点右上「🚀 开始 PK」——两名选手各自独立答题，同批题目各自乱序<br>
+      ⑤ 每题 1 分，多选题全部选对才得分；先答完的一方等待对手，倒计时归零双侧锁卷
     </div>
   </div>
   <div class="panel right" style="min-height:auto">
@@ -1000,14 +1018,6 @@ body.pk-mode .app{max-width:none}
     <div class="set-grid">
       <div class="set-item"><label>默认题量（1-50）</label><input id="pkDlgCount" value="10"></div>
       <div class="set-item"><label>默认计时（分钟）</label><input id="pkDlgMinutes" value="10"></div>
-      <div class="set-item set-full"><label>出题章节（勾选后只从选中章节抽题；全勾 = 整个题库）</label>
-        <div class="pkmods" id="pkCfgMods"></div>
-        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <button class="tbtn" id="pkModsAll">全选</button>
-          <button class="tbtn" id="pkModsNone">清空</button>
-          <span class="muted" id="pkModsCount"></span>
-        </div>
-      </div>
       <div class="set-item set-full"><label>通道②：线上题库地址（已预置，一般无需修改）</label>
         <input id="cfgBankUrl" value="">
         <div style="margin-top:8px"><button class="tbtn" id="cfgFetch">🌐 拉取题库</button><span class="muted" id="bankUrlHint" style="margin-left:10px"></span></div>
@@ -2943,7 +2953,7 @@ window.__PK_MOUNT = function () {
   function bankInfo() {
     var base = BANK.length + ' 题' + (window.BANK_VER ? '（' + window.BANK_VER + '）' : '');
     var pool = bankPool();
-    if (pool.length === BANK.length) return base;
+    if (pool.length === BANK.length) return base + ' · 全库';
     return base + ' · 已选 ' + selectedModCount() + ' 章 ' + pool.length + ' 题';
   }
   function setBank(arr, from) {
@@ -3144,6 +3154,7 @@ window.__PK_MOUNT = function () {
     fillSelect($('pkSelR'), pickL, pickR);
     $('pkCfgCount').value = CFG.count;
     $('pkCfgMinutes').value = CFG.minutes;
+    renderModBox();
   }
 
   /* ================= 随机匹配 =================
@@ -3169,7 +3180,7 @@ window.__PK_MOUNT = function () {
     CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkCfgMinutes').value, 10) || 10));
     saveCfg();
     var qs = pickQuestions(CFG.count);
-    if (!qs.length) { toast('所选章节里没有题目，请在「⚙️ 设置」重新勾选章节'); return; }
+    if (!qs.length) { toast('没有勾中任何题目，请在「开赛设置」里勾上出题章节'); return; }
     if (qs.length < CFG.count) { toast('所选章节只有 ' + qs.length + ' 题，本轮按 ' + qs.length + ' 题进行'); }
     PK.left = sideObj('L', L.sid, L.name); PK.right = sideObj('r', R.sid, R.name);
     // seq 存题目对象本身。早先存的是 BANK 下标 0..n-1，随机抽题结果被丢弃，
@@ -3524,22 +3535,22 @@ window.__PK_MOUNT = function () {
     $('rosterCountLabel').textContent = '共 ' + ROSTER.length + ' 名学生' + (ROSTER.length === DEFAULT_ROSTER.length ? '（' + DEFAULT_CLASS_NAME + '）' : '');
   }
 
-  /* ================= 章节勾选（设置弹窗） =================
-   * 弹窗里改的是草稿 modsDraft，点「保存默认值」才写进 CFG.mods——
-   * 跟题量/计时同一套规矩，点「✕ 关闭」不生效。
+  /* ================= 章节勾选（开赛设置面板） =================
+   * 和题量/计时同级：点一下立刻生效并落盘，没有「保存默认值」那一步。
+   * 默认全选＝整个题库，但「已选 N 章 · 可抽 X 题」必须摆在明面上，不做隐形默认。
    * ============================================ */
-  var modsDraft = null;
-  function draftFromCfg() {
-    var codes = modCodes(), d = {};
-    for (var i = 0; i < codes.length; i++) d[codes[i]] = !CFG.mods || CFG.mods[codes[i]] !== false;
-    return d;
+  function normalizeMods() {
+    var codes = modCodes(), m = CFG.mods || {}, out = {};
+    for (var i = 0; i < codes.length; i++) out[codes[i]] = m[codes[i]] !== false;
+    CFG.mods = out;
   }
   function countOn(sel) {
     var n = 0;
     for (var k in sel) if (sel[k]) n++;
     return n;
   }
-  function renderCfgMods() {
+  function renderModBox() {
+    normalizeMods();
     var box = $('pkCfgMods'); box.innerHTML = '';
     var codes = modCodes();
     if (!codes.length) {
@@ -3551,16 +3562,30 @@ window.__PK_MOUNT = function () {
     codes.forEach(function (code) {
       var meta = (window.BANK_META || []).filter(function (m) { return m.code === code; })[0] || {};
       var d = document.createElement('div');
-      d.className = 'pkmod' + (modsDraft[code] ? ' on' : '');
+      d.className = 'pkmod' + (CFG.mods[code] ? ' on' : '');
       d.setAttribute('data-code', code);
       var nm = document.createElement('span'); nm.className = 'mn'; nm.textContent = meta.disp || meta.name || code;
       var mi = document.createElement('span'); mi.className = 'mi'; mi.textContent = modCountOf(code) + ' 题';
       var ck = document.createElement('span'); ck.className = 'ck';
       d.appendChild(nm); d.appendChild(mi); d.appendChild(ck);
-      d.onclick = function () { modsDraft[code] = !modsDraft[code]; renderCfgMods(); };
+      d.onclick = function () { setMod(code, !CFG.mods[code]); };
       box.appendChild(d);
     });
-    $('pkModsCount').textContent = '已选 ' + countOn(modsDraft) + ' 章 · 可抽 ' + poolOf(modsDraft).length + ' 题';
+    var pool = bankPool();
+    $('pkModsCount').textContent = '已选 ' + countOn(CFG.mods) + ' 章 · 可抽 ' + pool.length + ' 题' +
+      (pool.length === BANK.length ? '（＝全库）' : '');
+  }
+  function setMod(code, on) {
+    normalizeMods();
+    CFG.mods[code] = on;
+    saveCfg();
+    renderHome();
+  }
+  function setAllMods(on) {
+    normalizeMods();
+    for (var k in CFG.mods) CFG.mods[k] = on;
+    saveCfg();
+    renderHome();
   }
 
   /* ================= 事件绑定 ================= */
@@ -3604,9 +3629,9 @@ window.__PK_MOUNT = function () {
     };
     $('btnCfg').onclick = function () {
       $('cfgPaste').value = '';
-      modsDraft = draftFromCfg(); renderCfgMods();
-      // 弹窗里的题量/计时是独立 id：开赛设置面板那对才是 startPK 读的，
-      // 同名会让 getElementById 只拿到面板那个，弹窗改的值永远不生效。
+      // 弹窗里的题量/计时回填当前已存值；章节勾选不在这里，在开赛设置面板
+      // 弹窗里的题量/计时用 pkDlg* 独立 id：面板那对（pkCfg*）才是 startPK 读的，
+      // 同名会让 getElementById 只拿到第一个，弹窗改的值永远不生效。
       $('pkDlgCount').value = CFG.count;
       $('pkDlgMinutes').value = CFG.minutes;
       try {
@@ -3618,8 +3643,8 @@ window.__PK_MOUNT = function () {
       $('cfgMask').classList.remove('hidden');
     };
     $('cfgClose').onclick = function () { $('cfgMask').classList.add('hidden'); };
-    $('pkModsAll').onclick = function () { for (var k in modsDraft) modsDraft[k] = true; renderCfgMods(); };
-    $('pkModsNone').onclick = function () { for (var k in modsDraft) modsDraft[k] = false; renderCfgMods(); };
+    $('pkModsAll').onclick = function () { setAllMods(true); };
+    $('pkModsNone').onclick = function () { setAllMods(false); };
     $('cfgFetch').onclick = function () {
       var u = $('cfgBankUrl').value.trim();
       if (!u) { toast('先填题库地址'); return; }
@@ -3629,9 +3654,7 @@ window.__PK_MOUNT = function () {
     $('cfgSave').onclick = function () {
       CFG.count = Math.max(1, Math.min(50, parseInt($('pkDlgCount').value, 10) || 10));
       CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkDlgMinutes').value, 10) || 10));
-      var m = {}; for (var k in modsDraft) m[k] = modsDraft[k];
-      CFG.mods = m;
-      saveCfg(); renderHome(); toast('已保存：' + CFG.count + ' 题 / ' + CFG.minutes + ' 分钟，本轮从 ' + bankPool().length + ' 题里抽');
+      saveCfg(); renderHome(); toast('已保存：' + CFG.count + ' 题 / ' + CFG.minutes + ' 分钟');
       $('cfgMask').classList.add('hidden');
     };
     $('btnSnd').onclick = function () {

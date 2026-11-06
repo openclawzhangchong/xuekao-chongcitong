@@ -84,7 +84,7 @@ window.__PK_MOUNT = function () {
   function bankInfo() {
     var base = BANK.length + ' 题' + (window.BANK_VER ? '（' + window.BANK_VER + '）' : '');
     var pool = bankPool();
-    if (pool.length === BANK.length) return base;
+    if (pool.length === BANK.length) return base + ' · 全库';
     return base + ' · 已选 ' + selectedModCount() + ' 章 ' + pool.length + ' 题';
   }
   function setBank(arr, from) {
@@ -285,6 +285,7 @@ window.__PK_MOUNT = function () {
     fillSelect($('pkSelR'), pickL, pickR);
     $('pkCfgCount').value = CFG.count;
     $('pkCfgMinutes').value = CFG.minutes;
+    renderModBox();
   }
 
   /* ================= 随机匹配 =================
@@ -310,7 +311,7 @@ window.__PK_MOUNT = function () {
     CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkCfgMinutes').value, 10) || 10));
     saveCfg();
     var qs = pickQuestions(CFG.count);
-    if (!qs.length) { toast('所选章节里没有题目，请在「⚙️ 设置」重新勾选章节'); return; }
+    if (!qs.length) { toast('没有勾中任何题目，请在「开赛设置」里勾上出题章节'); return; }
     if (qs.length < CFG.count) { toast('所选章节只有 ' + qs.length + ' 题，本轮按 ' + qs.length + ' 题进行'); }
     PK.left = sideObj('L', L.sid, L.name); PK.right = sideObj('r', R.sid, R.name);
     // seq 存题目对象本身。早先存的是 BANK 下标 0..n-1，随机抽题结果被丢弃，
@@ -665,22 +666,22 @@ window.__PK_MOUNT = function () {
     $('rosterCountLabel').textContent = '共 ' + ROSTER.length + ' 名学生' + (ROSTER.length === DEFAULT_ROSTER.length ? '（' + DEFAULT_CLASS_NAME + '）' : '');
   }
 
-  /* ================= 章节勾选（设置弹窗） =================
-   * 弹窗里改的是草稿 modsDraft，点「保存默认值」才写进 CFG.mods——
-   * 跟题量/计时同一套规矩，点「✕ 关闭」不生效。
+  /* ================= 章节勾选（开赛设置面板） =================
+   * 和题量/计时同级：点一下立刻生效并落盘，没有「保存默认值」那一步。
+   * 默认全选＝整个题库，但「已选 N 章 · 可抽 X 题」必须摆在明面上，不做隐形默认。
    * ============================================ */
-  var modsDraft = null;
-  function draftFromCfg() {
-    var codes = modCodes(), d = {};
-    for (var i = 0; i < codes.length; i++) d[codes[i]] = !CFG.mods || CFG.mods[codes[i]] !== false;
-    return d;
+  function normalizeMods() {
+    var codes = modCodes(), m = CFG.mods || {}, out = {};
+    for (var i = 0; i < codes.length; i++) out[codes[i]] = m[codes[i]] !== false;
+    CFG.mods = out;
   }
   function countOn(sel) {
     var n = 0;
     for (var k in sel) if (sel[k]) n++;
     return n;
   }
-  function renderCfgMods() {
+  function renderModBox() {
+    normalizeMods();
     var box = $('pkCfgMods'); box.innerHTML = '';
     var codes = modCodes();
     if (!codes.length) {
@@ -692,16 +693,30 @@ window.__PK_MOUNT = function () {
     codes.forEach(function (code) {
       var meta = (window.BANK_META || []).filter(function (m) { return m.code === code; })[0] || {};
       var d = document.createElement('div');
-      d.className = 'pkmod' + (modsDraft[code] ? ' on' : '');
+      d.className = 'pkmod' + (CFG.mods[code] ? ' on' : '');
       d.setAttribute('data-code', code);
       var nm = document.createElement('span'); nm.className = 'mn'; nm.textContent = meta.disp || meta.name || code;
       var mi = document.createElement('span'); mi.className = 'mi'; mi.textContent = modCountOf(code) + ' 题';
       var ck = document.createElement('span'); ck.className = 'ck';
       d.appendChild(nm); d.appendChild(mi); d.appendChild(ck);
-      d.onclick = function () { modsDraft[code] = !modsDraft[code]; renderCfgMods(); };
+      d.onclick = function () { setMod(code, !CFG.mods[code]); };
       box.appendChild(d);
     });
-    $('pkModsCount').textContent = '已选 ' + countOn(modsDraft) + ' 章 · 可抽 ' + poolOf(modsDraft).length + ' 题';
+    var pool = bankPool();
+    $('pkModsCount').textContent = '已选 ' + countOn(CFG.mods) + ' 章 · 可抽 ' + pool.length + ' 题' +
+      (pool.length === BANK.length ? '（＝全库）' : '');
+  }
+  function setMod(code, on) {
+    normalizeMods();
+    CFG.mods[code] = on;
+    saveCfg();
+    renderHome();
+  }
+  function setAllMods(on) {
+    normalizeMods();
+    for (var k in CFG.mods) CFG.mods[k] = on;
+    saveCfg();
+    renderHome();
   }
 
   /* ================= 事件绑定 ================= */
@@ -745,9 +760,9 @@ window.__PK_MOUNT = function () {
     };
     $('btnCfg').onclick = function () {
       $('cfgPaste').value = '';
-      modsDraft = draftFromCfg(); renderCfgMods();
-      // 弹窗里的题量/计时是独立 id：开赛设置面板那对才是 startPK 读的，
-      // 同名会让 getElementById 只拿到面板那个，弹窗改的值永远不生效。
+      // 弹窗里的题量/计时回填当前已存值；章节勾选不在这里，在开赛设置面板
+      // 弹窗里的题量/计时用 pkDlg* 独立 id：面板那对（pkCfg*）才是 startPK 读的，
+      // 同名会让 getElementById 只拿到第一个，弹窗改的值永远不生效。
       $('pkDlgCount').value = CFG.count;
       $('pkDlgMinutes').value = CFG.minutes;
       try {
@@ -759,8 +774,8 @@ window.__PK_MOUNT = function () {
       $('cfgMask').classList.remove('hidden');
     };
     $('cfgClose').onclick = function () { $('cfgMask').classList.add('hidden'); };
-    $('pkModsAll').onclick = function () { for (var k in modsDraft) modsDraft[k] = true; renderCfgMods(); };
-    $('pkModsNone').onclick = function () { for (var k in modsDraft) modsDraft[k] = false; renderCfgMods(); };
+    $('pkModsAll').onclick = function () { setAllMods(true); };
+    $('pkModsNone').onclick = function () { setAllMods(false); };
     $('cfgFetch').onclick = function () {
       var u = $('cfgBankUrl').value.trim();
       if (!u) { toast('先填题库地址'); return; }
@@ -770,9 +785,7 @@ window.__PK_MOUNT = function () {
     $('cfgSave').onclick = function () {
       CFG.count = Math.max(1, Math.min(50, parseInt($('pkDlgCount').value, 10) || 10));
       CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkDlgMinutes').value, 10) || 10));
-      var m = {}; for (var k in modsDraft) m[k] = modsDraft[k];
-      CFG.mods = m;
-      saveCfg(); renderHome(); toast('已保存：' + CFG.count + ' 题 / ' + CFG.minutes + ' 分钟，本轮从 ' + bankPool().length + ' 题里抽');
+      saveCfg(); renderHome(); toast('已保存：' + CFG.count + ' 题 / ' + CFG.minutes + ' 分钟');
       $('cfgMask').classList.add('hidden');
     };
     $('btnSnd').onclick = function () {

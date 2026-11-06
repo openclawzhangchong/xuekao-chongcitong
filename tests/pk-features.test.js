@@ -105,29 +105,40 @@ t('名单为空时点随机匹配不抛异常', () => {
   assert.strictEqual(p.$('pkSelL').value, '');
 });
 
-console.log('== C 章节勾选：默认=全库，过滤只影响抽题池 ==');
+console.log('== C 章节勾选：在开赛设置面板里，点一下即生效，默认全选也必须看得见 ==');
 function pickMods(p, codes) {
-  p.$('btnCfg').onclick();
   const box = p.$('pkCfgMods');
-  assert.ok(box.children.length, '设置弹窗里没有章节勾选格');
+  assert.ok(box.children.length, '开赛设置面板里没有章节勾选格');
   box.children.forEach((cell) => {
     const on = cell.classList.contains('on');
     const want = codes.indexOf(cell.getAttribute('data-code')) !== -1;
     if (on !== want) cell.onclick();
   });
-  p.$('cfgSave').onclick();
 }
 t('默认（配置里没有 mods 字段）抽题池等于全库 29 题', () => {
   const p = mount({ roster: R36 });
   assert.strictEqual(p.test().bankPool().length, 29, '默认抽题池被改变了');
 });
-t('设置弹窗按 BANK_META 渲染 9 格并标出可选题数', () => {
+t('章节勾选在开赛设置面板，不在设置弹窗里（同一功能不留两处）', () => {
+  const html = fs.readFileSync(path.join(__dirname, '..', 'pk', 'src', 'pk-markup.html'), 'utf8');
+  const setup = html.slice(html.indexOf('id="pkSetup"'), html.indexOf('id="endMask"'));
+  const cfg = html.slice(html.indexOf('id="cfgMask"'), html.indexOf('id="pkToast"'));
+  assert.ok(setup.includes('pkCfgMods'), '章节勾选没在开赛设置面板里');
+  assert.ok(!cfg.includes('pkCfgMods'), '设置弹窗里还留着章节勾选（两处重复）');
+});
+t('面板按 BANK_META 渲染 9 格并标出可选题数', () => {
   const p = mount({ roster: R36 });
-  p.$('btnCfg').onclick();
   const box = p.$('pkCfgMods');
   assert.strictEqual(box.children.length, 9, '章节格数不对：' + box.children.length);
   const m4 = box.children.filter((c) => c.getAttribute('data-code') === 'M4')[0];
   assert.ok(/3\s*题/.test(m4.textContent), 'M4 格没显示 3 题：' + m4.textContent);
+});
+t('默认全选时计数文案也必须常驻可见（不许隐形默认）', () => {
+  const p = mount({ roster: R36 });
+  const txt = p.$('pkModsCount').textContent;
+  assert.ok(/9\s*章/.test(txt), '全选时没显示章数：' + txt);
+  assert.ok(/29\s*题/.test(txt), '全选时没显示可抽题数：' + txt);
+  assert.ok(/全库/.test(txt), '全选时没说明这就是全库：' + txt);
 });
 t('只勾 M4 → 池 = M4 的 3 题 + 2 道无 m 的题', () => {
   const p = mount({ roster: R36 });
@@ -135,6 +146,7 @@ t('只勾 M4 → 池 = M4 的 3 题 + 2 道无 m 的题', () => {
   const pool = p.test().bankPool();
   assert.strictEqual(pool.length, 5, '池大小应为 5，实际 ' + pool.length);
   pool.forEach((q) => assert.ok(!q.m || q.m === 'M4', '池里混进别的章节：' + q.s));
+  assert.ok(/1\s*章/.test(p.$('pkModsCount').textContent), '计数没跟着变：' + p.$('pkModsCount').textContent);
 });
 t('教师粘贴的无 m 字段自定义题不受章节过滤影响', () => {
   const bank = [{ qt: '单选', s: '自定义 1', o: [['A', '甲']], a: 'A', e: 'x' }, { qt: '单选', s: '自定义 2', o: [['A', '甲']], a: 'A', e: 'x' }];
@@ -160,7 +172,7 @@ t('全部取消勾选且题库全带章节 → 池为 0 时拒绝开赛', () => 
   assert.ok(p.$('pkArena').classList.contains('hidden'), '池为 0 也开赛了');
   assert.ok(/章节/.test(p.$('pkToast').textContent), '提示没提到章节：' + p.$('pkToast').textContent);
 });
-t('保存默认值把勾选写进 pk.cfg', () => {
+t('点一下勾选就落盘到 pk.cfg（没有「保存默认值」这一步）', () => {
   const p = mount({ roster: R36 });
   pickMods(p, ['M6']);
   const cfg = JSON.parse(p.store.get('pk.cfg'));
@@ -170,8 +182,11 @@ t('下次打开直接读回上次的章节选择', () => {
   const saved = { 'pk.cfg': { count: 10, minutes: 10, mods: { M1: true, M2: false, M3: false, M4: false, M5: false, M6: false, M7: false, M8: false, M9: false } } };
   const p = mount({ roster: R36, storage: saved });
   assert.strictEqual(p.test().bankPool().length, 3 + 2, '读回的过滤没生效：' + p.test().bankPool().length);
+  assert.ok(/1\s*章/.test(p.$('pkModsCount').textContent), '面板计数没反映读回的勾选：' + p.$('pkModsCount').textContent);
 });
-t('选人区题库文案显示已选章节与可选题数', () => {
+t('选人区题库文案跟着显示范围（全选时也要说清是全库）', () => {
+  const all = mount({ roster: R36 });
+  assert.ok(/全库/.test(all.$('bankInfo').textContent), '全选时文案没说清：' + all.$('bankInfo').textContent);
   const p = mount({ roster: R36 });
   pickMods(p, ['M4']);
   const info = p.$('bankInfo').textContent;

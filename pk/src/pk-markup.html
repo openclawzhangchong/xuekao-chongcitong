@@ -59,10 +59,20 @@
   <div class="panel left" style="min-height:auto">
     <div class="phead"><span class="pname">📋 开赛设置</span></div>
     <div style="font-size:15px;line-height:2">
-      ① 上方选择左右两名选手（花名册可选，可点「管理花名册」增删）<br>
-      ② 题量：<input id="pkCfgCount" value="10" style="width:60px;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 9px;font-size:15px"> 题　计时：<input id="pkCfgMinutes" value="10" style="width:60px;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 9px;font-size:15px"> 分钟<br>
-      ③ 点右上「🚀 开始 PK」——两名选手各自独立答题，同批题目各自乱序<br>
-      ④ 每题 1 分，多选题全部选对才得分；先答完的一方等待对手，倒计时归零双侧锁卷
+      ① 上方选择左右两名选手（花名册可选，可点「管理花名册」增删，或点「🎲 随机匹配」当场抽两人）<br>
+      ② 题量：<input id="pkCfgCount" value="10" style="width:60px;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 9px;font-size:15px"> 题　计时：<input id="pkCfgMinutes" value="10" style="width:60px;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 9px;font-size:15px"> 分钟
+    </div>
+    <div class="modpick">
+      <div class="modpick-h">③ 出题章节
+        <span class="muted" id="pkModsCount"></span>
+        <span class="modpick-quick"><button class="tbtn" id="pkModsAll">全选</button> <button class="tbtn" id="pkModsNone">清空</button></span>
+      </div>
+      <div class="pkmods" id="pkCfgMods"></div>
+      <div class="modpick-note">点一下即生效，不用保存。全勾＝整个题库；一都不勾就不能开赛。</div>
+    </div>
+    <div style="font-size:15px;line-height:2">
+      ④ 点右上「🚀 开始 PK」——两名选手各自独立答题，同批题目各自乱序<br>
+      ⑤ 每题 1 分，多选题全部选对才得分；先答完的一方等待对手，倒计时归零双侧锁卷
     </div>
   </div>
   <div class="panel right" style="min-height:auto">
@@ -145,14 +155,6 @@
     <div class="set-grid">
       <div class="set-item"><label>默认题量（1-50）</label><input id="pkDlgCount" value="10"></div>
       <div class="set-item"><label>默认计时（分钟）</label><input id="pkDlgMinutes" value="10"></div>
-      <div class="set-item set-full"><label>出题章节（勾选后只从选中章节抽题；全勾 = 整个题库）</label>
-        <div class="pkmods" id="pkCfgMods"></div>
-        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <button class="tbtn" id="pkModsAll">全选</button>
-          <button class="tbtn" id="pkModsNone">清空</button>
-          <span class="muted" id="pkModsCount"></span>
-        </div>
-      </div>
       <div class="set-item set-full"><label>通道②：线上题库地址（已预置，一般无需修改）</label>
         <input id="cfgBankUrl" value="">
         <div style="margin-top:8px"><button class="tbtn" id="cfgFetch">🌐 拉取题库</button><span class="muted" id="bankUrlHint" style="margin-left:10px"></span></div>
