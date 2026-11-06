@@ -1,0 +1,120 @@
+<!-- ==================== 擂台赛（🥊 与双人 PK 的 ⚔️ 刻意不同） ==================== -->
+<div id="arenaPage" class="hidden">
+
+  <!-- 顶部擂台横幅：没有计时器大方块、没有选人下拉，一眼区别于 PK 顶栏 -->
+  <div class="ar-banner">
+    <div class="ar-brand">🥊 课堂擂台</div>
+    <div class="ar-champ-line" id="arBanner">擂台空着 · 第一场先定擂主</div>
+    <div class="ar-meta">
+      <span id="arRoundInfo">第 0 / 10 场</span>
+      <span id="arLeftInfo">候选还剩 36 人</span>
+    </div>
+    <div class="ar-tools">
+      <button class="ar-btn" id="arCfg">⚙️ 擂台设置</button>
+      <button class="ar-btn" id="arSnd">🔊 音效开</button>
+      <button class="ar-btn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
+      <button class="ar-btn" id="arBack">← 回双人 PK</button>
+      <button class="ar-btn" id="arHome">🏠 首页</button>
+    </div>
+  </div>
+
+  <!-- 舞台：左 30% 擂主席（金底）+ 右 70% 挑战者席，不对称 -->
+  <div class="ar-stage" id="arStage">
+    <div class="ar-seat ar-champ" id="arChampSeat">
+      <div class="ar-head">
+        <span class="ar-crown" id="arChampTag">👑 擂主</span>
+        <span class="ar-name" id="arChampName">虚位以待</span>
+        <span class="ar-score" id="arChampScore">0</span>
+      </div>
+      <div class="ar-prog"><i id="arChampProg" style="width:0%"></i></div>
+      <div class="ar-prog-text" id="arChampProgText">已完成 0 / 0 题</div>
+      <div class="ar-meta-line" id="arChampMeta"></div>
+      <div class="ar-body" id="arChampBody">
+        <div class="ar-wait">擂台还空着。从下面挑两位同学打第一场，赢的人坐上擂主位。</div>
+      </div>
+    </div>
+
+    <div class="ar-seat ar-chal" id="arChalSeat">
+      <div class="ar-head">
+        <span class="ar-crown">🥊 挑战者</span>
+        <span class="ar-name" id="arChalName">等待上台</span>
+        <span class="ar-score" id="arChalScore">0</span>
+      </div>
+      <div class="ar-prog"><i id="arChalProg" style="width:0%"></i></div>
+      <div class="ar-prog-text" id="arChalProgText">已完成 0 / 0 题</div>
+      <div class="ar-meta-line" id="arChalMeta"></div>
+      <div class="ar-body" id="arChalBody">
+        <div class="ar-wait">挑战者从右侧候选席里点选。每场题量相同、题目顺序各自打乱。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部：候选席在左、主操作大按钮居中偏下（PK 的开始按钮在右上角，位置刻意不同） -->
+  <div class="ar-bottom">
+    <div class="ar-picks">
+      <div class="ar-picks-h">
+        本轮还没上过的同学
+        <span class="ar-picks-tip" id="arPicksTip">点一个上台</span>
+        <button class="ar-btn" id="arRandPick">🎲 直接随机</button>
+      </div>
+      <div class="ar-picklist" id="arPickList"></div>
+    </div>
+    <div class="ar-actions">
+      <div class="ar-note" id="arNote">题量 5 题 · 每场 2 分钟 · 擂主在左、挑战者在右</div>
+      <button class="ar-go" id="arGo">🥊 开始这一场</button>
+      <div class="ar-sub-actions">
+        <button class="ar-btn" id="arRestart">↻ 重开一轮擂台</button>
+        <button class="ar-btn" id="arStop">🏁 提前结算</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结算告示 -->
+  <div class="ar-mask hidden" id="arResultMask">
+    <div class="ar-notice">
+      <div class="ar-notice-top">🏵 擂台告示</div>
+      <div class="ar-notice-main" id="arResMain"></div>
+      <div class="ar-notice-grid">
+        <div class="ar-notice-col">
+          <div class="ar-col-h">📊 每人上场与胜负</div>
+          <div class="ar-col-body" id="arResTable"></div>
+        </div>
+        <div class="ar-notice-col">
+          <div class="ar-col-h">🪑 本节没上过台的同学</div>
+          <div class="ar-col-body" id="arResNever"></div>
+        </div>
+      </div>
+      <div class="ar-notice-foot">战绩只记在擂台榜，不影响双人 PK 的总排行榜。</div>
+      <div class="ar-notice-actions">
+        <button class="ar-btn" id="arResAgain">🥊 再开一轮</button>
+        <button class="ar-btn" id="arResClose">✕ 关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 擂台设置（独立存储 pk.arena.cfg，不碰 pk.cfg） -->
+  <div class="ar-mask hidden" id="arCfgMask">
+    <div class="ar-notice ar-notice-slim">
+      <div class="ar-notice-top">⚙️ 擂台设置</div>
+      <div class="ar-cfg-grid">
+        <div class="ar-cfg-item"><label>每场题量（1-20）</label><input id="arCfgCount" value="5"></div>
+        <div class="ar-cfg-item"><label>每场计时（分钟）</label><input id="arCfgMinutes" value="2"></div>
+        <div class="ar-cfg-item"><label>一轮场数（3-40）</label><input id="arCfgRounds" value="10"></div>
+      </div>
+      <div class="ar-cfg-block">
+        <div class="ar-cfg-h">出题章节
+          <span class="muted" id="arCfgModsCount"></span>
+          <span class="ar-quick"><button class="ar-btn" id="arCfgModsAll">全选</button><button class="ar-btn" id="arCfgModsNone">清空</button></span>
+        </div>
+        <div class="ar-mods" id="arCfgMods"></div>
+        <div class="ar-note">章节改动从下一场开始生效，本场题目不变。</div>
+      </div>
+      <div class="ar-notice-actions">
+        <button class="ar-btn primary" id="arCfgSave">💾 保存</button>
+        <button class="ar-btn" id="arCfgClose">✕ 关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ar-toast" id="arToast"></div>
+</div>

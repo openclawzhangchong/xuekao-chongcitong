@@ -23,6 +23,7 @@
 - 错题本（连对 2 次自动毕业）、考点诊断雷达图、弱项特训、模拟考组卷
 - 课堂互动：随机点名、音效、多音色 TTS 朗读、1000 条带姓名表扬语 + 500 条鼓励语
 - 双人课堂 PK：分屏对战、花名册（内置「25计算机01班」36 人）、排行榜
+- 擂台赛：一名擂主守擂、全班轮流踢馆，打满 N 场自动结算（与双人 PK 完全隔离的另一套界面）
 - 云端班级版：学生输学号+班级码，成绩同步到 Cloudflare KV
 - 深色/浅色主题切换（默认浅色）
 
@@ -60,15 +61,19 @@ pk/
   src/pk-markup.html ← PK 模块 HTML 片段
   src/pk-style.css ← PK 样式（变量驱动，跟随主题）
   src/pk-build.js  ← 独立 PK 单文件构建
+  src/arena-app.js    ← 擂台赛逻辑（window.__ARENA_MOUNT，只读 PK 花名册，写 pk.arena.*）
+  src/arena-markup.html / arena-style.css ← 擂台赛界面（id 一律 ar*，样式一律 .ar-*）
+  src/arena-lines.js  ← 擂台赛播报语料（window.XKA，40 条，与 XKP 表扬语分开）
 cloud/
   worker.js        ← Cloudflare Worker（API + 静态资源）
   wrangler.toml    ← 主站配置（zcstudy 账户 + KV）
   wrangler.d1.toml ← D1 备用版配置
   keys.json        ← 班级码 + 教师密钥（已 gitignore，绝不入库）
 班级版服务.py       ← 局域网版服务（Python 标准库，端口 8953）
-tests/             ← 6 套单测（170 项，必须全绿）+ dom-stub.js 共用 DOM 桩
+tests/             ← 7 套单测（216 项，必须全绿）+ dom-stub.js 共用 DOM 桩
+            ← 另有两道机器闸门：tools/scan-defects.js（题库缺陷计数）、tools/gate-fit.js（投屏一屏实测）
 tools/             ← 生成器、修正应用器与缺陷复扫闸门
-docs/              ← 开发方案文档（当前只有擂台赛，尚未开工）
+docs/              ← 开发方案文档（擂台赛方案已定稿并按 C1→C3 落地）
 evidence/          ← 测试证据与截图
 site/              ← 线上部署目录（index.html + data.js 拆分版）
 dist/              ← 单文件构建产物
@@ -81,34 +86,39 @@ dist/              ← 单文件构建产物
 ```bash
 cd "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通"
 
-# 1. 六套单测必须全绿（170 项）
-node tests/engine.test.js              # 期望 40 通过（含 8 项题干清洗回归）
+# 1. 七套单测必须全绿（216 项）
+node tests/engine.test.js              # 期望 52 通过（第 10 节题干清洗 8 项 + 第 11 节擂台/PK 共用纯函数 12 项）
 node tests/classroom.test.js           # 期望 19 通过
 node tests/pk-pick.test.js             # 期望 11 通过（PK 选人：下拉能选中姓名）
-node tests/pk-features.test.js         # 期望 42 通过（领先条/随机匹配/章节过滤/抽题随机/表扬语/清洗/一屏自适应）
+node tests/pk-features.test.js         # 期望 45 通过（领先条/随机匹配/章节过滤/抽题随机/表扬语/清洗/一屏自适应/回首页）
+node tests/arena.test.js               # 期望 31 通过（A 组 7 项防混淆 + B 组 21 项状态机 + C 组 3 项投屏一屏）
 node cloud/worker.test.js              # 期望 20 通过
 python -I tests/test_server_logic.py   # 期望 38 通过
 
 # 1b. 题库缺陷闸门（任一类计数上升 → 退出码 1）
 node tools/scan-defects.js
 
+# 1c. 投屏一屏闸门（无头 Edge 真渲染真题；随机题滚动率 >2% 或中位字号 <20px → 退出码 1）
+node tools/gate-fit.js                 # 默认 1366×768 抽 200 题；要更狠：node tools/gate-fit.js 1366 768 400
+
 # 2. 题库规模
 node -e "global.window={};eval(require('fs').readFileSync('src/data.js','utf8'));console.log(window.BANK.length)"
 # 期望 3999
 
 # 3. 构建可用
-node src/build.js                      # 单文件，期望 ~3.1MB
-node src/build.js --split site/index.html   # 拆分版，期望 index 163KB + data.js 2.9MB
+node src/build.js                      # 单文件，期望 3231KB
+node src/build.js --split site/index.html   # 拆分版，期望 index 233KB + data.js 3071KB
 ```
 
-**已完成的审题修正**：累计 2095 条（4 个批次 agent 审读 + gen4 核验 + v5 批 2-3），全部已验证落库。
+**已完成的审题修正**：累计 2171 条（4 个批次 agent 审读 + gen4 核验 + v5 批 2-3 = 2095，
+加 v6 重复选项 6 条、v6 补解析 70 条），全部经 `tools/apply-v5fix.js` 质检后落库。
 
 **四类已知缺陷的实测结论**（`node tools/scan-defects.js` 随时复算，别再引用旧数字）：
 
 | 类别 | 旧文档 | 实测 | 现状 |
 |---|---|---|---|
 | 题面残留选项标记 | 53 | **64 题，全部在 M3** | 渲染层已由 `XK.cleanStem` 剥离（**data.js 未改，qid 不变**）；根治要改题干 → 会断学生记录，暂缓 |
-| 重复选项 | 3 | **3 题**（旧「5 题」是把「1 2 3」和「123」折叠空格后的假阳性） | 已改写落库（只动 `o`/`e`，不动题干） |
+| 重复选项 | 3 | 曾实测 **3 题**（旧「5 题」是把「1 2 3」和「123」折叠空格后的假阳性） | **已归零**：改写落库（只动 `o`/`e`，不动题干），基线 0 |
 | 过短解析（<20 字） | 61 | 曾实测 70 题 | **已清零**：70 题逐题补写（新解析 70-181 字，平均 119 字），只动 `e` 字段 → qid 不变。逐条对照见 `evidence/qbank-audit/v6-explanations-review.md`，其中 17 题标了「请教师复核」 |
 | 选项截断 | 22 | **不成立** | 两种启发式命中 97 / 372 题，抽样几乎全是正常干扰项；文档举的实例「最基本的系统软件是办公」其实选项完整。只出候选清单，不计入闸门 |
 
@@ -259,6 +269,8 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 | `pk.cfg` | PK 开赛设置：题量 / 计时 / 出题章节 `mods`（点章节格**即时落盘**，无保存按钮；**字段缺失 = 不过滤**，等于章节功能上线前的行为） |
 | `pk.matches` | PK 比赛记录 |
 | `pk.snd` | PK 音效开关 |
+| `pk.arena.v1` | 擂台赛战绩（当前擂主 / 连胜 / 场次 / 每人上场次数），**与 `pk.matches` 完全分开** |
+| `pk.arena.cfg` | 擂台赛设置：题量 / 每场分钟 / 总场次 / 章节 `mods`（首次使用时继承 `pk.cfg.mods`） |
 | `xkc.big` | 课堂投屏状态 |
 
 ---
@@ -274,6 +286,8 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 | `tools/apply-v5fix.js` | 应用 v5fix-*.json | 支持 a/e/s/o |
 | `tools/rescan-gen4.js` | 五项复扫 | — |
 | `tools/scan-defects.js` | 四类缺陷复扫 + 基线对比闸门 | `--save-baseline` 存基线，`--json` 机器可读 |
+| `tools/gate-fit.js` | 无头 Edge 真渲染真题，量「投屏一屏装不装得下」 | `[宽 高 抽样数]`，默认 1366 768 200；`GATE_SCROLL_MAX` / `GATE_FS_MIN` 调线 |
+| `tools/shot-arena.js` | PK 与擂台 5 张对比截图 + 布局数字 | 产物进 `evidence/arena-shots/`；`[宽 高]` 换分辨率 |
 
 **注意**：生成器有防递归守卫（输入题数不对会报错），这是保护机制，**不要移除**。
 
@@ -281,7 +295,7 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 
 ## 九、工作方式要求
 
-1. **每次改题库后必须**：跑 6 套单测 → build → 抽样人工复核 → 部署 → 验证线上
+1. **每次改题库后必须**：跑 7 套单测 → build → 抽样人工复核 → 部署 → 验证线上
 2. **不确定的改动**：先小范围试（改 5 题看效果），确认无误再全量
 3. **遇到 bug**：先复现 → 定位根因 → 修 → 回归测试，不要猜
 4. **不要重写整个项目**：这是已上线的成熟项目，增量优化
@@ -299,7 +313,7 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 - ✅ 内置默认班级 25计算机01班（36 人）
 - ✅ 题库地址预置（无需用户填写）
 - ✅ 云端班级版（Cloudflare KV）+ 局域网版 + here.now 备用站
-- ✅ 6 套单测 170 项全绿
+- ✅ 7 套单测 216 项全绿（含擂台赛 31 项）
 - ✅ PK 选人下拉可正常选中姓名（含无编号学生）
 - ✅ PK 抽题改为真随机（此前每局固定做题库前 N 题，学生打两轮就背完了）
 - ✅ PK 新增：领先条居中放大 / 🎲 随机匹配+上台播报 / 开赛设置里「③ 出题章节」/ 答对答错带姓名表扬语
@@ -312,9 +326,20 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 - ✅ 设置弹窗的「默认题量/默认计时」不再与开赛面板撞 id（此前改了不生效）
 - ✅ 构建产物不再混入模板残留文本（build.js 已加残留守卫）
 - ✅ README 含 9 张页面截图
-- 📄 **擂台赛尚未开工**，方案已定稿在 `docs/擂台赛-开发方案.md`：与双人 PK 的硬隔离表
-  （id 前缀 `ar*`、独立存储 `pk.arena.*`、独立样式与语料）、配色/版式/TTS/文案差异化、
-  18 项测试清单、C1→C4 分步与回滚点。**动手前先回答文末 §12 的三个待定问题。**
+- ✅ **擂台赛（一人守擂 · 全班轮流踢馆）已落地**，方案见 `docs/擂台赛-开发方案.md`：
+  与双人 PK 硬隔离（id 全 `ar*`、样式全 `.ar-*`、独立存储 `pk.arena.*`、独立语料 `XKA`），
+  配色/版式/图标/播报口吻都不同，防混淆由 `tests/arena.test.js` A 组 6 项闸门盯着。
+  首页 🥊 入口进擂台；打满 N 场自动结算（最终擂主 + 战绩表 + 没上过台名单）。
+- ✅ 擂台赛候选袋保证「一屏之内不重复同一个人」：名单不足时宁可少给并提示，
+  也不会让擂主出现在自己踢自己的馆里（`tests/arena.test.js` B18/B19/B20，旧代码这 3 项全红）。
+- ✅ **修掉「一屏自适应缩了个寂寞」**：面板里选项内边距/ABCD 圆片/姓名分数/提交按钮原先是固定 px，
+  不跟 `--pkfs`/`--arfs` 走 → 1366×768 投屏上随机 200 题有 170 题（85%）顶到 16px 下限还得滚动。
+  全部改成 `calc(var(--*) * k)` 后：PK 中位 21px、擂台 22px，随机题需滚动 0.3% / 0%。
+  闸门 = `tools/gate-fit.js`（浏览器实测）+ CSS 结构断言（`pk-features` 2 条 + `arena` A7）。
+- ✅ **修掉底部页签压住内容**：`.tabs` 是 fixed，投屏模式下压在 PK 两侧「选择答案后提交」上半截、
+  并切掉擂台候选卡片下沿。宽屏（≥901px）的 PK/擂台模式整条隐藏页签，退出改走顶栏「🏠 首页」
+  （独立版没有宿主钩子，按钮自动隐藏）。手机上页签照旧。
+- ✅ 擂台打完一场后右席撤成「虚位以待」并清分数/题型行，避免「擂主 vs 擂主」同名错觉（B21）。
 
 ---
 
@@ -326,7 +351,7 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 cd "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通"
 
 # ① 单测全绿
-node tests/engine.test.js && node tests/classroom.test.js && node tests/pk-pick.test.js && node cloud/worker.test.js
+node tests/engine.test.js && node tests/classroom.test.js && node tests/pk-pick.test.js && node tests/pk-features.test.js && node tests/arena.test.js && node cloud/worker.test.js
 
 # ② 构建成功
 node src/build.js

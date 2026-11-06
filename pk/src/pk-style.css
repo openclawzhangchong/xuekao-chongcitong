@@ -47,23 +47,42 @@ body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;backgroun
 /* 对战区中间一条竖分割线：投屏时两半一眼分开；窄屏堆叠时不需要，见下方媒体查询 */
 #pkArena::before{content:'';position:absolute;left:50%;top:14px;bottom:14px;width:2px;margin-left:-1px;
   background:var(--line-2);border-radius:1px;pointer-events:none}
-/* 一屏自适应：字号由 --pkfs 驱动，fitSide() 逐级下调；缩到下限仍装不下才允许该侧滚动 */
+/* 一屏自适应：字号由 --pkfs 驱动，fitSide() 逐级下调；缩到下限仍装不下才允许该侧滚动。
+ * 注意：不只是题目文字，选项内边距/圆片/间距/头部分数这些「占高度的零件」也必须跟着
+ * --pkfs 走——否则缩字号缩不动总高，投屏上每题都会顶到 16px 下限并开始滚动。 */
 #pkArena{align-items:stretch}
 #pkArena .panel{--pkfs:23px;min-height:0;overflow:hidden}
 #pkArena .panel.pkfit-scroll{overflow:auto}
-#pkArena .qstem{font-size:var(--pkfs)}
-#pkArena .opt{min-height:calc(var(--pkfs) + 28px)}
-#pkArena .opt .v{font-size:calc(var(--pkfs) - 5px)}
-#pkArena .opt .k{font-size:calc(var(--pkfs) - 8px)}
-#pkArena .feedback{font-size:calc(var(--pkfs) - 7px)}
-#pkArena .submit-btn{font-size:calc(var(--pkfs) - 4px)}
+#pkArena .phead{margin-bottom:calc(var(--pkfs) * .32);gap:calc(var(--pkfs) * .42)}
+#pkArena .pname{font-size:calc(var(--pkfs) * 1.3)}
+#pkArena .pscore{font-size:calc(var(--pkfs) * 1.7)}
+#pkArena .progress{height:calc(var(--pkfs) * .36);margin:calc(var(--pkfs) * .26) 0 calc(var(--pkfs) * .5)}
+#pkArena .muted{font-size:calc(var(--pkfs) * .7)}
+#pkArena .qmeta{font-size:calc(var(--pkfs) * .7);margin-bottom:calc(var(--pkfs) * .28)}
+#pkArena .qstem{font-size:var(--pkfs);margin:calc(var(--pkfs) * .26) 0 calc(var(--pkfs) * .7);line-height:1.5}
+#pkArena .opts{gap:calc(var(--pkfs) * .4)}
+#pkArena .opt{padding:calc(var(--pkfs) * .42) calc(var(--pkfs) * .66);min-height:calc(var(--pkfs) * 1.8);
+  gap:calc(var(--pkfs) * .5);border-radius:calc(var(--pkfs) * .55)}
+#pkArena .opt .k{width:calc(var(--pkfs) * 1.35);height:calc(var(--pkfs) * 1.35);font-size:calc(var(--pkfs) * .78)}
+#pkArena .opt .v{font-size:calc(var(--pkfs) * .92);line-height:1.4}
+#pkArena .feedback{font-size:calc(var(--pkfs) * .78);margin-top:calc(var(--pkfs) * .4);
+  padding:calc(var(--pkfs) * .4) calc(var(--pkfs) * .58)}
+#pkArena .submit-btn{font-size:calc(var(--pkfs) * .88);margin-top:calc(var(--pkfs) * .55);
+  padding:calc(var(--pkfs) * .58) calc(var(--pkfs) * .7);border-radius:calc(var(--pkfs) * .5)}
 /* PK 页永远全宽（手机上也该全宽） */
 body.pk-mode .app{max-width:none}
 /* 「锁成一屏」只用于宽屏投屏/电脑：窄屏手机上顶栏会换行占掉大半高度，
  * 若照样锁高，题面会被挤到只剩几十像素——所以窄屏回退成普通文档流滚动。 */
 @media (min-width:901px){
   body.pk-mode .app{height:100vh;overflow:hidden}
-  body.pk-mode #pkPage{height:100%;display:flex;flex-direction:column;overflow:hidden}
+  /* 底部页签在投屏模式下改成普通流：它是 position:fixed 时会压在「选择答案后提交」
+   * 按钮上半截遮住——PK 两侧面板因此各少一条能点的按钮。 */
+  /* 投屏/宽屏：底部页签整条藏掉（65px 还给题面），退出走顶栏「🏠 首页」。
+   * 之前它 position:fixed 压在「选择答案后提交」按钮上半截，实测 1366×768 两边都点不着。 */
+  body.pk-mode .tabs{display:none}
+  /* 顶栏按钮多了一个「🏠 首页」：把主题按钮收成纯图标，避免这一行换行吃掉题面高度 */
+  body.pk-mode .tbtn .tb-lb{display:none}
+  body.pk-mode #pkPage{height:auto;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden}
   body.pk-mode #pkArena{flex:1;min-height:0}
   body.pk-mode #pkSetup{flex:1;min-height:0;overflow:auto}
   body.pk-solo{height:100vh;overflow:hidden;display:flex;flex-direction:column}

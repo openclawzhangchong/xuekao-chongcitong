@@ -18,6 +18,10 @@ const sfx = read('sfx.js');
 const pkMarkup = fs.readFileSync(path.join(SRC, '..', 'pk', 'src', 'pk-markup.html'), 'utf8');
 const pkStyle = fs.readFileSync(path.join(SRC, '..', 'pk', 'src', 'pk-style.css'), 'utf8');
 const pkApp = fs.readFileSync(path.join(SRC, '..', 'pk', 'src', 'pk-app.js'), 'utf8');
+const arenaMarkup = fs.readFileSync(path.join(SRC, '..', 'pk', 'src', 'arena-markup.html'), 'utf8');
+const arenaStyle = fs.readFileSync(path.join(SRC, '..', 'pk', 'src', 'arena-style.css'), 'utf8');
+const arenaLines = fs.readFileSync(path.join(SRC, '..', 'pk', 'src', 'arena-lines.js'), 'utf8');
+const arenaApp = fs.readFileSync(path.join(SRC, '..', 'pk', 'src', 'arena-app.js'), 'utf8');
 
 // ---- 构建期校验 ----
 global.window = {};
@@ -29,7 +33,7 @@ if (window.BANK_META.length !== 9) throw new Error('模块数异常');
 const total150 = window.BANK_META.reduce((x, m) => x + m.score, 0);
 if (total150 !== 150) throw new Error('考纲总分异常: ' + total150);
 
-[engine, data, app, praise, sfx, pkApp].forEach((code, i) => {
+[engine, data, app, praise, sfx, pkApp, arenaLines, arenaApp].forEach((code, i) => {
   if (/<\/script/i.test(code)) throw new Error('内嵌脚本含 </script>，会破坏 HTML（脚本#' + i + '）');
 });
 
@@ -54,6 +58,7 @@ const tpl = `<!DOCTYPE html>
 ${themeCss}
 ${css}
 ${pkStyle}
+${arenaStyle}
 </style>
 </head>
 <body>
@@ -107,6 +112,11 @@ ${pkStyle}
           <div class="ic">📊</div><div class="nm">考点诊断</div>
           <div class="ds">133 个考点掌握度</div>
           <span class="bd" id="entDiag">…</span>
+        </div>
+        <div class="entry" id="entCardArena">
+          <div class="ic">🥊</div><div class="nm">擂台赛</div>
+          <div class="ds">一人守擂 · 全班轮流踢馆</div>
+          <span class="bd">投屏专用</span>
         </div>
       </div>
 
@@ -262,6 +272,8 @@ ${pkStyle}
 ${pkMarkup}
   </div>
 
+  ${arenaMarkup}
+
   <div class="tabs" id="tabs">
     <button class="tab on" data-t="home"><span class="ti">🏠</span>首页</button>
     <button class="tab" data-t="setup"><span class="ti">📝</span>刷题</button>
@@ -313,6 +325,12 @@ ${app}
 </script>
 <script>
 ${pkApp}
+</script>
+<script>
+${arenaLines}
+</script>
+<script>
+${arenaApp}
 </script>
 </body>
 </html>

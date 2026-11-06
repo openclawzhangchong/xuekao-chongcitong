@@ -702,6 +702,12 @@ window.__PK_MOUNT = function () {
   function bind() {
     $('btnStart').onclick = startPK;
     $('btnRand').onclick = randomMatch;
+    // 投屏模式下底部页签整条让位给题面，退出只能走这里；独立版没有「首页」可回，直接藏掉
+    var hb = $('btnHome');
+    if (hb) {
+      if (window.__PK_ONLEAVE) { hb.style.display = ''; hb.onclick = function () { window.__PK_ONLEAVE(); }; }
+      else hb.style.display = 'none';
+    }
     $('btnReset').onclick = function () {
       if (PK.state === 'running' && !confirm('本轮还在进行中，确定重置？')) return;
       resetRound();
@@ -804,7 +810,9 @@ window.__PK_MOUNT = function () {
     PKFS_MIN: PKFS_MIN,
     cfg: function () { return CFG; },
     pk: function () { return PK; },
-    picks: function () { return [pickL, pickR]; }
+    picks: function () { return [pickL, pickR]; },
+    // 供 tools/gate-fit.js 用真实渲染路径逐题量高度（不是重新实现一遍 fitSide）
+    render: function (side) { renderSide(side); }
   };
 
   /* ================= 启动 ================= */

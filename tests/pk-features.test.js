@@ -370,6 +370,39 @@ t('下限就是 16px，绝不低于它', () => {
   assert.strictEqual(r.scroll, true);
 });
 
+/* CSS 结构闸门：面板里「占高度的零件」必须跟着 --pkfs 走。
+ * 事故：只有题目文字用 var(--pkfs)，选项内边距/圆片/头部分数是固定 px，
+ * 缩字号缩不动总高 → 1366×768 投屏上 85% 的题顶到 16px 下限还得滚动，
+ * 而上面那几条纯算术断言全绿。浏览器逐题实测见 tools/gate-fit.js。 */
+const PK_CSS = fs.readFileSync(path.join(__dirname, '..', 'pk', 'src', 'pk-style.css'), 'utf8');
+function ruleBody(sel) {
+  const at = PK_CSS.indexOf(sel + '{');
+  if (at < 0) throw new Error('样式里没有 ' + sel + ' 这条规则');
+  return PK_CSS.slice(at + sel.length + 1, PK_CSS.indexOf('}', at));
+}
+t('选项的内边距/最小高/行间距必须由 --pkfs 驱动（否则缩字号白缩）', () => {
+  const opt = ruleBody('#pkArena .opt');
+  assert.ok(/padding:\s*calc\(var\(--pkfs\)/.test(opt), '.opt 的 padding 没跟 --pkfs：' + opt.replace(/\s+/g, ' ').slice(0, 90));
+  assert.ok(/min-height:\s*calc\(var\(--pkfs\)/.test(opt), '.opt 的 min-height 没跟 --pkfs');
+  assert.ok(/gap:\s*calc\(var\(--pkfs\)/.test(ruleBody('#pkArena .opts')), '.opts 的 gap 没跟 --pkfs');
+  assert.ok(/width:\s*calc\(var\(--pkfs\)/.test(ruleBody('#pkArena .opt .k')), '选项圆片 ABCD 尺寸是固定 px');
+});
+t('头部姓名/分数、进度条、提交按钮也必须由 --pkfs 驱动', () => {
+  ['.pname', '.pscore', '.progress', '.submit-btn'].forEach((s) => {
+    const body = ruleBody('#pkArena ' + s);
+    assert.ok(/calc\(var\(--pkfs\)/.test(body), '#pkArena ' + s + ' 里一处 --pkfs 都没有：' + body.replace(/\s+/g, ' ').slice(0, 70));
+  });
+});
+t('「🏠 首页」：接上宿主就真退出，独立版自动藏掉（点了没反应最气人）', () => {
+  let hit = 0;
+  const solo = mount({ roster: R36 });                        // 桩里没有 app.js，等价于独立版
+  assert.strictEqual(solo.$('btnHome').style.display, 'none', '独立版还留着回首页按钮，点了没反应');
+  const merged = mount({ roster: R36, hooks: { __PK_ONLEAVE: function () { hit++; } } });
+  assert.notStrictEqual(merged.$('btnHome').style.display, 'none', '有宿主时按钮被藏着，投屏上就没出口了');
+  merged.$('btnHome').onclick();
+  assert.strictEqual(hit, 1, '点了「🏠 首页」没走退出钩子');
+});
+
 console.log('\n结果: ' + passed + ' 通过, ' + failed + ' 失败');
 if (failed) console.log('\n未通过清单:\n  ' + fails.join('\n  '));
 process.exit(failed ? 1 : 0);

@@ -75,6 +75,20 @@
     click: function () {
       if (!isEnabled()) return;
       tone(660, 0, 0.05, 'sine', 0.08);
+    },
+    // 擂台开场：低频两下 + 高音一下（鼓点，与双人 PK 的上行三音明显不同）
+    drum: function () {
+      if (!isEnabled()) return;
+      tone(110, 0, 0.16, 'sine', 0.3);
+      tone(110, 0.2, 0.16, 'sine', 0.3);
+      tone(440, 0.42, 0.34, 'triangle', 0.2);
+    },
+    // 擂台易主：下行两音（擂主被换下的信号）
+    oust: function () {
+      if (!isEnabled()) return;
+      tone(523.25, 0, 0.2, 'triangle', 0.2);
+      tone(392, 0.18, 0.24, 'triangle', 0.2);
+      tone(293.66, 0.4, 0.4, 'triangle', 0.22);
     }
   };
 

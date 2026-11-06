@@ -12,14 +12,29 @@ const vm = require('vm');
 
 // PK_APP_PATH 用于「同一套断言跑旧代码」，证明闸门在未修复时确实会红
 const APP_PATH = process.env.PK_APP_PATH || path.join(__dirname, '..', 'pk', 'src', 'pk-app.js');
+// ARENA_APP_PATH 同理，针对擂台赛
+const ARENA_PATH = process.env.ARENA_APP_PATH || path.join(__dirname, '..', 'pk', 'src', 'arena-app.js');
 
 const OPT_RE = /<option value="([^"]*)"[^>]*>([^<]*)<\/option>/g;
+
+/* 真实 DOM 里 innerHTML 的标签不是文字：断言 textContent 时必须只看可见文本 */
+function htmlText(html) {
+  return String(html)
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&');
+}
 
 /* 复刻 pk-markup.html 里带 hidden 的容器，否则「是否显示」断言不成立 */
 const SEED_CLASS = {
   pkArena: 'arena hidden', pkSetup: 'arena',
   endMask: 'mask hidden', lbMask: 'mask hidden', pkRosterMask: 'mask hidden', cfgMask: 'mask hidden',
-  pkPanelL: 'panel left', pkPanelR: 'panel right'
+  pkPanelL: 'panel left', pkPanelR: 'panel right',
+  arenaPage: 'hidden', arResultMask: 'ar-mask hidden', arCfgMask: 'ar-mask hidden',
+  arChampSeat: 'ar-seat ar-champ', arChalSeat: 'ar-seat ar-chal'
 };
 const SELECT_IDS = { pkSelL: 1, pkSelR: 1 };
 
@@ -61,6 +76,7 @@ function makeElement(tag, reg) {
     get: () => _html,
     set(v) {
       _html = String(v);
+      _text = '';            // 真实 DOM：写 innerHTML 后原来的纯文本不残留
       el.children = [];
       if (el.options) {
         el.options = [];
@@ -80,8 +96,8 @@ function makeElement(tag, reg) {
       set(v) { _value = String(v); }
     });
     Object.defineProperty(el, 'textContent', {
-      get: () => (el.children.length ? el.children.map((c) => c.textContent).join('') : _text),
-      set(v) { _text = String(v); el.children = []; }
+      get: () => (el.children.length ? el.children.map((c) => c.textContent).join('') : (_html ? htmlText(_html) : _text)),
+      set(v) { _text = String(v); _html = ''; el.children = []; }
     });
   }
   el.setAttribute = (k, v) => { el.attrs[k] = String(v); };
@@ -152,7 +168,14 @@ function fakeXKP() {
   };
 }
 
-function mount(opts) {
+/* 本机实测的三个中文声（擂台赛要靠 Kangkang 与双人 PK 的随机声区分开） */
+const ZH_VOICES = [
+  { name: 'Microsoft Huihui - Chinese (Simplified, PRC)', lang: 'zh-CN' },
+  { name: 'Microsoft Kangkang - Chinese (Simplified, PRC)', lang: 'zh-CN' },
+  { name: 'Microsoft Yaoyao - Chinese (Simplified, PRC)', lang: 'zh-CN' }
+];
+
+function sandbox(opts) {
   opts = opts || {};
   const roster = opts.roster === undefined ? sampleRoster(36) : opts.roster;
   const bank = opts.bank || sampleBank();
@@ -176,14 +199,20 @@ function mount(opts) {
     body: makeElement('div', null)
   };
 
-  const spoke = [];
+  const spoke = [];          // 只存文本，pk-features 用它做包含断言
+  const spoken = [];         // 存 {text, voice, pitch, rate}，擂台要验音色选择
+  const voices = opts.voices === undefined ? ZH_VOICES : opts.voices;
+  const synth = {
+    cancel: () => {},
+    getVoices: () => voices,
+    speak: (u) => { spoke.push(u.text); spoken.push({ text: u.text, voice: u.voice ? u.voice.name : null, pitch: u.pitch, rate: u.rate }); }
+  };
+  const Utter = function (t) { this.text = t; this.pitch = 1; this.rate = 1; this.lang = ''; this.voice = null; };
+
   const win = { BANK: bank.slice() };
   if (meta) win.BANK_META = meta;
   // 真实页面里 praise.js 一定先于 pk-app.js 加载（两份构建都嵌了），桩默认就给 XKP
   win.XKP = opts.xkp || fakeXKP();
-  // 浏览器里 speechSynthesis 既是 window 属性也是全局裸标识符，两边都要给
-  const synth = { cancel: () => {}, getVoices: () => [], speak: (u) => spoke.push(u.text) };
-  const Utter = function (t) { this.text = t; };
   win.speechSynthesis = synth;
   win.SpeechSynthesisUtterance = Utter;
 
@@ -214,17 +243,40 @@ function mount(opts) {
   win.setInterval = ctx.setInterval;
   win.clearInterval = ctx.clearInterval;
   win.confirm = ctx.confirm;
+  // 真实页面里 app.js 先于 pk-app.js 跑，退出钩子早就定义好了；桩用 opts.hooks 复刻这个顺序
+  if (opts.hooks) Object.keys(opts.hooks).forEach(function (k) { win[k] = opts.hooks[k]; });
   vm.createContext(ctx);
-  // 真实 engine.js 先加载：pk-app.js 显示题干要用 XK.cleanStem（与线上同一份实现）
-  vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'src', 'engine.js'), 'utf8'), ctx, { filename: 'engine.js' });
-  vm.runInContext(fs.readFileSync(APP_PATH, 'utf8'), ctx, { filename: 'pk-app.js' });
-  win.__PK_MOUNT();
 
+  const run = (rel, name) => vm.runInContext(fs.readFileSync(path.join(__dirname, '..', rel), 'utf8'), ctx, { filename: name });
+  ctx.run = run;
   ctx.$ = (id) => document.getElementById(id);
+  ctx.win = win;
   ctx.spoke = spoke;
+  ctx.spoken = spoken;
   ctx.store = store;
   ctx.bank = bank;
-  ctx.test = () => win.__PK_TEST;
+  return ctx;
+}
+
+function mount(opts) {
+  const ctx = sandbox(opts);
+  // 真实 engine.js 先加载：pk-app.js 显示题干要用 XK.cleanStem（与线上同一份实现）
+  ctx.run('src/engine.js', 'engine.js');
+  vm.runInContext(fs.readFileSync(APP_PATH, 'utf8'), ctx, { filename: 'pk-app.js' });
+  ctx.win.__PK_MOUNT();
+  ctx.test = () => ctx.win.__PK_TEST;
+  return ctx;
+}
+
+/* 擂台赛：加载真实 engine.js + sfx.js + arena-lines.js + arena-app.js */
+function mountArena(opts) {
+  const ctx = sandbox(opts);
+  ctx.run('src/engine.js', 'engine.js');
+  ctx.run('src/sfx.js', 'sfx.js');
+  ctx.run('pk/src/arena-lines.js', 'arena-lines.js');
+  vm.runInContext(fs.readFileSync(ARENA_PATH, 'utf8'), ctx, { filename: 'arena-app.js' });
+  ctx.win.__ARENA_MOUNT();
+  ctx.test = () => ctx.win.__ARENA_TEST;
   return ctx;
 }
 
@@ -260,4 +312,4 @@ function answer(p, side, optIndex) {
   return key;
 }
 
-module.exports = { mount, fire, choose, answer, sampleBank, sampleMeta, sampleRoster, fakeXKP, makeElement };
+module.exports = { mount, mountArena, fire, choose, answer, sampleBank, sampleMeta, sampleRoster, fakeXKP, makeElement, ZH_VOICES };

@@ -51,6 +51,14 @@ html[data-theme="light"] {
   --r-d: #b91c1c;
   --r-bg: rgba(220, 38, 38, .07);
 
+  /* 擂台赛专用色（刻意不用上面的 --l/--r 蓝红，保证和双人 PK 一眼能分辨） */
+  --ar-champ: #b42318;
+  --ar-champ-bg: #fff5ed;
+  --ar-chal: #0f766e;
+  --ar-chal-bg: #effaf7;
+  --ar-stage-bg: #fbf7ef;
+  --ar-accent: #a16207;
+
   /* 面板/遮罩 */
   --panel-bg: #ffffff;
   --panel-left-bg: linear-gradient(180deg, rgba(37, 99, 235, .06), transparent 30%), #ffffff;
@@ -122,6 +130,14 @@ html[data-theme="dark"] {
   --r-l: rgba(248, 113, 113, .16);
   --r-d: #ef4444;
   --r-bg: rgba(248, 113, 113, .08);
+
+  /* 擂台赛专用色 · 深色 */
+  --ar-champ: #f97066;
+  --ar-champ-bg: rgba(249, 112, 102, .10);
+  --ar-chal: #5eead4;
+  --ar-chal-bg: rgba(94, 234, 212, .10);
+  --ar-stage-bg: #1a2233;
+  --ar-accent: #facc15;
 
   --panel-bg: #151f33;
   --panel-left-bg: linear-gradient(180deg, rgba(96, 165, 250, .10), transparent 30%), #151f33;

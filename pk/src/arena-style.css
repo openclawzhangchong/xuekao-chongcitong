@@ -1,0 +1,163 @@
+/* =====================================================================
+ * 擂台赛样式（.ar-* 选择器 + --ar-* 配色变量）
+ * 刻意与双人 PK 区分：不用 --l/--r 蓝红对撞，改成朱红擂主 / 青竹挑战者 /
+ * 宣纸擂台底 / 麦金连胜；舞台 30%+70% 不对称；主操作在底部居中大按钮。
+ * 通用控件（深色、设置、关闭）保持与 PK 相同的交互位置，避免教师重新找。
+ * ===================================================================== */
+
+/* ---------- 顶部横幅 ---------- */
+.ar-banner{position:sticky;top:0;z-index:40;background:var(--ar-stage-bg);border-bottom:3px solid var(--ar-accent);
+  padding:10px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.ar-brand{font-size:22px;font-weight:900;color:var(--ar-champ);letter-spacing:1px}
+.ar-champ-line{flex:1;min-width:220px;font-size:26px;font-weight:900;color:var(--txt);text-align:center;line-height:1.25}
+.ar-champ-line b{color:var(--ar-champ)}
+.ar-meta{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--sub);font-weight:700}
+.ar-tools{display:flex;gap:8px;flex-wrap:wrap}
+
+.ar-btn{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:10px;
+  padding:9px 15px;font-size:15px;font-weight:700;cursor:pointer}
+.ar-btn:active{transform:translateY(1px)}
+.ar-btn.primary{background:var(--ar-champ);border-color:var(--ar-champ);color:#fff}
+.ar-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ---------- 舞台：30% 擂主席 + 70% 挑战者席 ---------- */
+.ar-stage{display:grid;grid-template-columns:30% 1fr;gap:16px;padding:14px 16px;align-items:stretch;flex:1;min-height:0}
+.ar-seat{border-radius:16px;padding:calc(var(--arfs) * .6) calc(var(--arfs) * .7);border:3px solid var(--line);min-height:0;overflow:hidden;
+  display:flex;flex-direction:column;--arfs:22px}
+.ar-seat.ar-pkfit-scroll{overflow:auto}
+.ar-champ{border-color:var(--ar-champ);background:var(--ar-champ-bg)}
+.ar-chal{border-color:var(--ar-chal);background:var(--panel-bg)}
+.ar-head{display:flex;align-items:center;gap:calc(var(--arfs) * .42);flex-wrap:wrap;margin-bottom:calc(var(--arfs) * .32)}
+.ar-crown{font-size:calc(var(--arfs) * .6);font-weight:900;color:#fff;background:var(--ar-champ);
+  border-radius:99px;padding:calc(var(--arfs) * .12) calc(var(--arfs) * .52)}
+.ar-chal .ar-crown{background:var(--ar-chal)}
+.ar-name{font-size:calc(var(--arfs) * 1.15);font-weight:900;color:var(--ar-champ)}
+.ar-chal .ar-name{color:var(--ar-chal)}
+.ar-score{font-size:calc(var(--arfs) * 1.55);font-weight:900;margin-left:auto;color:var(--txt);font-variant-numeric:tabular-nums}
+.ar-prog{height:calc(var(--arfs) * .32);background:var(--line);border-radius:99px;overflow:hidden;
+  margin:calc(var(--arfs) * .2) 0 calc(var(--arfs) * .28)}
+.ar-prog>i{display:block;height:100%;border-radius:99px;background:var(--ar-accent);transition:width .3s}
+.ar-prog-text{font-size:calc(var(--arfs) * .62);color:var(--sub);margin-bottom:calc(var(--arfs) * .26)}
+.ar-meta-line{font-size:calc(var(--arfs) * .66);color:var(--sub);display:flex;gap:calc(var(--arfs) * .35);
+  flex-wrap:wrap;margin-bottom:calc(var(--arfs) * .28)}
+.ar-meta-line .artype{font-weight:900;color:var(--ar-accent)}
+.ar-wait{font-size:calc(var(--arfs) * .8);line-height:1.9;color:var(--sub);background:var(--card);border:1px dashed var(--line);
+  border-radius:12px;padding:14px 16px}
+
+/* 题目区：字号由 --arfs 驱动，fitSeat 逐级下调，下限之后开内部滚动。
+ * 占高度的零件（内边距/圆片/间距/头部分数）一律跟着 --arfs 走，否则缩字号缩不动总高。 */
+.ar-qstem{font-size:var(--arfs);font-weight:700;line-height:1.5;margin:calc(var(--arfs) * .26) 0 calc(var(--arfs) * .62);
+  word-break:break-word;white-space:pre-wrap}
+.ar-opts{display:flex;flex-direction:column;gap:calc(var(--arfs) * .38)}
+.ar-opt{display:flex;gap:calc(var(--arfs) * .5);align-items:flex-start;background:var(--opt-bg);border:2px solid var(--line);
+  border-radius:calc(var(--arfs) * .55);padding:calc(var(--arfs) * .4) calc(var(--arfs) * .6);cursor:pointer;transition:.12s;
+  min-height:calc(var(--arfs) * 1.75)}
+.ar-opt:hover{border-color:var(--line-2);background:var(--opt-hover)}
+.ar-opt .k{width:calc(var(--arfs) * 1.3);height:calc(var(--arfs) * 1.3);flex:none;border-radius:50%;border:2px solid var(--sub);display:flex;
+  align-items:center;justify-content:center;font-weight:800;font-size:calc(var(--arfs) * .72);color:var(--sub)}
+.ar-opt .v{flex:1;font-size:calc(var(--arfs) * .9);line-height:1.4;word-break:break-word}
+.ar-opt.sel{border-color:var(--ar-accent);background:var(--gold-bg)}
+.ar-opt.sel .k{background:var(--ar-accent);border-color:var(--ar-accent);color:#fff}
+.ar-opt.correct{border-color:var(--ok);background:var(--ok-bg)}
+.ar-opt.correct .k{background:var(--ok);border-color:var(--ok);color:#fff}
+.ar-opt.wrong{border-color:var(--err);background:var(--err-bg)}
+.ar-opt.wrong .k{background:var(--err);border-color:var(--err);color:#fff}
+.ar-opt.dim{opacity:.5}
+.ar-fb{margin-top:calc(var(--arfs) * .4);border-radius:calc(var(--arfs) * .5);
+  padding:calc(var(--arfs) * .38) calc(var(--arfs) * .58);font-weight:700;font-size:calc(var(--arfs) * .78);display:none}
+.ar-fb.show{display:block}
+.ar-fb.ok{background:var(--ok-bg);color:var(--ok)}
+.ar-fb.err{background:var(--err-bg);color:var(--err)}
+.ar-submit{width:100%;margin-top:calc(var(--arfs) * .5);padding:calc(var(--arfs) * .55) calc(var(--arfs) * .6);
+  font-size:calc(var(--arfs) * .86);font-weight:900;border:none;
+  border-radius:calc(var(--arfs) * .5);background:var(--ar-chal);color:#fff;cursor:pointer}
+.ar-champ .ar-submit{background:var(--ar-champ)}
+.ar-submit:disabled{opacity:.35;cursor:not-allowed}
+
+/* ---------- 底部：候选席 + 主操作大按钮 ---------- */
+.ar-bottom{display:grid;grid-template-columns:1fr 320px;gap:16px;padding:6px 16px 16px;align-items:start}
+.ar-picks{background:var(--ar-chal-bg);border:2px solid var(--ar-chal);border-radius:16px;padding:12px 14px}
+.ar-picks-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:900;font-size:15px;color:var(--ar-chal);margin-bottom:10px}
+.ar-picks-tip{font-size:12px;font-weight:700;color:var(--sub)}
+.ar-picklist{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ar-pick{background:var(--card);border:2px solid var(--ar-chal);border-radius:14px;padding:12px 10px;text-align:center;
+  cursor:pointer;transition:.12s}
+.ar-pick:hover{background:var(--ar-chal-bg)}
+.ar-pick.on{background:var(--ar-chal);border-color:var(--ar-chal);color:#fff}
+.ar-pick .pn{display:block;font-size:19px;font-weight:900;line-height:1.3}
+.ar-pick .ps{display:block;font-size:12px;color:var(--sub);margin-top:3px}
+.ar-pick.on .ps{color:rgba(255,255,255,.85)}
+.ar-picklist .ar-empty{grid-column:1/-1;font-size:14px;color:var(--sub);text-align:center;padding:10px}
+
+.ar-actions{text-align:center}
+.ar-go{display:block;width:100%;padding:18px 12px;font-size:22px;font-weight:900;border:none;border-radius:16px;
+  background:var(--ar-champ);color:#fff;cursor:pointer;box-shadow:var(--shadow-md)}
+.ar-go:active{transform:translateY(1px)}
+.ar-go:disabled{opacity:.4;cursor:not-allowed}
+.ar-note{font-size:12px;color:var(--sub);margin:6px 0 8px;line-height:1.6}
+.ar-sub-actions{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+
+/* ---------- 遮罩与告示 ---------- */
+.ar-mask{position:fixed;inset:0;background:var(--mask-bg);z-index:70;display:flex;align-items:center;justify-content:center;padding:20px}
+.ar-mask.hidden{display:none}
+.ar-notice{background:var(--card);border:3px solid var(--ar-accent);border-radius:20px;padding:0;width:100%;
+  max-width:880px;max-height:92vh;overflow:auto;box-shadow:var(--shadow-lg)}
+.ar-notice-top{background:var(--ar-champ);color:#fff;font-size:24px;font-weight:900;padding:14px 20px;
+  border-radius:16px 16px 0 0;letter-spacing:2px}
+.ar-notice-main{font-size:22px;font-weight:900;color:var(--txt);padding:16px 20px 6px;line-height:1.5}
+.ar-notice-main b{color:var(--ar-champ)}
+.ar-notice-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:10px 20px}
+.ar-notice-col{background:var(--card-2);border:1px solid var(--line);border-radius:14px;padding:12px}
+.ar-col-h{font-weight:900;font-size:14px;margin-bottom:8px;color:var(--txt)}
+.ar-col-body{font-size:13px;line-height:1.9;color:var(--sub);max-height:220px;overflow:auto}
+.ar-col-body .ar-row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:2px 0}
+.ar-col-body .ar-row b{color:var(--txt)}
+.ar-notice-foot{font-size:12px;color:var(--sub);padding:6px 20px}
+.ar-notice-actions{display:flex;gap:10px;justify-content:flex-end;padding:12px 20px 18px;flex-wrap:wrap}
+.ar-notice-slim{max-width:640px}
+.ar-notice-slim .ar-notice-top{background:var(--ar-accent);font-size:20px;letter-spacing:1px}
+
+.ar-cfg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 20px 6px}
+.ar-cfg-item label{display:block;font-size:13px;color:var(--sub);margin-bottom:5px}
+.ar-cfg-item input{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--txt);
+  border-radius:9px;padding:9px 11px;font-size:15px}
+.ar-cfg-block{padding:10px 20px 4px}
+.ar-cfg-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:800;font-size:14px;margin-bottom:8px}
+.ar-cfg-h .muted{font-size:12px;color:var(--sub);font-weight:700}
+.ar-quick{margin-left:auto;display:flex;gap:6px}
+.ar-quick .ar-btn{padding:5px 12px;font-size:13px}
+.ar-mods{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ar-mod{position:relative;background:var(--card);border:2px solid var(--line);border-radius:12px;
+  padding:9px 32px 9px 11px;cursor:pointer;text-align:left}
+.ar-mod .mn{display:block;font-weight:700;font-size:13px;line-height:1.3}
+.ar-mod .mi{display:block;font-size:11px;color:var(--sub);margin-top:2px}
+.ar-mod .ck{position:absolute;top:9px;right:9px;width:18px;height:18px;border-radius:6px;border:2px solid var(--mut)}
+.ar-mod.on{border-color:var(--ar-champ);background:var(--ar-champ-bg)}
+.ar-mod.on .ck{background:var(--ar-champ);border-color:var(--ar-champ)}
+
+.ar-toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:90;background:var(--ar-champ);color:#fff;
+  padding:11px 22px;border-radius:12px;font-weight:800;font-size:15px;opacity:0;pointer-events:none;transition:.25s;max-width:90vw}
+.ar-toast.show{opacity:1}
+
+/* ---------- 一屏布局：宽屏锁成一屏，窄屏回退整页滚动（与 PK 同一策略） ---------- */
+body.arena-mode .app{max-width:none}
+@media (min-width:901px){
+  body.arena-mode .app{height:100vh;overflow:hidden}
+  /* 同 PK：底部页签压在候选席卡片和「重开/结算」按钮上，投屏模式下让它占自己的一行 */
+  /* 同 PK：投屏模式下底部页签整条让位（否则候选席卡片下沿被切），退出走横幅「🏠 首页」 */
+  body.arena-mode .tabs{display:none}
+  body.arena-mode .ar-btn .tb-lb{display:none}
+  body.arena-mode #arenaPage{height:auto;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+}
+@media (max-width:900px){
+  .ar-stage{grid-template-columns:1fr}
+  .ar-bottom{grid-template-columns:1fr}
+  .ar-notice-grid{grid-template-columns:1fr}
+  .ar-cfg-grid{grid-template-columns:1fr}
+  .ar-champ-line{font-size:20px}
+}
+@media (min-width:1600px){
+  .ar-seat{--arfs:26px}
+  .ar-champ-line{font-size:30px}
+  .ar-go{font-size:26px}
+}

@@ -285,14 +285,28 @@
   /* ---------- 面板切换 ---------- */
   var TABS = ['home', 'setup', 'wrong', 'diag', 'pk'];
   function showPanel(name) {
-    // PK 页要占满整屏（投屏两侧各一半），其余页保持 760px 居中列
+    // PK / 擂台赛要占满整屏（投屏两侧各一半），其余页保持 760px 居中列
     document.body.classList.toggle('pk-mode', name === 'pk');
+    document.body.classList.toggle('arena-mode', name === 'arena');
     TABS.forEach(function (t) {
       if (t === 'pk') return; // PK 容器 id 为 pkPage，单独处理
       var el = $(t); if (el) el.classList.add('hidden');
     });
     var pkEl = document.getElementById('pkPage');
     if (pkEl) pkEl.classList.add('hidden');
+    var arEl = document.getElementById('arenaPage');
+    if (arEl) arEl.classList.add('hidden');
+    if (name === 'arena') {
+      if (arEl) arEl.classList.remove('hidden');
+      if (window.__ARENA_MOUNT) window.__ARENA_MOUNT();
+      if (window.__ARENA_REFRESH) window.__ARENA_REFRESH();
+      var tbA = document.getElementById('tabs'); if (tbA) tbA.classList.remove('hidden');
+      var nbA = document.getElementById('navbar'); if (nbA) nbA.classList.add('hidden');
+      // 擂台赛不是底部页签：让所有页签都不高亮，避免和 PK 混淆
+      document.querySelectorAll('.tab').forEach(function (el) { el.classList.remove('on'); });
+      window.scrollTo(0, 0);
+      return;
+    }
     if (name === 'pk') {
       if (pkEl) { pkEl.classList.remove('hidden'); }
       if (window.__PK_MOUNT) window.__PK_MOUNT();
@@ -407,6 +421,11 @@
     on('entCardDiag', 'onclick', function () { switchTab('diag'); });
     on('entCardSim', 'onclick', function () { startSession({ kind: 'sim' }); });
     on('entCardPk', 'onclick', function () { switchTab('pk'); });
+    on('entCardArena', 'onclick', function () { switchTab('arena'); });
+    window.__ARENA_ONLEAVE = function () { switchTab('pk'); };
+    // 投屏模式（PK / 擂台）把底部页签整条让给题面，退出入口在这两个模块的顶栏里
+    window.__PK_ONLEAVE = function () { switchTab('home'); };
+    window.__ARENA_GO_HOME = function () { switchTab('home'); };
     document.querySelectorAll('[data-theme-toggle]').forEach(function (b) { b.onclick = toggleTheme; });
     applyTheme(currentTheme());
     on('wrongStartBtn', 'onclick', function () { startSession({ kind: 'wrong' }); });

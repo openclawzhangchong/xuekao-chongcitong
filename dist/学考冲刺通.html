@@ -58,6 +58,14 @@ html[data-theme="light"] {
   --r-d: #b91c1c;
   --r-bg: rgba(220, 38, 38, .07);
 
+  /* 擂台赛专用色（刻意不用上面的 --l/--r 蓝红，保证和双人 PK 一眼能分辨） */
+  --ar-champ: #b42318;
+  --ar-champ-bg: #fff5ed;
+  --ar-chal: #0f766e;
+  --ar-chal-bg: #effaf7;
+  --ar-stage-bg: #fbf7ef;
+  --ar-accent: #a16207;
+
   /* 面板/遮罩 */
   --panel-bg: #ffffff;
   --panel-left-bg: linear-gradient(180deg, rgba(37, 99, 235, .06), transparent 30%), #ffffff;
@@ -129,6 +137,14 @@ html[data-theme="dark"] {
   --r-l: rgba(248, 113, 113, .16);
   --r-d: #ef4444;
   --r-bg: rgba(248, 113, 113, .08);
+
+  /* 擂台赛专用色 · 深色 */
+  --ar-champ: #f97066;
+  --ar-champ-bg: rgba(249, 112, 102, .10);
+  --ar-chal: #5eead4;
+  --ar-chal-bg: rgba(94, 234, 212, .10);
+  --ar-stage-bg: #1a2233;
+  --ar-accent: #facc15;
 
   --panel-bg: #151f33;
   --panel-left-bg: linear-gradient(180deg, rgba(96, 165, 250, .10), transparent 30%), #151f33;
@@ -502,23 +518,42 @@ body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;backgroun
 /* 对战区中间一条竖分割线：投屏时两半一眼分开；窄屏堆叠时不需要，见下方媒体查询 */
 #pkArena::before{content:'';position:absolute;left:50%;top:14px;bottom:14px;width:2px;margin-left:-1px;
   background:var(--line-2);border-radius:1px;pointer-events:none}
-/* 一屏自适应：字号由 --pkfs 驱动，fitSide() 逐级下调；缩到下限仍装不下才允许该侧滚动 */
+/* 一屏自适应：字号由 --pkfs 驱动，fitSide() 逐级下调；缩到下限仍装不下才允许该侧滚动。
+ * 注意：不只是题目文字，选项内边距/圆片/间距/头部分数这些「占高度的零件」也必须跟着
+ * --pkfs 走——否则缩字号缩不动总高，投屏上每题都会顶到 16px 下限并开始滚动。 */
 #pkArena{align-items:stretch}
 #pkArena .panel{--pkfs:23px;min-height:0;overflow:hidden}
 #pkArena .panel.pkfit-scroll{overflow:auto}
-#pkArena .qstem{font-size:var(--pkfs)}
-#pkArena .opt{min-height:calc(var(--pkfs) + 28px)}
-#pkArena .opt .v{font-size:calc(var(--pkfs) - 5px)}
-#pkArena .opt .k{font-size:calc(var(--pkfs) - 8px)}
-#pkArena .feedback{font-size:calc(var(--pkfs) - 7px)}
-#pkArena .submit-btn{font-size:calc(var(--pkfs) - 4px)}
+#pkArena .phead{margin-bottom:calc(var(--pkfs) * .32);gap:calc(var(--pkfs) * .42)}
+#pkArena .pname{font-size:calc(var(--pkfs) * 1.3)}
+#pkArena .pscore{font-size:calc(var(--pkfs) * 1.7)}
+#pkArena .progress{height:calc(var(--pkfs) * .36);margin:calc(var(--pkfs) * .26) 0 calc(var(--pkfs) * .5)}
+#pkArena .muted{font-size:calc(var(--pkfs) * .7)}
+#pkArena .qmeta{font-size:calc(var(--pkfs) * .7);margin-bottom:calc(var(--pkfs) * .28)}
+#pkArena .qstem{font-size:var(--pkfs);margin:calc(var(--pkfs) * .26) 0 calc(var(--pkfs) * .7);line-height:1.5}
+#pkArena .opts{gap:calc(var(--pkfs) * .4)}
+#pkArena .opt{padding:calc(var(--pkfs) * .42) calc(var(--pkfs) * .66);min-height:calc(var(--pkfs) * 1.8);
+  gap:calc(var(--pkfs) * .5);border-radius:calc(var(--pkfs) * .55)}
+#pkArena .opt .k{width:calc(var(--pkfs) * 1.35);height:calc(var(--pkfs) * 1.35);font-size:calc(var(--pkfs) * .78)}
+#pkArena .opt .v{font-size:calc(var(--pkfs) * .92);line-height:1.4}
+#pkArena .feedback{font-size:calc(var(--pkfs) * .78);margin-top:calc(var(--pkfs) * .4);
+  padding:calc(var(--pkfs) * .4) calc(var(--pkfs) * .58)}
+#pkArena .submit-btn{font-size:calc(var(--pkfs) * .88);margin-top:calc(var(--pkfs) * .55);
+  padding:calc(var(--pkfs) * .58) calc(var(--pkfs) * .7);border-radius:calc(var(--pkfs) * .5)}
 /* PK 页永远全宽（手机上也该全宽） */
 body.pk-mode .app{max-width:none}
 /* 「锁成一屏」只用于宽屏投屏/电脑：窄屏手机上顶栏会换行占掉大半高度，
  * 若照样锁高，题面会被挤到只剩几十像素——所以窄屏回退成普通文档流滚动。 */
 @media (min-width:901px){
   body.pk-mode .app{height:100vh;overflow:hidden}
-  body.pk-mode #pkPage{height:100%;display:flex;flex-direction:column;overflow:hidden}
+  /* 底部页签在投屏模式下改成普通流：它是 position:fixed 时会压在「选择答案后提交」
+   * 按钮上半截遮住——PK 两侧面板因此各少一条能点的按钮。 */
+  /* 投屏/宽屏：底部页签整条藏掉（65px 还给题面），退出走顶栏「🏠 首页」。
+   * 之前它 position:fixed 压在「选择答案后提交」按钮上半截，实测 1366×768 两边都点不着。 */
+  body.pk-mode .tabs{display:none}
+  /* 顶栏按钮多了一个「🏠 首页」：把主题按钮收成纯图标，避免这一行换行吃掉题面高度 */
+  body.pk-mode .tbtn .tb-lb{display:none}
+  body.pk-mode #pkPage{height:auto;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden}
   body.pk-mode #pkArena{flex:1;min-height:0}
   body.pk-mode #pkSetup{flex:1;min-height:0;overflow:auto}
   body.pk-solo{height:100vh;overflow:hidden;display:flex;flex-direction:column}
@@ -656,6 +691,170 @@ body.pk-mode .app{max-width:none}
   #pkArena .panel{--pkfs:27px}
 }
 
+/* =====================================================================
+ * 擂台赛样式（.ar-* 选择器 + --ar-* 配色变量）
+ * 刻意与双人 PK 区分：不用 --l/--r 蓝红对撞，改成朱红擂主 / 青竹挑战者 /
+ * 宣纸擂台底 / 麦金连胜；舞台 30%+70% 不对称；主操作在底部居中大按钮。
+ * 通用控件（深色、设置、关闭）保持与 PK 相同的交互位置，避免教师重新找。
+ * ===================================================================== */
+
+/* ---------- 顶部横幅 ---------- */
+.ar-banner{position:sticky;top:0;z-index:40;background:var(--ar-stage-bg);border-bottom:3px solid var(--ar-accent);
+  padding:10px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.ar-brand{font-size:22px;font-weight:900;color:var(--ar-champ);letter-spacing:1px}
+.ar-champ-line{flex:1;min-width:220px;font-size:26px;font-weight:900;color:var(--txt);text-align:center;line-height:1.25}
+.ar-champ-line b{color:var(--ar-champ)}
+.ar-meta{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--sub);font-weight:700}
+.ar-tools{display:flex;gap:8px;flex-wrap:wrap}
+
+.ar-btn{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:10px;
+  padding:9px 15px;font-size:15px;font-weight:700;cursor:pointer}
+.ar-btn:active{transform:translateY(1px)}
+.ar-btn.primary{background:var(--ar-champ);border-color:var(--ar-champ);color:#fff}
+.ar-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ---------- 舞台：30% 擂主席 + 70% 挑战者席 ---------- */
+.ar-stage{display:grid;grid-template-columns:30% 1fr;gap:16px;padding:14px 16px;align-items:stretch;flex:1;min-height:0}
+.ar-seat{border-radius:16px;padding:calc(var(--arfs) * .6) calc(var(--arfs) * .7);border:3px solid var(--line);min-height:0;overflow:hidden;
+  display:flex;flex-direction:column;--arfs:22px}
+.ar-seat.ar-pkfit-scroll{overflow:auto}
+.ar-champ{border-color:var(--ar-champ);background:var(--ar-champ-bg)}
+.ar-chal{border-color:var(--ar-chal);background:var(--panel-bg)}
+.ar-head{display:flex;align-items:center;gap:calc(var(--arfs) * .42);flex-wrap:wrap;margin-bottom:calc(var(--arfs) * .32)}
+.ar-crown{font-size:calc(var(--arfs) * .6);font-weight:900;color:#fff;background:var(--ar-champ);
+  border-radius:99px;padding:calc(var(--arfs) * .12) calc(var(--arfs) * .52)}
+.ar-chal .ar-crown{background:var(--ar-chal)}
+.ar-name{font-size:calc(var(--arfs) * 1.15);font-weight:900;color:var(--ar-champ)}
+.ar-chal .ar-name{color:var(--ar-chal)}
+.ar-score{font-size:calc(var(--arfs) * 1.55);font-weight:900;margin-left:auto;color:var(--txt);font-variant-numeric:tabular-nums}
+.ar-prog{height:calc(var(--arfs) * .32);background:var(--line);border-radius:99px;overflow:hidden;
+  margin:calc(var(--arfs) * .2) 0 calc(var(--arfs) * .28)}
+.ar-prog>i{display:block;height:100%;border-radius:99px;background:var(--ar-accent);transition:width .3s}
+.ar-prog-text{font-size:calc(var(--arfs) * .62);color:var(--sub);margin-bottom:calc(var(--arfs) * .26)}
+.ar-meta-line{font-size:calc(var(--arfs) * .66);color:var(--sub);display:flex;gap:calc(var(--arfs) * .35);
+  flex-wrap:wrap;margin-bottom:calc(var(--arfs) * .28)}
+.ar-meta-line .artype{font-weight:900;color:var(--ar-accent)}
+.ar-wait{font-size:calc(var(--arfs) * .8);line-height:1.9;color:var(--sub);background:var(--card);border:1px dashed var(--line);
+  border-radius:12px;padding:14px 16px}
+
+/* 题目区：字号由 --arfs 驱动，fitSeat 逐级下调，下限之后开内部滚动。
+ * 占高度的零件（内边距/圆片/间距/头部分数）一律跟着 --arfs 走，否则缩字号缩不动总高。 */
+.ar-qstem{font-size:var(--arfs);font-weight:700;line-height:1.5;margin:calc(var(--arfs) * .26) 0 calc(var(--arfs) * .62);
+  word-break:break-word;white-space:pre-wrap}
+.ar-opts{display:flex;flex-direction:column;gap:calc(var(--arfs) * .38)}
+.ar-opt{display:flex;gap:calc(var(--arfs) * .5);align-items:flex-start;background:var(--opt-bg);border:2px solid var(--line);
+  border-radius:calc(var(--arfs) * .55);padding:calc(var(--arfs) * .4) calc(var(--arfs) * .6);cursor:pointer;transition:.12s;
+  min-height:calc(var(--arfs) * 1.75)}
+.ar-opt:hover{border-color:var(--line-2);background:var(--opt-hover)}
+.ar-opt .k{width:calc(var(--arfs) * 1.3);height:calc(var(--arfs) * 1.3);flex:none;border-radius:50%;border:2px solid var(--sub);display:flex;
+  align-items:center;justify-content:center;font-weight:800;font-size:calc(var(--arfs) * .72);color:var(--sub)}
+.ar-opt .v{flex:1;font-size:calc(var(--arfs) * .9);line-height:1.4;word-break:break-word}
+.ar-opt.sel{border-color:var(--ar-accent);background:var(--gold-bg)}
+.ar-opt.sel .k{background:var(--ar-accent);border-color:var(--ar-accent);color:#fff}
+.ar-opt.correct{border-color:var(--ok);background:var(--ok-bg)}
+.ar-opt.correct .k{background:var(--ok);border-color:var(--ok);color:#fff}
+.ar-opt.wrong{border-color:var(--err);background:var(--err-bg)}
+.ar-opt.wrong .k{background:var(--err);border-color:var(--err);color:#fff}
+.ar-opt.dim{opacity:.5}
+.ar-fb{margin-top:calc(var(--arfs) * .4);border-radius:calc(var(--arfs) * .5);
+  padding:calc(var(--arfs) * .38) calc(var(--arfs) * .58);font-weight:700;font-size:calc(var(--arfs) * .78);display:none}
+.ar-fb.show{display:block}
+.ar-fb.ok{background:var(--ok-bg);color:var(--ok)}
+.ar-fb.err{background:var(--err-bg);color:var(--err)}
+.ar-submit{width:100%;margin-top:calc(var(--arfs) * .5);padding:calc(var(--arfs) * .55) calc(var(--arfs) * .6);
+  font-size:calc(var(--arfs) * .86);font-weight:900;border:none;
+  border-radius:calc(var(--arfs) * .5);background:var(--ar-chal);color:#fff;cursor:pointer}
+.ar-champ .ar-submit{background:var(--ar-champ)}
+.ar-submit:disabled{opacity:.35;cursor:not-allowed}
+
+/* ---------- 底部：候选席 + 主操作大按钮 ---------- */
+.ar-bottom{display:grid;grid-template-columns:1fr 320px;gap:16px;padding:6px 16px 16px;align-items:start}
+.ar-picks{background:var(--ar-chal-bg);border:2px solid var(--ar-chal);border-radius:16px;padding:12px 14px}
+.ar-picks-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:900;font-size:15px;color:var(--ar-chal);margin-bottom:10px}
+.ar-picks-tip{font-size:12px;font-weight:700;color:var(--sub)}
+.ar-picklist{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ar-pick{background:var(--card);border:2px solid var(--ar-chal);border-radius:14px;padding:12px 10px;text-align:center;
+  cursor:pointer;transition:.12s}
+.ar-pick:hover{background:var(--ar-chal-bg)}
+.ar-pick.on{background:var(--ar-chal);border-color:var(--ar-chal);color:#fff}
+.ar-pick .pn{display:block;font-size:19px;font-weight:900;line-height:1.3}
+.ar-pick .ps{display:block;font-size:12px;color:var(--sub);margin-top:3px}
+.ar-pick.on .ps{color:rgba(255,255,255,.85)}
+.ar-picklist .ar-empty{grid-column:1/-1;font-size:14px;color:var(--sub);text-align:center;padding:10px}
+
+.ar-actions{text-align:center}
+.ar-go{display:block;width:100%;padding:18px 12px;font-size:22px;font-weight:900;border:none;border-radius:16px;
+  background:var(--ar-champ);color:#fff;cursor:pointer;box-shadow:var(--shadow-md)}
+.ar-go:active{transform:translateY(1px)}
+.ar-go:disabled{opacity:.4;cursor:not-allowed}
+.ar-note{font-size:12px;color:var(--sub);margin:6px 0 8px;line-height:1.6}
+.ar-sub-actions{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+
+/* ---------- 遮罩与告示 ---------- */
+.ar-mask{position:fixed;inset:0;background:var(--mask-bg);z-index:70;display:flex;align-items:center;justify-content:center;padding:20px}
+.ar-mask.hidden{display:none}
+.ar-notice{background:var(--card);border:3px solid var(--ar-accent);border-radius:20px;padding:0;width:100%;
+  max-width:880px;max-height:92vh;overflow:auto;box-shadow:var(--shadow-lg)}
+.ar-notice-top{background:var(--ar-champ);color:#fff;font-size:24px;font-weight:900;padding:14px 20px;
+  border-radius:16px 16px 0 0;letter-spacing:2px}
+.ar-notice-main{font-size:22px;font-weight:900;color:var(--txt);padding:16px 20px 6px;line-height:1.5}
+.ar-notice-main b{color:var(--ar-champ)}
+.ar-notice-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:10px 20px}
+.ar-notice-col{background:var(--card-2);border:1px solid var(--line);border-radius:14px;padding:12px}
+.ar-col-h{font-weight:900;font-size:14px;margin-bottom:8px;color:var(--txt)}
+.ar-col-body{font-size:13px;line-height:1.9;color:var(--sub);max-height:220px;overflow:auto}
+.ar-col-body .ar-row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:2px 0}
+.ar-col-body .ar-row b{color:var(--txt)}
+.ar-notice-foot{font-size:12px;color:var(--sub);padding:6px 20px}
+.ar-notice-actions{display:flex;gap:10px;justify-content:flex-end;padding:12px 20px 18px;flex-wrap:wrap}
+.ar-notice-slim{max-width:640px}
+.ar-notice-slim .ar-notice-top{background:var(--ar-accent);font-size:20px;letter-spacing:1px}
+
+.ar-cfg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 20px 6px}
+.ar-cfg-item label{display:block;font-size:13px;color:var(--sub);margin-bottom:5px}
+.ar-cfg-item input{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--txt);
+  border-radius:9px;padding:9px 11px;font-size:15px}
+.ar-cfg-block{padding:10px 20px 4px}
+.ar-cfg-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:800;font-size:14px;margin-bottom:8px}
+.ar-cfg-h .muted{font-size:12px;color:var(--sub);font-weight:700}
+.ar-quick{margin-left:auto;display:flex;gap:6px}
+.ar-quick .ar-btn{padding:5px 12px;font-size:13px}
+.ar-mods{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ar-mod{position:relative;background:var(--card);border:2px solid var(--line);border-radius:12px;
+  padding:9px 32px 9px 11px;cursor:pointer;text-align:left}
+.ar-mod .mn{display:block;font-weight:700;font-size:13px;line-height:1.3}
+.ar-mod .mi{display:block;font-size:11px;color:var(--sub);margin-top:2px}
+.ar-mod .ck{position:absolute;top:9px;right:9px;width:18px;height:18px;border-radius:6px;border:2px solid var(--mut)}
+.ar-mod.on{border-color:var(--ar-champ);background:var(--ar-champ-bg)}
+.ar-mod.on .ck{background:var(--ar-champ);border-color:var(--ar-champ)}
+
+.ar-toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:90;background:var(--ar-champ);color:#fff;
+  padding:11px 22px;border-radius:12px;font-weight:800;font-size:15px;opacity:0;pointer-events:none;transition:.25s;max-width:90vw}
+.ar-toast.show{opacity:1}
+
+/* ---------- 一屏布局：宽屏锁成一屏，窄屏回退整页滚动（与 PK 同一策略） ---------- */
+body.arena-mode .app{max-width:none}
+@media (min-width:901px){
+  body.arena-mode .app{height:100vh;overflow:hidden}
+  /* 同 PK：底部页签压在候选席卡片和「重开/结算」按钮上，投屏模式下让它占自己的一行 */
+  /* 同 PK：投屏模式下底部页签整条让位（否则候选席卡片下沿被切），退出走横幅「🏠 首页」 */
+  body.arena-mode .tabs{display:none}
+  body.arena-mode .ar-btn .tb-lb{display:none}
+  body.arena-mode #arenaPage{height:auto;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+}
+@media (max-width:900px){
+  .ar-stage{grid-template-columns:1fr}
+  .ar-bottom{grid-template-columns:1fr}
+  .ar-notice-grid{grid-template-columns:1fr}
+  .ar-cfg-grid{grid-template-columns:1fr}
+  .ar-champ-line{font-size:20px}
+}
+@media (min-width:1600px){
+  .ar-seat{--arfs:26px}
+  .ar-champ-line{font-size:30px}
+  .ar-go{font-size:26px}
+}
+
 </style>
 </head>
 <body>
@@ -709,6 +908,11 @@ body.pk-mode .app{max-width:none}
           <div class="ic">📊</div><div class="nm">考点诊断</div>
           <div class="ds">133 个考点掌握度</div>
           <span class="bd" id="entDiag">…</span>
+        </div>
+        <div class="entry" id="entCardArena">
+          <div class="ic">🥊</div><div class="nm">擂台赛</div>
+          <div class="ds">一人守擂 · 全班轮流踢馆</div>
+          <span class="bd">投屏专用</span>
         </div>
       </div>
 
@@ -873,6 +1077,7 @@ body.pk-mode .app{max-width:none}
     <button class="tbtn" id="btnCfg">⚙️ 设置</button>
     <button class="tbtn" id="btnSnd">🔊 音效开</button>
     <button class="tbtn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
+    <button class="tbtn" id="btnHome">🏠 首页</button>
   </div>
   <div class="leadrow"><div class="lead-tag tie" id="pkLeadTag">🏆 待开赛</div></div>
   <div class="scorebar">
@@ -1035,6 +1240,128 @@ body.pk-mode .app{max-width:none}
 
 <div class="toast" id="pkToast"></div>
   </div>
+
+  <!-- ==================== 擂台赛（🥊 与双人 PK 的 ⚔️ 刻意不同） ==================== -->
+<div id="arenaPage" class="hidden">
+
+  <!-- 顶部擂台横幅：没有计时器大方块、没有选人下拉，一眼区别于 PK 顶栏 -->
+  <div class="ar-banner">
+    <div class="ar-brand">🥊 课堂擂台</div>
+    <div class="ar-champ-line" id="arBanner">擂台空着 · 第一场先定擂主</div>
+    <div class="ar-meta">
+      <span id="arRoundInfo">第 0 / 10 场</span>
+      <span id="arLeftInfo">候选还剩 36 人</span>
+    </div>
+    <div class="ar-tools">
+      <button class="ar-btn" id="arCfg">⚙️ 擂台设置</button>
+      <button class="ar-btn" id="arSnd">🔊 音效开</button>
+      <button class="ar-btn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
+      <button class="ar-btn" id="arBack">← 回双人 PK</button>
+      <button class="ar-btn" id="arHome">🏠 首页</button>
+    </div>
+  </div>
+
+  <!-- 舞台：左 30% 擂主席（金底）+ 右 70% 挑战者席，不对称 -->
+  <div class="ar-stage" id="arStage">
+    <div class="ar-seat ar-champ" id="arChampSeat">
+      <div class="ar-head">
+        <span class="ar-crown" id="arChampTag">👑 擂主</span>
+        <span class="ar-name" id="arChampName">虚位以待</span>
+        <span class="ar-score" id="arChampScore">0</span>
+      </div>
+      <div class="ar-prog"><i id="arChampProg" style="width:0%"></i></div>
+      <div class="ar-prog-text" id="arChampProgText">已完成 0 / 0 题</div>
+      <div class="ar-meta-line" id="arChampMeta"></div>
+      <div class="ar-body" id="arChampBody">
+        <div class="ar-wait">擂台还空着。从下面挑两位同学打第一场，赢的人坐上擂主位。</div>
+      </div>
+    </div>
+
+    <div class="ar-seat ar-chal" id="arChalSeat">
+      <div class="ar-head">
+        <span class="ar-crown">🥊 挑战者</span>
+        <span class="ar-name" id="arChalName">等待上台</span>
+        <span class="ar-score" id="arChalScore">0</span>
+      </div>
+      <div class="ar-prog"><i id="arChalProg" style="width:0%"></i></div>
+      <div class="ar-prog-text" id="arChalProgText">已完成 0 / 0 题</div>
+      <div class="ar-meta-line" id="arChalMeta"></div>
+      <div class="ar-body" id="arChalBody">
+        <div class="ar-wait">挑战者从右侧候选席里点选。每场题量相同、题目顺序各自打乱。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部：候选席在左、主操作大按钮居中偏下（PK 的开始按钮在右上角，位置刻意不同） -->
+  <div class="ar-bottom">
+    <div class="ar-picks">
+      <div class="ar-picks-h">
+        本轮还没上过的同学
+        <span class="ar-picks-tip" id="arPicksTip">点一个上台</span>
+        <button class="ar-btn" id="arRandPick">🎲 直接随机</button>
+      </div>
+      <div class="ar-picklist" id="arPickList"></div>
+    </div>
+    <div class="ar-actions">
+      <div class="ar-note" id="arNote">题量 5 题 · 每场 2 分钟 · 擂主在左、挑战者在右</div>
+      <button class="ar-go" id="arGo">🥊 开始这一场</button>
+      <div class="ar-sub-actions">
+        <button class="ar-btn" id="arRestart">↻ 重开一轮擂台</button>
+        <button class="ar-btn" id="arStop">🏁 提前结算</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结算告示 -->
+  <div class="ar-mask hidden" id="arResultMask">
+    <div class="ar-notice">
+      <div class="ar-notice-top">🏵 擂台告示</div>
+      <div class="ar-notice-main" id="arResMain"></div>
+      <div class="ar-notice-grid">
+        <div class="ar-notice-col">
+          <div class="ar-col-h">📊 每人上场与胜负</div>
+          <div class="ar-col-body" id="arResTable"></div>
+        </div>
+        <div class="ar-notice-col">
+          <div class="ar-col-h">🪑 本节没上过台的同学</div>
+          <div class="ar-col-body" id="arResNever"></div>
+        </div>
+      </div>
+      <div class="ar-notice-foot">战绩只记在擂台榜，不影响双人 PK 的总排行榜。</div>
+      <div class="ar-notice-actions">
+        <button class="ar-btn" id="arResAgain">🥊 再开一轮</button>
+        <button class="ar-btn" id="arResClose">✕ 关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 擂台设置（独立存储 pk.arena.cfg，不碰 pk.cfg） -->
+  <div class="ar-mask hidden" id="arCfgMask">
+    <div class="ar-notice ar-notice-slim">
+      <div class="ar-notice-top">⚙️ 擂台设置</div>
+      <div class="ar-cfg-grid">
+        <div class="ar-cfg-item"><label>每场题量（1-20）</label><input id="arCfgCount" value="5"></div>
+        <div class="ar-cfg-item"><label>每场计时（分钟）</label><input id="arCfgMinutes" value="2"></div>
+        <div class="ar-cfg-item"><label>一轮场数（3-40）</label><input id="arCfgRounds" value="10"></div>
+      </div>
+      <div class="ar-cfg-block">
+        <div class="ar-cfg-h">出题章节
+          <span class="muted" id="arCfgModsCount"></span>
+          <span class="ar-quick"><button class="ar-btn" id="arCfgModsAll">全选</button><button class="ar-btn" id="arCfgModsNone">清空</button></span>
+        </div>
+        <div class="ar-mods" id="arCfgMods"></div>
+        <div class="ar-note">章节改动从下一场开始生效，本场题目不变。</div>
+      </div>
+      <div class="ar-notice-actions">
+        <button class="ar-btn primary" id="arCfgSave">💾 保存</button>
+        <button class="ar-btn" id="arCfgClose">✕ 关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ar-toast" id="arToast"></div>
+</div>
+
 
   <div class="tabs" id="tabs">
     <button class="tab on" data-t="home"><span class="ti">🏠</span>首页</button>
@@ -1814,6 +2141,20 @@ body.pk-mode .app{max-width:none}
     click: function () {
       if (!isEnabled()) return;
       tone(660, 0, 0.05, 'sine', 0.08);
+    },
+    // 擂台开场：低频两下 + 高音一下（鼓点，与双人 PK 的上行三音明显不同）
+    drum: function () {
+      if (!isEnabled()) return;
+      tone(110, 0, 0.16, 'sine', 0.3);
+      tone(110, 0.2, 0.16, 'sine', 0.3);
+      tone(440, 0.42, 0.34, 'triangle', 0.2);
+    },
+    // 擂台易主：下行两音（擂主被换下的信号）
+    oust: function () {
+      if (!isEnabled()) return;
+      tone(523.25, 0, 0.2, 'triangle', 0.2);
+      tone(392, 0.18, 0.24, 'triangle', 0.2);
+      tone(293.66, 0.4, 0.4, 'triangle', 0.22);
     }
   };
 
@@ -2117,14 +2458,28 @@ window.BANK=[{"m":"M1","kd":"考点 1 · 信息技术的概念及典型应用","
   /* ---------- 面板切换 ---------- */
   var TABS = ['home', 'setup', 'wrong', 'diag', 'pk'];
   function showPanel(name) {
-    // PK 页要占满整屏（投屏两侧各一半），其余页保持 760px 居中列
+    // PK / 擂台赛要占满整屏（投屏两侧各一半），其余页保持 760px 居中列
     document.body.classList.toggle('pk-mode', name === 'pk');
+    document.body.classList.toggle('arena-mode', name === 'arena');
     TABS.forEach(function (t) {
       if (t === 'pk') return; // PK 容器 id 为 pkPage，单独处理
       var el = $(t); if (el) el.classList.add('hidden');
     });
     var pkEl = document.getElementById('pkPage');
     if (pkEl) pkEl.classList.add('hidden');
+    var arEl = document.getElementById('arenaPage');
+    if (arEl) arEl.classList.add('hidden');
+    if (name === 'arena') {
+      if (arEl) arEl.classList.remove('hidden');
+      if (window.__ARENA_MOUNT) window.__ARENA_MOUNT();
+      if (window.__ARENA_REFRESH) window.__ARENA_REFRESH();
+      var tbA = document.getElementById('tabs'); if (tbA) tbA.classList.remove('hidden');
+      var nbA = document.getElementById('navbar'); if (nbA) nbA.classList.add('hidden');
+      // 擂台赛不是底部页签：让所有页签都不高亮，避免和 PK 混淆
+      document.querySelectorAll('.tab').forEach(function (el) { el.classList.remove('on'); });
+      window.scrollTo(0, 0);
+      return;
+    }
     if (name === 'pk') {
       if (pkEl) { pkEl.classList.remove('hidden'); }
       if (window.__PK_MOUNT) window.__PK_MOUNT();
@@ -2239,6 +2594,11 @@ window.BANK=[{"m":"M1","kd":"考点 1 · 信息技术的概念及典型应用","
     on('entCardDiag', 'onclick', function () { switchTab('diag'); });
     on('entCardSim', 'onclick', function () { startSession({ kind: 'sim' }); });
     on('entCardPk', 'onclick', function () { switchTab('pk'); });
+    on('entCardArena', 'onclick', function () { switchTab('arena'); });
+    window.__ARENA_ONLEAVE = function () { switchTab('pk'); };
+    // 投屏模式（PK / 擂台）把底部页签整条让给题面，退出入口在这两个模块的顶栏里
+    window.__PK_ONLEAVE = function () { switchTab('home'); };
+    window.__ARENA_GO_HOME = function () { switchTab('home'); };
     document.querySelectorAll('[data-theme-toggle]').forEach(function (b) { b.onclick = toggleTheme; });
     applyTheme(currentTheme());
     on('wrongStartBtn', 'onclick', function () { startSession({ kind: 'wrong' }); });
@@ -3609,6 +3969,12 @@ window.__PK_MOUNT = function () {
   function bind() {
     $('btnStart').onclick = startPK;
     $('btnRand').onclick = randomMatch;
+    // 投屏模式下底部页签整条让位给题面，退出只能走这里；独立版没有「首页」可回，直接藏掉
+    var hb = $('btnHome');
+    if (hb) {
+      if (window.__PK_ONLEAVE) { hb.style.display = ''; hb.onclick = function () { window.__PK_ONLEAVE(); }; }
+      else hb.style.display = 'none';
+    }
     $('btnReset').onclick = function () {
       if (PK.state === 'running' && !confirm('本轮还在进行中，确定重置？')) return;
       resetRound();
@@ -3711,7 +4077,9 @@ window.__PK_MOUNT = function () {
     PKFS_MIN: PKFS_MIN,
     cfg: function () { return CFG; },
     pk: function () { return PK; },
-    picks: function () { return [pickL, pickR]; }
+    picks: function () { return [pickL, pickR]; },
+    // 供 tools/gate-fit.js 用真实渲染路径逐题量高度（不是重新实现一遍 fitSide）
+    render: function (side) { renderSide(side); }
   };
 
   /* ================= 启动 ================= */
@@ -3751,6 +4119,713 @@ window.__PK_MOUNT = function () {
   try { bind(); } catch (e) { if (window.console) console.error('[PK] bind:', e); }
   try { $('btnSnd').textContent = sndOn ? '🔊 音效开' : '🔇 音效关'; } catch (e) { }
 };
+</script>
+<script>
+/* =====================================================================
+ * 擂台赛专属播报语料 XKA
+ * 与 XKP 的分工：单题答对/答错仍用 XKP（学习反馈口径两个模式必须一致）；
+ * 这里只管擂台事件——开场、守擂成功、擂主被换、挑战者落败、最终结算。
+ * 占位符：{c}=擂主名，{h}=挑战者名，{n}=连胜场数
+ * ===================================================================== */
+(function (root) {
+  'use strict';
+
+  /* 第一场：台上还没有擂主，先定擂主 */
+  var FIRST = [
+    '第一场上擂台，{c}对{h}。这一场赢的人，就是今天的第一个擂主！',
+    '擂台刚支起来，{c}和{h}先来定擂主。谁赢谁坐上去。',
+    '开台第一战：{c}对{h}。擂主之位，就看这一场。',
+    '{c}、{h}两人先打头阵，胜者坐上擂台，其余同学排队等着踢馆。'
+  ];
+
+  /* 每场开场：已有擂主，报挑战者 */
+  var OPEN = [
+    '现在打擂台。擂主{c}，已连胜{n}场。挑战者{h}，上台！',
+    '擂主{c}守台{n}场，{h}来踢馆。两位各答各的题，赢的留下。',
+    '{h}走上擂台，向守擂{n}场的{c}挑战。开始！',
+    '第{n}场守擂：{c}坐台，{h}上台。谁答得又快又准，谁留在台上。',
+    '擂台挑战开始：{c}对{h}。{c}要守住，{h}要抢下。',
+    '{h}要撼动已经连胜{n}场的{c}。历史上这种挑战，多半守得住——来试试。'
+  ];
+
+  /* 擂主守住 */
+  var HOLD = [
+    '{c}守住了！这是第{n}场连赢，擂台还没人撼得动。',
+    '又是{c}！连胜{n}场，挑战者一个都没拿下擂台。',
+    '{c}稳稳守住，连胜涨到{n}场。这位同学今天状态在线。',
+    '擂主还是{c}，{n}场连赢。台下还有谁想试？',
+    '{c}又一次站到最后，连胜{n}场。这手感，是刷了多少题换来的。',
+    '守住咯！{c}把第{n}场胜利收入囊中。',
+    '{c}连守{n}场，擂台上的位置越来越稳。',
+    '第{n}次守擂成功，{c}这道墙还挺硬。',
+    '{c}又赢了，{n}场连赢。挑战者们别灰心，接着上。',
+    '{n}场连赢！{c}现在全班都知道你厉害了。'
+  ];
+
+  /* 擂主被换（挑战者抢下擂台） */
+  var OUST = [
+    '擂台换主人！{h}把{c}请下了台，新擂主诞生。',
+    '{h}赢了！{c}的连胜到此为止，现在擂主是{h}。',
+    '爆冷了！{h}掀翻擂主{c}，坐上擂台。',
+    '{h}抢下擂台，{c}守擂结束。下一位挑战者，准备。',
+    '新擂主{h}！从{c}手里接过来的，位置烫手，看你能守几场。',
+    '{c}守到头了，{h}成为新擂主。这就是擂台的魅力。',
+    '{h}把擂主之位夺走，{c}回座位复盘去。{h}，接下来轮到你守。',
+    '擂台易主：{h}胜出，{c}下台。掌声给两位。'
+  ];
+
+  /* 挑战者落败（回座位） */
+  var FALL = [
+    '{h}差一口气。回去练两手，下一场再来。',
+    '这一场{h}没抢下擂台。别灰心，能上台就已经赢了胆量。',
+    '{h}下台。错题本里看一眼刚才错在哪，下次更稳。',
+    '{h}没能撼动擂主。不过敢上擂台的同学，本身就值得表扬。',
+    '{h}这场输了，但答对的题也不少。回去补补，再来踢馆。',
+    '挑战失败，{h}回座位。擂台还在，机会还有。'
+  ];
+
+  /* 本场擂台结束（满 N 场结算） */
+  var FINAL = [
+    '本场擂台结束，{c}守住{n}场，是本节课的擂主！',
+    '擂台收摊。最终擂主{c}，连胜{n}场，全班最稳的就是你。',
+    '今天打到这里，擂主是{c}，守了{n}场。其他同学下次再战。',
+    '结算完成：{c}以{n}场连胜坐上最终擂主之位，掌声送上！',
+    '本场擂台的擂主——{c}，连胜{n}场。这份手感，明天继续保持。',
+    '收台！{c}守住{n}场成为擂主，没上过台的同学下节课优先安排。'
+  ];
+
+  function fill(tpl, map) {
+    return tpl.replace(/\{([chn])\}/g, function (m, k) { return map[k] == null ? '' : String(map[k]); });
+  }
+  function pick(arr, map) {
+    return fill(arr[Math.floor(Math.random() * arr.length)], map);
+  }
+
+  var XKA = {
+    first: function (c, h) { return pick(FIRST, { c: c, h: h }); },
+    open: function (c, h, n) { return pick(OPEN, { c: c, h: h, n: n }); },
+    hold: function (c, n) { return pick(HOLD, { c: c, h: c, n: n }); },
+    oust: function (c, h) { return pick(OUST, { c: c, h: h }); },
+    fall: function (h) { return pick(FALL, { c: h, h: h }); },
+    final: function (c, n) { return pick(FINAL, { c: c, h: c, n: n }); },
+    count: function () { return FIRST.length + OPEN.length + HOLD.length + OUST.length + FALL.length + FINAL.length; },
+    pools: function () { return { first: FIRST, open: OPEN, hold: HOLD, oust: OUST, fall: FALL, final: FINAL }; },
+    allTemplates: function () { return [].concat(FIRST, OPEN, HOLD, OUST, FALL, FINAL); }
+  };
+
+  root.XKA = XKA;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* =====================================================================
+ * 课堂擂台赛 · 应用逻辑
+ * 与双人 PK 的关系：只读 pk.roster / pk.snd / xkc.sfx，绝不写它们；
+ * 自己的战绩与设置分别存 pk.arena.v1 / pk.arena.cfg。
+ * 判分、抽题、一屏自适应全部复用 engine.js 的纯函数，不复制第二份实现。
+ * ===================================================================== */
+window.__ARENA_MOUNT = function () {
+  'use strict';
+  if (window.__ARENA_MOUNTED) { window.__ARENA_REFRESH && window.__ARENA_REFRESH(); return; }
+  window.__ARENA_MOUNTED = true;
+
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return (s == null ? '' : String(s)).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function load(k, fb) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } }
+  function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
+
+  var K_ROSTER = 'pk.roster', K_SND = 'pk.snd', K_CFG = 'pk.cfg', K_LOG = 'pk.arena.v1', K_ARCFG = 'pk.arena.cfg';
+  var ARFS_MIN = 16;
+
+  var DEFAULT_ROSTER = [];
+  (function () {
+    var names = ['陈博杰', '陈嘉伟', '陈凯棋', '陈晓璐', '陈羽韩', '陈紫欣', '程伟杰', '邓志', '何静', '黄凯杰', '黄晓伟', '李航',
+      '林静静', '林烨凯', '林泽豪', '林志灵', '凌峰', '刘晨希', '刘椿尧', '刘智伟', '倪皓轩', '沈金龙', '宋海龙', '宋政烨',
+      '王依晨', '翁晨辉', '谢志豪', '颜琦镔', '叶睿晨', '游子鹏', '张亿乐', '赵伟坤', '郑杨鸿', '郑子添', '朱炫杰', '朱紫寒'];
+    for (var i = 0; i < names.length; i++) DEFAULT_ROSTER.push({ sid: '2025' + (i + 1 < 10 ? '00' : i + 1 < 100 ? '0' : '') + (i + 1), name: names[i] });
+  })();
+
+  /* ================= 只读：名单与音效开关 ================= */
+  function roster() {
+    var r = load(K_ROSTER, null);
+    return Array.isArray(r) && r.length ? r : DEFAULT_ROSTER;
+  }
+  function sndOn() { return load(K_SND, true) !== false; }
+
+  /* ================= 擂台设置（独立存储） ================= */
+  var CFG = load(K_ARCFG, null);
+  if (!CFG || typeof CFG !== 'object') {
+    var pk = load(K_CFG, null) || {};
+    CFG = { count: 5, minutes: 2, rounds: 10, mods: pk.mods ? JSON.parse(JSON.stringify(pk.mods)) : null };
+  }
+  function saveCfg() { save(K_ARCFG, CFG); }
+  function modCodes() {
+    var out = [];
+    (window.BANK_META || []).forEach(function (m) { if (m && m.code) out.push(m.code); });
+    return out;
+  }
+  function normalizeMods() {
+    var codes = modCodes(), m = CFG.mods || {}, out = {};
+    for (var i = 0; i < codes.length; i++) out[codes[i]] = m[codes[i]] !== false;
+    CFG.mods = out;
+  }
+  function modCountOf(code) {
+    var n = 0;
+    for (var i = 0; i < BANK.length; i++) if (BANK[i].m === code) n++;
+    return n;
+  }
+
+  /* ================= 题库 ================= */
+  var BANK = (window.BANK || []).slice();
+
+  /* ================= 战绩（本轮 + 全课累计） ================= */
+  function blankLog() {
+    return { round: 0, champ: null, played: {}, results: [], best: null, allPlayed: {}, streak: 0 };
+  }
+  var LOG = load(K_LOG, null);
+  if (!LOG || typeof LOG !== 'object' || !Array.isArray(LOG.results)) LOG = blankLog();
+  if (!LOG.allPlayed) LOG.allPlayed = {};
+  function saveLog() { save(K_LOG, LOG); }
+
+  /* ================= 本局状态 ================= */
+  var AR = { running: false, left: null, right: null, timerId: null, leftSec: 0,
+    sel: [], picks: [], pool: null, poolPos: 0, defending: false, isExtra: false };
+  function sideObj(key, stu) {
+    return { key: key, sid: stu ? stu.sid : '', name: stu ? stu.name : '', seq: [], idx: 0, score: 0, answered: [], locked: false, done: false };
+  }
+
+  function toast(msg) {
+    var t = $('arToast'); if (!t) return;
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, 2400);
+  }
+
+  /* ================= TTS：固定男声 + 低沉慢速，取不到就兜底 ================= */
+  function zhVoices() {
+    if (!('speechSynthesis' in window)) return [];
+    try { return speechSynthesis.getVoices().filter(function (v) { return /^zh/i.test(v.lang); }); } catch (e) { return []; }
+  }
+  function arenaVoice() {
+    var vs = zhVoices();
+    if (!vs.length) return null;
+    for (var i = 0; i < vs.length; i++) if (/kangkang/i.test(vs[i].name)) return vs[i];
+    return vs[0];
+  }
+  function tts(text, cb) {
+    if (!sndOn() || !('speechSynthesis' in window)) { if (cb) cb(); return; }
+    try {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      var v = arenaVoice();
+      if (v) u.voice = v;
+      u.lang = 'zh-CN';
+      u.pitch = 0.8;   // 比双人 PK 低沉
+      u.rate = 0.92;   // 报幕式放慢
+      if (cb) u.onend = cb;
+      speechSynthesis.speak(u);
+    } catch (e) { if (cb) cb(); }
+  }
+
+  /* ================= 候选席 =================
+   * 候选袋只在挂载/重开一轮时洗一次，之后顺序取出：
+   * 每次调用都重洗会让教师点选时另外两张卡当场换人。
+   * =========================================== */
+  function buildPool() {
+    var rs = roster();
+    AR.pool = window.XK.shuffle(rs.slice());
+    AR.poolPos = 0;
+    AR.washedNote = '';
+  }
+  /* 一批候选里绝不重复同一个人：名单不足 k 人时宁可少给，
+   * 上层据此提示「至少需要 N 人」，避免出现擂主 vs 擂主。 */
+  function nextCandidates(k) {
+    if (!AR.pool || !AR.pool.length) buildPool();
+    var out = [], used = {}, rewashed = false;
+    while (out.length < k) {
+      if (AR.poolPos >= AR.pool.length) {
+        var fresh = 0;
+        AR.pool.forEach(function (s) {
+          if (!used[s.sid] && !(LOG.champ && s.sid === LOG.champ.sid)) fresh++;
+        });
+        if (!fresh) break;
+        buildPool();
+        rewashed = true;
+        continue;
+      }
+      var s = AR.pool[AR.poolPos++];
+      if (LOG.champ && s.sid === LOG.champ.sid) continue;
+      if (used[s.sid]) continue;
+      used[s.sid] = 1;
+      out.push(s);
+    }
+    if (rewashed) AR.washedNote = '本轮候选已用完，已重新洗入全班。';
+    return out;
+  }
+  function ensurePicks() {
+    if (!AR.picks.length) AR.picks = nextCandidates(3);
+    return AR.picks;
+  }
+  function needCount() { return LOG.champ ? 1 : 2; }
+  function renderPicks() {
+    var box = $('arPickList'); if (!box) return;
+    box.innerHTML = '';
+    var cs = ensurePicks();
+    if (!cs.length) {
+      var e = document.createElement('div'); e.className = 'ar-empty';
+      e.textContent = '名单里没人可选了，请先在双人 PK 里导入花名册。';
+      box.appendChild(e);
+    }
+    cs.forEach(function (s) {
+      var d = document.createElement('div');
+      d.className = 'ar-pick' + (AR.sel.indexOf(s) !== -1 ? ' on' : '');
+      d.setAttribute('data-sid', s.sid);
+      var pn = document.createElement('span'); pn.className = 'pn'; pn.textContent = s.name;
+      var ps = document.createElement('span'); ps.className = 'ps';
+      ps.textContent = (LOG.allPlayed[s.sid] || 0) > 0 ? '本课上过 ' + LOG.allPlayed[s.sid] + ' 次' : '还没上过台';
+      d.appendChild(pn); d.appendChild(ps);
+      d.onclick = function () { toggleSel(s); };
+      box.appendChild(d);
+    });
+    var tip = $('arPicksTip');
+    if (tip) tip.textContent = LOG.champ ? '点 1 人上台' : '第一场：点 2 人定擂主';
+    $('arLeftInfo').textContent = '本轮还剩 ' + Math.max(0, AR.pool.length - AR.poolPos) + ' 人未候选';
+    syncGo();
+  }
+  function toggleSel(s) {
+    var at = AR.sel.indexOf(s);
+    if (at !== -1) AR.sel.splice(at, 1);
+    else {
+      if (AR.sel.length >= needCount()) AR.sel.shift();
+      AR.sel.push(s);
+    }
+    renderPicks();
+  }
+  function syncGo() {
+    var go = $('arGo');
+    if (!go) return;
+    go.disabled = AR.running || AR.sel.length !== needCount();
+    go.textContent = AR.running ? '⚔️ 这一场进行中…' : (LOG.champ ? '🥊 开始守擂' : '🥊 开始第一场（定擂主）');
+  }
+
+  /* ================= 横幅与计数 ================= */
+  function renderBanner() {
+    var b = $('arBanner'), tag = $('arChampTag');
+    // 第一场台上还没有擂主：左席是「争擂者」而不是守擂者，名字必须用本局的左位
+    var contesting = AR.running && !AR.defending;
+    if (contesting) {
+      b.innerHTML = '⚔️ 第一场争擂：<b>' + esc(AR.left.name) + '</b> vs <b>' + esc(AR.right.name) + '</b>';
+      if (tag) tag.textContent = '⚔️ 争擂';
+      $('arChampName').textContent = AR.left.name;
+    } else if (LOG.champ) {
+      b.innerHTML = '👑 擂主 <b>' + esc(LOG.champ.name) + '</b> · 已连胜 ' + LOG.streak + ' 场';
+      if (tag) tag.textContent = '👑 擂主（连胜 ' + LOG.streak + '）';
+      $('arChampName').textContent = LOG.champ.name;
+    } else {
+      b.textContent = '擂台空着 · 第一场先定擂主';
+      if (tag) tag.textContent = '👑 擂主';
+      $('arChampName').textContent = '虚位以待';
+    }
+    $('arRoundInfo').textContent = '第 ' + LOG.round + ' / ' + CFG.rounds + ' 场';
+    $('arNote').textContent = '题量 ' + CFG.count + ' 题 · 每场 ' + CFG.minutes + ' 分钟 · ' +
+      (LOG.champ || contesting ? '擂主在左、挑战者在右' : '第一场两位同学争夺擂主之位') +
+      (AR.washedNote ? ' · ' + AR.washedNote : '');
+  }
+
+  /* ================= 一场 ================= */
+  function startRound() {
+    if (AR.running) { toast('这一场还在进行中'); return; }
+    var need = needCount();
+    if (roster().length < need) {
+      toast('擂台赛至少需要 ' + need + ' 位不同的同学，请先在双人 PK 里导入花名册'); return;
+    }
+    if (AR.sel.length !== need) { toast(need === 1 ? '先从候选席点 1 位挑战者' : '第一场要从候选席点 2 位同学'); return; }
+    normalizeMods();
+    var qs = window.XK.pickFromBank(BANK, CFG.mods, CFG.count);
+    if (!qs.length) { toast('没有勾中任何题目，请在「擂台设置」里勾上出题章节'); return; }
+    if (qs.length < CFG.count) toast('所选章节只有 ' + qs.length + ' 题，本场按 ' + qs.length + ' 题进行');
+
+    var leftStu = LOG.champ ? LOG.champ : AR.sel[0];
+    var rightStu = LOG.champ ? AR.sel[0] : AR.sel[1];
+    // 旧候选卡可能还留着刚上台的擂主，教师点它就变成自己踢自己的馆
+    if (rightStu && leftStu && rightStu.sid === leftStu.sid) { toast('这位就是当前擂主，换一位来踢馆'); return; }
+    AR.defending = !!LOG.champ;              // 本局是不是「有擂主守擂」，横幅据此区分
+    AR.left = sideObj('champ', leftStu);
+    AR.right = sideObj('chal', rightStu);
+    AR.left.seq = qs.slice();
+    AR.right.seq = window.XK.shuffle(qs.slice());
+    AR.running = true;
+    AR.leftSec = Math.max(1, CFG.minutes) * 60;
+    if (!AR.isExtra) LOG.round++;     // 加赛不占正式场次
+    AR.isExtra = false;
+    bumpPlayed(leftStu.sid); bumpPlayed(rightStu.sid);
+    saveLog();
+
+    $('arChalName').textContent = rightStu.name;
+    renderSeat('champ'); renderSeat('chal');
+    startTimer();
+    renderBanner(); renderPicks();
+    if (window.XKS) window.XKS.drum();
+    tts(LOG.champ ? window.XKA.open(leftStu.name, rightStu.name, LOG.streak)
+      : window.XKA.first(leftStu.name, rightStu.name));
+  }
+  function bumpPlayed(sid) {
+    if (!sid) return;
+    LOG.played[sid] = (LOG.played[sid] || 0) + 1;
+    LOG.allPlayed[sid] = (LOG.allPlayed[sid] || 0) + 1;
+  }
+
+  /* ================= 面板渲染 ================= */
+  function seatEl(key, suffix) { return $(key === 'champ' ? 'arChamp' + suffix : 'arChal' + suffix); }
+  function renderSeat(key) {
+    var S = key === 'champ' ? AR.left : AR.right;
+    var i = S.idx;
+    seatEl(key, 'Name').textContent = S.name || '—';
+    seatEl(key, 'Score').textContent = S.score;
+    seatEl(key, 'Prog').style.width = (S.seq.length ? Math.round(i / S.seq.length * 100) : 0) + '%';
+    seatEl(key, 'ProgText').textContent = '已完成 ' + i + ' / ' + S.seq.length + ' 题';
+    var body = seatEl(key, 'Body');
+    if (i >= S.seq.length) { body.innerHTML = '<div class="ar-wait">🎉 答完啦，等另一边收尾。</div>'; fitSeat(key); return; }
+    var q = S.seq[i];
+    seatEl(key, 'Meta').innerHTML = '<span class="artype">' + esc(q.qt || '') + '</span><span>第 ' + (i + 1) + ' / ' + S.seq.length + ' 题</span>' +
+      (q.kd ? '<span>' + esc(q.kd) + '</span>' : '');
+    body.innerHTML = '';
+    var stem = document.createElement('div'); stem.className = 'ar-qstem'; stem.textContent = window.XK.cleanStem(q.s); body.appendChild(stem);
+    var opts = document.createElement('div'); opts.className = 'ar-opts';
+    var selNow = S.answered[i] ? S.answered[i].sel : [];
+    q.o.forEach(function (o) {
+      var d = document.createElement('div'); d.className = 'ar-opt';
+      var k = document.createElement('div'); k.className = 'k'; k.textContent = o[0];
+      var v = document.createElement('div'); v.className = 'v'; v.textContent = (o[1] && o[1] !== o[0]) ? o[0] + '. ' + o[1] : o[0];
+      d.appendChild(k); d.appendChild(v);
+      if (selNow.indexOf(o[0]) !== -1) d.classList.add('sel');
+      d.setAttribute('data-key', o[0]);
+      d.onclick = function () { pickOpt(key, o[0]); };
+      opts.appendChild(d);
+    });
+    body.appendChild(opts);
+    var fb = document.createElement('div'); fb.className = 'ar-fb'; fb.id = key === 'champ' ? 'arChampFb' : 'arChalFb'; body.appendChild(fb);
+    var btn = document.createElement('button'); btn.className = 'ar-submit'; btn.id = key === 'champ' ? 'arChampSubmit' : 'arChalSubmit';
+    btn.textContent = selNow.length ? '提交本题' : '选择答案后提交';
+    btn.disabled = S.locked || S.done || !selNow.length;
+    btn.onclick = function () { submitSeat(key); };
+    body.appendChild(btn);
+    fitSeat(key);
+  }
+  function pickOpt(key, k) {
+    var S = key === 'champ' ? AR.left : AR.right;
+    if (S.locked || S.done || !AR.running) return;
+    var q = S.seq[S.idx];
+    if (q.qt === '多选') {
+      if (!S.answered[S.idx]) S.answered[S.idx] = { sel: [] };
+      var arr = S.answered[S.idx].sel, at = arr.indexOf(k);
+      if (at === -1) arr.push(k); else arr.splice(at, 1);
+    } else S.answered[S.idx] = { sel: [k] };
+    var selNow = S.answered[S.idx] ? S.answered[S.idx].sel : [];
+    seatEl(key, 'Body').querySelectorAll('.ar-opt').forEach(function (o) {
+      o.classList.toggle('sel', selNow.indexOf(o.getAttribute('data-key')) !== -1);
+    });
+    var btn = seatEl(key, 'Submit');
+    btn.disabled = !selNow.length; btn.textContent = '提交本题';
+  }
+  function submitSeat(key) {
+    var S = key === 'champ' ? AR.left : AR.right;
+    if (S.locked || S.done || !AR.running) return;
+    var q = S.seq[S.idx];
+    var sel = (S.answered[S.idx] || { sel: [] }).sel.slice();
+    if (!sel.length) return;
+    var right = window.XK.judge(q, sel);
+    S.locked = true;
+    S.answered[S.idx] = { sel: sel, right: right };
+    if (right) S.score++;
+    seatEl(key, 'Body').querySelectorAll('.ar-opt').forEach(function (o) {
+      var k = o.getAttribute('data-key');
+      var isAns = (q.qt === '多选') ? String(q.a).indexOf(k) !== -1 : (k === String(q.a).trim());
+      if (isAns) { o.classList.remove('dim'); o.classList.add('correct'); }
+      else if (sel.indexOf(k) !== -1) { o.classList.remove('dim'); o.classList.add('wrong'); }
+      else o.classList.add('dim');
+    });
+    var fb = seatEl(key, 'Fb');
+    fb.className = 'ar-fb show ' + (right ? 'ok' : 'err');
+    fb.textContent = right ? '✅ 答对！' : '❌ 答错咯，正确答案：' + q.a;
+    if (window.XKS) { if (right) window.XKS.correct(); else window.XKS.wrong(); }
+    if (window.XKP) tts(right ? window.XKP.pickPraise(S.name, S.score) : window.XKP.pickEncourage(S.name));
+    var btn = seatEl(key, 'Submit');
+    btn.disabled = true; btn.textContent = '已提交';
+    setTimeout(function () {
+      btn.disabled = false; btn.textContent = '下一题 →';
+      btn.onclick = function () { nextSeat(key); };
+      fitSeat(key);
+    }, 400);
+    seatEl(key, 'Score').textContent = S.score;
+    seatEl(key, 'Prog').style.width = (S.seq.length ? Math.round(S.idx / S.seq.length * 100) : 0) + '%';
+    seatEl(key, 'ProgText').textContent = '已完成 ' + S.idx + ' / ' + S.seq.length + ' 题';
+  }
+  function nextSeat(key) {
+    var S = key === 'champ' ? AR.left : AR.right;
+    S.locked = false; S.idx++;
+    renderSeat(key);
+    if (AR.left.idx >= AR.left.seq.length && AR.right.idx >= AR.right.seq.length) endRound('both');
+  }
+
+  /* ================= 计时 ================= */
+  function startTimer() {
+    stopTimer();
+    AR.timerId = setInterval(function () {
+      AR.leftSec--;
+      if (AR.leftSec <= 0) { stopTimer(); endRound('timeup'); }
+    }, 1000);
+  }
+  function stopTimer() { if (AR.timerId) { clearInterval(AR.timerId); AR.timerId = null; } }
+
+  /* ================= 判定 ================= */
+  function endRound(reason) {
+    if (!AR.running) return;
+    AR.running = false; stopTimer();
+    AR.left.locked = true; AR.right.locked = true;
+    var L = AR.left.score, R = AR.right.score;
+    var hadChamp = !!LOG.champ;
+    var winner;                       // 'champ' | 'chal'
+    if (L > R) winner = 'champ';
+    else if (R > L) winner = 'chal';
+    else winner = hadChamp ? 'champ' : null;   // 平局：有擂主→擂主守住；第一场→加赛
+
+    if (!hadChamp && winner === null && !AR.isExtra) {
+      // 第一场打平：同批题加赛，加赛不占正式场次
+      saveLog();
+      toast('第一场打平，同批题再加赛一场');
+      tts('第一场打平，加赛一场，定出第一位擂主！');
+      AR.sel = [sideStudent('champ'), sideStudent('chal')];
+      AR.isExtra = true;
+      setTimeout(function () { startRound(); }, 900);
+      return;
+    }
+    if (!hadChamp && winner === null) winner = 'champ';   // 加赛仍平局：按左判，避免死循环
+
+    var champStu = sideStudent('champ'), chalStu = sideStudent('chal');
+    LOG.results.push({ n: LOG.round, ts: Date.now(), champSid: champStu.sid, champName: champStu.name,
+      chalSid: chalStu.sid, chalName: chalStu.name, champScore: L, chalScore: R,
+      winner: winner, draw: L === R, reason: reason, qcount: AR.left.seq.length });
+
+    if (winner === 'champ') {
+      LOG.streak = (LOG.streak || 0) + 1;
+      LOG.champ = { sid: champStu.sid, name: champStu.name };
+      if (!LOG.best || LOG.streak > LOG.best.streak) LOG.best = { sid: champStu.sid, name: champStu.name, streak: LOG.streak };
+      tts(window.XKA.hold(champStu.name, LOG.streak));
+      toast('👑 ' + champStu.name + ' 守住擂台（连胜 ' + LOG.streak + ' 场）');
+      if (hadChamp) tts(window.XKA.fall(chalStu.name));
+    } else {
+      LOG.champ = { sid: chalStu.sid, name: chalStu.name };
+      LOG.streak = 1;
+      if (!LOG.best || LOG.streak > LOG.best.streak) LOG.best = { sid: chalStu.sid, name: chalStu.name, streak: LOG.streak };
+      if (window.XKS) window.XKS.oust();
+      tts(window.XKA.oust(champStu.name, chalStu.name));
+      toast('🥊 擂台易主！新擂主 ' + chalStu.name);
+    }
+    saveLog();
+    // 台上只演「现在这一场」：打完就把名字和分数从座位上撤下。
+    // 不清的话，挑战者赢了之后左席（新擂主）和右席显示同一个人，投屏上看着像坏了。
+    $('arChalName').textContent = '虚位以待';
+    seatEl('champ', 'Score').textContent = '0';
+    seatEl('chal', 'Score').textContent = '0';
+    seatEl('champ', 'ProgText').textContent = '等下一场开始';
+    seatEl('chal', 'ProgText').textContent = '等下一位上台';
+    seatEl('champ', 'Meta').innerHTML = '';
+    seatEl('chal', 'Meta').innerHTML = '';
+    seatEl('champ', 'Body').innerHTML = '<div class="ar-wait">👑 擂主在座位上等挑战。</div>';
+    seatEl('chal', 'Body').innerHTML = '<div class="ar-wait">🥊 从下面卡片挑一位上台踢馆（或点「直接随机」）。</div>';
+    AR.sel = []; AR.picks = [];      // 下一场重新给 3 个候选
+    renderBanner(); renderPicks();
+    if (LOG.round >= CFG.rounds) finish();
+  }
+  function sideStudent(key) {
+    var S = key === 'champ' ? AR.left : AR.right;
+    return { sid: S.sid, name: S.name };
+  }
+
+  /* ================= 结算 ================= */
+  function finish() {
+    var rs = roster();
+    var rows = rs.map(function (s) {
+      var wins = 0, games = 0;
+      LOG.results.forEach(function (r) {
+        if (r.champSid === s.sid) { games++; if (r.winner === 'champ') wins++; }
+        if (r.chalSid === s.sid) { games++; if (r.winner === 'chal') wins++; }
+      });
+      return { sid: s.sid, name: s.name, games: games, wins: wins };
+    }).filter(function (x) { return x.games > 0; }).sort(function (a, b) { return b.wins - a.wins || b.games - a.games; });
+
+    var never = rs.filter(function (s) { return !LOG.allPlayed[s.sid]; });
+    var champ = LOG.champ;
+    $('arResMain').innerHTML = champ
+      ? '本场擂台结束：最终擂主 <b>' + esc(champ.name) + '</b>，连胜 ' + LOG.streak + ' 场，共打 ' + LOG.results.length + ' 场。'
+      : '本场擂台结束，没能定出擂主（' + LOG.results.length + ' 场）。';
+    var tb = $('arResTable'); tb.innerHTML = '';
+    if (!rows.length) tb.innerHTML = '<div class="muted">还没有战绩</div>';
+    rows.forEach(function (x, i) {
+      var d = document.createElement('div'); d.className = 'ar-row';
+      d.innerHTML = '<span>' + (i + 1) + '. ' + esc(x.name) + '</span><span>上场 <b>' + x.games + '</b> · 赢 <b>' + x.wins + '</b></span>';
+      tb.appendChild(d);
+    });
+    var nv = $('arResNever');
+    nv.innerHTML = never.length
+      ? never.map(function (s) { return esc(s.name); }).join('、') + '<br><span class="muted">共 ' + never.length + ' 人。下一轮擂台优先安排他们。</span>'
+      : '<span class="muted">全班都上过台了 👍</span>';
+    $('arResultMask').classList.remove('hidden');
+    if (window.XKS) window.XKS.fanfare();
+    if (champ) tts(window.XKA.final(champ.name, LOG.streak));
+    else tts('本场擂台结束，没能定出擂主，下一节课继续。');
+  }
+
+  /* ================= 一屏自适应（复用 engine 纯函数） ================= */
+  function fitSeat(key) {
+    var root = seatEl(key, 'Seat');
+    if (!root || !root.scrollHeight) return;
+    root.style.removeProperty('--arfs');
+    root.classList.remove('ar-pkfit-scroll');
+    var base = parseFloat(getComputedStyle(root).getPropertyValue('--arfs')) || 22;
+    var res = window.XK.fitToBox(base, function (fs) {
+      root.style.setProperty('--arfs', fs + 'px');
+      return { h: root.scrollHeight, avail: root.clientHeight };
+    }, ARFS_MIN);
+    root.style.setProperty('--arfs', res.fs + 'px');
+    root.classList.toggle('ar-pkfit-scroll', res.scroll);
+  }
+
+  /* ================= 设置弹窗 ================= */
+  function renderCfgMods() {
+    normalizeMods();
+    var box = $('arCfgMods'); if (!box) return;
+    box.innerHTML = '';
+    var codes = modCodes();
+    if (!codes.length) {
+      var tip = document.createElement('div'); tip.className = 'ar-empty';
+      tip.textContent = '当前题库没有章节信息，按整个题库抽题。';
+      box.appendChild(tip);
+    }
+    codes.forEach(function (code) {
+      var meta = (window.BANK_META || []).filter(function (m) { return m.code === code; })[0] || {};
+      var d = document.createElement('div');
+      d.className = 'ar-mod' + (CFG.mods[code] ? ' on' : '');
+      d.setAttribute('data-code', code);
+      var nm = document.createElement('span'); nm.className = 'mn'; nm.textContent = meta.disp || meta.name || code;
+      var mi = document.createElement('span'); mi.className = 'mi'; mi.textContent = modCountOf(code) + ' 题';
+      var ck = document.createElement('span'); ck.className = 'ck';
+      d.appendChild(nm); d.appendChild(mi); d.appendChild(ck);
+      d.onclick = function () { normalizeMods(); CFG.mods[code] = !CFG.mods[code]; saveCfg(); renderCfgMods(); };
+      box.appendChild(d);
+    });
+    var pool = window.XK.bankPool(BANK, CFG.mods);
+    $('arCfgModsCount').textContent = '已选 ' + (function () { var n = 0; for (var k in CFG.mods) if (CFG.mods[k]) n++; return n; })() +
+      ' 章 · 可抽 ' + pool.length + ' 题' + (pool.length === BANK.length ? '（＝全库）' : '');
+  }
+
+  /* ================= 事件绑定 ================= */
+  function bind() {
+    $('arGo').onclick = startRound;
+    $('arRandPick').onclick = function () {
+      var cs = ensurePicks();
+      if (cs.length < needCount()) { toast('擂台赛至少需要 2 人名单，请先在双人 PK 里导入花名册'); return; }
+      AR.sel = cs.slice(0, needCount());
+      renderPicks();
+    };
+    $('arBack').onclick = function () { if (window.__ARENA_LEAVE) window.__ARENA_LEAVE(); };
+    var ah = $('arHome');
+    if (ah) {
+      if (window.__ARENA_GO_HOME) { ah.style.display = ''; ah.onclick = function () { window.__ARENA_GO_HOME(); }; }
+      else ah.style.display = 'none';
+    }
+    $('arRestart').onclick = function () {
+      if (AR.running && !confirm('这一场还在进行中，确定重开一轮擂台？')) return;
+      LOG = blankLog(); saveLog();
+      AR.sel = []; AR.picks = []; AR.pool = null; AR.poolPos = 0;
+      AR.running = false; stopTimer();
+      $('arChampBody').innerHTML = '<div class="ar-wait">擂台已重置。挑两位同学打第一场。</div>';
+      $('arChalBody').innerHTML = '<div class="ar-wait">等待上台。</div>';
+      $('arChampScore').textContent = '0'; $('arChalScore').textContent = '0';
+      renderBanner(); renderPicks();
+      toast('已重开一轮擂台（本课累计上场次数保留统计）');
+    };
+    $('arStop').onclick = function () {
+      if (AR.running) { toast('请先打完或重开这一场，再结算'); return; }
+      if (!LOG.results.length) { toast('还没打过任何一场，没有可结算的战绩'); return; }
+      finish();
+    };
+    $('arResClose').onclick = function () { $('arResultMask').classList.add('hidden'); };
+    $('arResAgain').onclick = function () {
+      $('arResultMask').classList.add('hidden');
+      LOG = blankLog(); saveLog();
+      AR.sel = []; AR.picks = []; AR.pool = null; AR.poolPos = 0;
+      renderBanner(); renderPicks();
+    };
+    $('arCfg').onclick = function () {
+      $('arCfgCount').value = CFG.count; $('arCfgMinutes').value = CFG.minutes; $('arCfgRounds').value = CFG.rounds;
+      renderCfgMods();
+      $('arCfgMask').classList.remove('hidden');
+    };
+    $('arCfgClose').onclick = function () { $('arCfgMask').classList.add('hidden'); };
+    $('arCfgModsAll').onclick = function () { normalizeMods(); for (var k in CFG.mods) CFG.mods[k] = true; saveCfg(); renderCfgMods(); };
+    $('arCfgModsNone').onclick = function () { normalizeMods(); for (var k in CFG.mods) CFG.mods[k] = false; saveCfg(); renderCfgMods(); };
+    $('arCfgSave').onclick = function () {
+      CFG.count = Math.max(1, Math.min(20, parseInt($('arCfgCount').value, 10) || 5));
+      CFG.minutes = Math.max(1, Math.min(30, parseInt($('arCfgMinutes').value, 10) || 2));
+      CFG.rounds = Math.max(3, Math.min(40, parseInt($('arCfgRounds').value, 10) || 10));
+      saveCfg(); renderBanner(); renderPicks();
+      $('arCfgMask').classList.add('hidden');
+      toast('已保存：每场 ' + CFG.count + ' 题 / ' + CFG.minutes + ' 分钟，一轮 ' + CFG.rounds + ' 场');
+    };
+    $('arSnd').onclick = function () {
+      var v = !sndOn();
+      save(K_SND, v);
+      $('arSnd').textContent = v ? '🔊 音效开' : '🔇 音效关';
+      toast(v ? '音效已打开' : '音效已关闭（擂台与双人 PK 共用这个开关）');
+    };
+    $('arSnd').textContent = sndOn() ? '🔊 音效开' : '🔇 音效关';
+  }
+
+  /* 单测钩子：只读快照 + 纯函数出口 */
+  window.__ARENA_TEST = {
+    cfg: function () { return CFG; },
+    log: function () { return LOG; },
+    ar: function () { return AR; },
+    bank: function () { return BANK; },
+    pool: function () { normalizeMods(); return window.XK.bankPool(BANK, CFG.mods); },
+    candidates: function () { return AR.picks; },
+    needCount: needCount,
+    endRound: function (reason) { endRound(reason || 'both'); },
+    // 供 tools/gate-fit.js 用真实渲染路径逐题量高度（不是重新实现一遍 fitSeat）
+    render: function (key) { renderSeat(key); },
+    select: function (a, b) {
+      var cs = ensurePicks();
+      AR.sel = b === undefined ? [cs[a]] : [cs[a], cs[b]];
+      renderPicks();
+      return AR.sel.map(function (s) { return s.name; });
+    },
+    answerAll: function (key, right) {
+      var S = key === 'champ' ? AR.left : AR.right;
+      for (var i = S.idx; i < S.seq.length; i++) {
+        var q = S.seq[i];
+        var k = right ? q.a.charAt(0) : (q.o.filter(function (o) { return o[0] !== q.a; })[0] || q.o[0])[0];
+        S.answered[i] = { sel: [k], right: window.XK.judge(q, [k]) };
+        if (window.XK.judge(q, [k])) S.score++;
+        S.idx = i + 1;
+      }
+      S.done = true;
+      return S.score;
+    }
+  };
+
+  /* ================= 启动 ================= */
+  window.__ARENA_REFRESH = function () {
+    try { renderBanner(); renderPicks(); } catch (e) { if (window.console) console.error('[ARENA] refresh:', e); }
+  };
+  window.__ARENA_LEAVE = function () { if (window.__ARENA_ONLEAVE) window.__ARENA_ONLEAVE(); };
+
+  document.addEventListener('click', function () { if (window.XKS) { try { window.XKS.click(); } catch (e) { } } }, { once: true });
+  try { renderBanner(); } catch (e) { if (window.console) console.error('[ARENA] init banner:', e); }
+  try { renderPicks(); } catch (e) { if (window.console) console.error('[ARENA] init picks:', e); }
+  try { bind(); } catch (e) { if (window.console) console.error('[ARENA] bind:', e); }
+};
+
 </script>
 </body>
 </html>
