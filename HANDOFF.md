@@ -291,6 +291,7 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 | `tools/scan-defects.js` | 四类缺陷复扫 + 基线对比闸门 | `--save-baseline` 存基线，`--json` 机器可读 |
 | `tools/gate-fit.js` | 无头 Edge 真渲染真题，量「投屏一屏装不装得下」 | `[宽 高 抽样数]`，默认 1366 768 200；`GATE_SCROLL_MAX` / `GATE_FS_MIN` 调线 |
 | `tools/shot-arena.js` | PK 与擂台 5 张对比截图 + 布局数字 | 产物进 `evidence/arena-shots/`；`[宽 高]` 换分辨率 |
+| `tools/e2e-full.js` | 全站 E2E：无头 Edge 真点真答（答题/PK/擂台/持久化/教师页闸门） | `node tools/e2e-full.js [URL]`，缺省本地拆分版；可传 `http://127.0.0.1:8953/`（班级版多测 6 项）或线上站（只冒烟不写云端数据）；`E2E_VIEWPORT=390x844` / `E2E_OUT=目录` 调视口与产物目录；退出码即验收 |
 
 **注意**：生成器有防递归守卫（输入题数不对会报错），这是保护机制，**不要移除**。
 
@@ -309,6 +310,10 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 
 ## 十、已完成的工作（不要重做）
 
+- ✅ **全站 E2E 工具与四套环境实测全绿**（2026-11-07 凌晨，ZCode）：file:// 27/27、班级版 33/33、
+  线上双站各 27/27、移动端 390×844 27/27；键盘无障碍（三处选项 Tab+回车可作答）、
+  窄屏投屏 2 列修复、首屏加载提示、favicon 消音、启动块去重 —— 明细见 `changelog.md` 与
+  `evidence/交接-20261107-ZCode.md`
 - ✅ 题库从 1238 扩容到 3999（变式生成 + 选择题扩容）
 - ✅ 4 个批次 AI 审题修正 2095 条
 - ✅ PK 模块开发并合并进主程序
