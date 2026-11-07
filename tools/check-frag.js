@@ -1,3 +1,4 @@
+const path = require('path');
 const fs = require('fs');
 global.window = {};
 eval(fs.readFileSync('src/data.js', 'utf8'));

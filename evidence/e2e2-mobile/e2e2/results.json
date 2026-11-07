@@ -1,12 +1,12 @@
 {
   "page": "file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html",
   "viewport": "390x844",
-  "loadMs": 325,
+  "loadMs": 376,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 325ms"
+      "note": "BANK=3982，就绪耗时 376ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -110,18 +110,18 @@
     },
     {
       "name": "I3 右侧低于左侧",
-      "ok": false,
-      "note": "R=null"
+      "ok": true,
+      "note": "R=0"
     },
     {
       "name": "I4 结算弹层出现",
-      "ok": false,
+      "ok": true,
       "note": ""
     },
     {
       "name": "I5 排行榜有参赛记录",
       "ok": true,
-      "note": "2 行"
+      "note": "3 行"
     },
     {
       "name": "J1 擂台页打开",
@@ -145,13 +145,13 @@
     },
     {
       "name": "K1 PK 战绩持久化",
-      "ok": false,
-      "note": "0 场"
+      "ok": true,
+      "note": "1 场"
     },
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=李航"
+      "note": "results=3 擂主=林静静"
     },
     {
       "name": "P1 备课夹清单（勾选顺序 3 题）",
