@@ -10,6 +10,7 @@ const read = f => fs.readFileSync(path.isAbsolute(f) ? f : path.join(SRC, f), 'u
 
 const themeCss = read('theme.css');
 const LOGO_PNG = 'data:image/png;base64,' + fs.readFileSync(path.join(SRC, 'assets', 'logo.png')).toString('base64');
+const QR_CLOUD = 'data:image/png;base64,' + fs.readFileSync(path.join(SRC, 'assets', 'qr-cloud.b64'), 'utf8');
 const css = read('style.css');
 const engine = read('engine.js');
 const data = read('data.js');
@@ -130,6 +131,15 @@ ${arenaStyle}
         <div class="sec-t"><span class="dot"></span>🏆 荣誉榜（PK 获胜 Top10 · 周擂主）</div>
         <div id="honorBody" class="honor-body"></div>
       </div>
+      <div class="dlg-mask hidden" id="qrMask">
+        <div class="dlg" style="text-align:center">
+          <div class="dlg-t">📱 学生入口</div>
+          <img id="qrImg" style="width:240px;height:240px;margin:6px auto" alt="学生入口二维码" src="${QR_CLOUD}">
+          <div style="font-size:15px;font-weight:700;margin:8px 0">https://xuekao.jiuyeke.cn</div>
+          <div class="muted" style="font-size:13px;margin-bottom:10px">学生手机扫码或输网址 → 输学号 + 班级码 → 刷题成绩实时上云</div>
+          <div class="dlg-actions"><button class="tbtn primary" id="qrClose">✕ 关闭</button></div>
+        </div>
+      </div>
       <div class="card" id="prepCard">
         <div class="sec-t"><span class="dot"></span>📋 备课夹（课前挑题 → PK/擂台按勾选顺序出）</div>
         <div class="prep-bar">
@@ -163,6 +173,7 @@ ${arenaStyle}
           <button class="mini-btn" id="rosterClear">🗑 清空</button>
           <label class="mini-btn" style="display:inline-block">📄 导入TXT/CSV<input type="file" id="rosterFile" accept=".txt,.csv" class="hidden"></label>
           <button class="mini-btn" id="rosterFetch">☁️ 从云端班级拉取</button>
+          <button class="mini-btn" id="qrBtn">📱 学生入口</button>
         </div>
         <div class="hint">云端拉取需教师密钥；也可从教师学情页点「📋 名单导入学生端」一键带过去。</div>
         <div class="tts-row">

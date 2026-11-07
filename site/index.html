@@ -974,6 +974,15 @@ body.arena-mode .app{max-width:none}
         <div class="sec-t"><span class="dot"></span>🏆 荣誉榜（PK 获胜 Top10 · 周擂主）</div>
         <div id="honorBody" class="honor-body"></div>
       </div>
+      <div class="dlg-mask hidden" id="qrMask">
+        <div class="dlg" style="text-align:center">
+          <div class="dlg-t">📱 学生入口</div>
+          <img id="qrImg" style="width:240px;height:240px;margin:6px auto" alt="学生入口二维码" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAJYCAYAAAC+ZpjcAAAAAklEQVR4AewaftIAAA0wSURBVO3BAZHshoIEsE7X4jAjEzEgEzEjE8mFwuV11Z/NSPrr738EAICZBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKmf/BLncQf+xPNeWTqPO7/B815ZOo87a897Ze087qw97xX+3HncgT/xvFc+XQMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMDUT77Y817hM53HnW/0vFfWzuPOpzuPO2ycx521573y6Z73Cp/pPO58owYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKmfMHMed77R816Bb3Aed/ge53HnGz3vFf5cAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwNRPgH/lea/wXZ73ytJ53AH+mxoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmfgL8K+dxZ+15r6w975Wl87jDxvNeWTuPO8D/XgMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwNRPmHneK3yP572ydh53Pt3zXoFv8LxX4N9qAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmPrJFzuPO/Bvncedtee9snYedz7dedxZe94ra+dxZ+l5r7BxHnfgkzQAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABM/fX3PwLwH3Med9ae98rSedxZe94rwP9eAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDA1E9+ifO4s/a8Vz7dedzhezzvFTae98raedxZet4ra+dx59M975Xf4DzuLD3vlbXzuPONnvfKp2sAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACY+uvvf+RLncedT/e8V9bO487S8175Dc7jDp/pea/8Budx59M975W187iz9LxX1s7jDp/pea98owYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpn/B1nvfK0nnc+Q2e98qnO487n+55r3yr572ydB53foPnvbJ0HnfWnvfK2nnc+XTPe+XTncedtee98ukaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmfvJLnMedtee9snQed9bO4843et4ra+dx59M975VPdx531p73ym9wHnfgk5zHHT5TAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwNRPfonnvbJ2Hnf4c897Ze087qw975VvdB53Pt153Fl73itrz3vl053HnbXnvfKNnvcKf+487nyjBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKmf/BLncefTPe8VNp73ytp53PlGz3vl053Hnd/gPO58uue98ume98pvcB53lp73ym9wHneWnvfKN2oAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACY+uvvf+QXOI873+h5r3y687jzGzzvlaXzuLP2vFf4HudxZ+15r6ydx51P97xX1s7jDp/pea98ugYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKmffLHnvbJ0HnfWzuPO2vNe+XTPe2XtPO58uvO4s/a8V5bO487a816BP3Eed9ae98rSedz5DZ73ytJ53PlGDQAAUw0AAFMNAABTDQAAUw0AAFMNAABTDQAAUw0AAFMNAABTDQAAUw0AAFMNAABTDQAAUw0AAFMNAABTDQAAUw0AAFMNAABTDQAAUw0AAFN//f2P/ALncWftea8sncedtee98o3O487a8175dOdx59M975W187jzGzzvlU93Hnf4TM97Ze087ny6573yjRoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmfvJLPO+VT/e8V9h43iuf7jzu8Lme9wobz3vlG53HHfi3GgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAAphoAAKYaAACmGgAApn7yS5zHHfgTz3vlGz3vlaXzuPMbnMedtee9wp87jztrz3vlGz3vlU93HnfWnvfKp2sAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACY+skXe94rfKbzuMP3eN4ra+dx59Odx51v9LxX+B7Pe+UbNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEz9hJnzuPONnvcK/InzuLP2vFfYOI87wP9PAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDA1E+A/7TzuPPpnvfK2nnc4Xs87xU2zuPOp3veK5+uAQBgqgEAYKoBAGCqAQBgqgEAYKoBAGCqAQBgqgEAYKoBAGCqAQBgqgEAYKoBAGCqAQBgqgEAYKoBAGCqAQBgqgEAYKoBAGCqAQBgqgEAYOonwL/yvFfWzuPO2vNeWTqPO9/qea8sncedtee9snYed5ae98pvcB534N9qAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmGoAAJhqAACYagAAmPoJM897Bf7rnvfK2nncWXveK5/uea+wcR53Pt3zXlk7jzt8pgYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKkGAICpBgCAqQYAgKmffLHzuAP/1nnc+UbncYfPdR531p73yqd73iuf7jzurD3vlU93Hne+UQMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMBUAwDAVAMAwFQDAMDUX3//IwAAzDQAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEw1AABMNQAATDUAAEz9H4UweMnY8plTAAAAAElFTkSuQmCC">
+          <div style="font-size:15px;font-weight:700;margin:8px 0">https://xuekao.jiuyeke.cn</div>
+          <div class="muted" style="font-size:13px;margin-bottom:10px">学生手机扫码或输网址 → 输学号 + 班级码 → 刷题成绩实时上云</div>
+          <div class="dlg-actions"><button class="tbtn primary" id="qrClose">✕ 关闭</button></div>
+        </div>
+      </div>
       <div class="card" id="prepCard">
         <div class="sec-t"><span class="dot"></span>📋 备课夹（课前挑题 → PK/擂台按勾选顺序出）</div>
         <div class="prep-bar">
@@ -1007,6 +1016,7 @@ body.arena-mode .app{max-width:none}
           <button class="mini-btn" id="rosterClear">🗑 清空</button>
           <label class="mini-btn" style="display:inline-block">📄 导入TXT/CSV<input type="file" id="rosterFile" accept=".txt,.csv" class="hidden"></label>
           <button class="mini-btn" id="rosterFetch">☁️ 从云端班级拉取</button>
+          <button class="mini-btn" id="qrBtn">📱 学生入口</button>
         </div>
         <div class="hint">云端拉取需教师密钥；也可从教师学情页点「📋 名单导入学生端」一键带过去。</div>
         <div class="tts-row">
@@ -1282,7 +1292,7 @@ body.arena-mode .app{max-width:none}
     <div style="font-size:15px;line-height:2">
       ⑤ 点右上「🚀 开始 PK」——两名选手各自独立答题（备课夹模式按同一顺序出）<br>
       ⑥ 每题 1 分，多选题全部选对才得分；先答完的一方等待对手，倒计时归零双侧锁卷<br>
-      <span style="font-size:13px;color:var(--mut)">⌨ 舞台键盘：左侧 A–D 选 · 回车提交 ｜ 右侧 1–6 选 · 空格提交 ｜ 🔀 换一题随时跳过当前题</span>
+      <span style="font-size:13px;color:var(--mut)">✋ 触屏/鼠标：直接点选项作答，再点「提交本题」｜ 🔀 换一题随时跳过当前题 ｜ ⌨ 接键盘时：左 A–D · 右 1–6</span>
     </div>
   </div>
   <div class="panel right" style="min-height:auto">
@@ -2441,7 +2451,7 @@ body.arena-mode .app{max-width:none}
 
 </script>
 <script>window.BANK_VER='20261106';</script>
-<script src="data.js?v=202611071221"></script>
+<script src="data.js?v=202611071243"></script>
 <script>
 /* =====================================================================
  * 学考冲刺通 · 应用层（依赖同页内嵌的 engine.js 与 data.js）
@@ -3180,6 +3190,9 @@ body.arena-mode .app{max-width:none}
       };
     });
     on('clsDrawBtn', 'onclick', function () { runDraw(); });
+    on('qrBtn', 'onclick', function () { $('qrMask').classList.remove('hidden'); });
+    on('qrClose', 'onclick', function () { $('qrMask').classList.add('hidden'); });
+    on('qrMask', 'onclick', function (ev) { if (ev.target === this) this.classList.add('hidden'); });
     on('honorNavBack', 'onclick', navBack);
     on('honorNavFwd', 'onclick', navFwd);
     on('prepNavBack', 'onclick', navBack);

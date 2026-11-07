@@ -735,6 +735,9 @@
       };
     });
     on('clsDrawBtn', 'onclick', function () { runDraw(); });
+    on('qrBtn', 'onclick', function () { $('qrMask').classList.remove('hidden'); });
+    on('qrClose', 'onclick', function () { $('qrMask').classList.add('hidden'); });
+    on('qrMask', 'onclick', function (ev) { if (ev.target === this) this.classList.add('hidden'); });
     on('honorNavBack', 'onclick', navBack);
     on('honorNavFwd', 'onclick', navFwd);
     on('prepNavBack', 'onclick', navBack);
