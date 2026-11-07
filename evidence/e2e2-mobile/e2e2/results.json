@@ -1,12 +1,12 @@
 {
   "page": "file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html",
   "viewport": "390x844",
-  "loadMs": 270,
+  "loadMs": 417,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 270ms"
+      "note": "BANK=3982，就绪耗时 417ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -136,7 +136,7 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=陈博杰"
+      "note": "results=3 擂主=凌峰"
     }
   ],
   "errors": []

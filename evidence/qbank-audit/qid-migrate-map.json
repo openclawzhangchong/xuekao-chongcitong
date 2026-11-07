@@ -1,13 +1,13 @@
 {
- "generated": "2026-11-07T01:19:38.266Z",
+ "generated": "2026-11-07T03:23:16.604Z",
  "archaeology": {
-  "renames": 691,
+  "renames": 692,
   "droppedForEvidence": 1559,
-  "kept": 197
+  "kept": 204
  },
  "stemFixes": 47,
  "mergedDuplicates": 17,
- "total": 214,
+ "total": 226,
  "stemList": [
   {
    "i": 562,
@@ -604,6 +604,13 @@
   }
  ],
  "map": {
+  "M1-9bwqsv": "M1-1v5g9n2",
+  "M1-hcnmh1": "M1-1joz7k4",
+  "M1-1iezcvg": "M1-1djdbm5",
+  "M9-13hp2su": "M9-mi93n3",
+  "M9-j3dwv4": "M9-rx8yip",
+  "M9-1xf0iam": "M9-vz5acf",
+  "M9-5s2zid": "M9-1tt2rl0",
   "M3-1859kao": "M3-sv3avx",
   "M3-4k0n9p": "M3-1xl8hep",
   "M3-1yotp6r": "M3-1xq2lay",
@@ -692,14 +699,14 @@
   "M4-118ulbb": "M4-1rp7yq8",
   "M4-1uvb8g6": "M4-opjxpd",
   "M4-kzaxbd": "M4-nukljs",
-  "M1-hmem27": "M1-9bwqsv",
-  "M1-wm9m79": "M1-hcnmh1",
-  "M1-29f3t8": "M1-1iezcvg",
+  "M1-hmem27": "M1-1v5g9n2",
+  "M1-wm9m79": "M1-1joz7k4",
+  "M1-29f3t8": "M1-1djdbm5",
   "M1-nepaa1": "M1-1yon6h5",
-  "M9-5zf5f2": "M9-13hp2su",
-  "M9-10w27gg": "M9-j3dwv4",
-  "M9-1saohge": "M9-1xf0iam",
-  "M9-qsn0jp": "M9-5s2zid",
+  "M9-5zf5f2": "M9-mi93n3",
+  "M9-10w27gg": "M9-rx8yip",
+  "M9-1saohge": "M9-vz5acf",
+  "M9-qsn0jp": "M9-1tt2rl0",
   "M4-ote8k5": "M4-111i3hk",
   "M1-19s8e5b": "M1-nr0sr9",
   "M1-1ftvw5k": "M1-5ztq6q",
@@ -817,6 +824,11 @@
   "M3-1ru4rvn": "M3-gehlx4",
   "M3-fq0jei": "M3-dfn6l7",
   "M3-zb72k1": "M3-o953hz",
-  "M3-p9d6qa": "M3-1h8253x"
+  "M3-p9d6qa": "M3-1h8253x",
+  "M9-14jrncf": "M9-3jbe3y",
+  "M5-15e01bi": "M5-38rnrj",
+  "M5-1ok98sk": "M5-2zknb9",
+  "M5-fx88iv": "M5-l1p0o6",
+  "M5-td1c63": "M5-1q0x4ey"
  }
 }
