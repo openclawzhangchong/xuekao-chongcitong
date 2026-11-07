@@ -751,6 +751,8 @@ body.pk-mode .app{max-width:none}
 
 .ar-btn{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:10px;
   padding:9px 15px;font-size:15px;font-weight:700;cursor:pointer}
+/* 工具排按钮紧凑化：换一题/导航加入后横幅不得增高（否则席位字号跌破 20px 闸门） */
+.ar-tools .ar-btn{padding:6px 11px;font-size:14px}
 .ar-btn:active{transform:translateY(1px)}
 .ar-btn.primary{background:var(--ar-champ);border-color:var(--ar-champ);color:#fff}
 .ar-btn:disabled{opacity:.4;cursor:not-allowed}
@@ -975,21 +977,21 @@ body.arena-mode .app{max-width:none}
       <div class="card" id="prepCard">
         <div class="sec-t"><span class="dot"></span>📋 备课夹（课前挑题 → PK/擂台按勾选顺序出）</div>
         <div class="prep-bar">
-          <select id="prepMod" class="prep-sel"></select>
-          <select id="prepQt" class="prep-sel">
+          <select class="j-prepMod prep-sel" class="prep-sel"></select>
+          <select class="j-prepQt prep-sel">
             <option value="">全部题型</option><option>单选</option><option>判断</option><option>多选</option>
           </select>
-          <input id="prepKw" class="prep-kw" placeholder="题干关键词">
-          <span class="muted" id="prepStat"></span>
+          <input class="j-prepKw prep-kw" placeholder="题干关键词">
+          <span class="muted" class="j-prepStat muted"></span>
         </div>
-        <div id="prepList" class="prep-list"></div>
+        <div class="j-prepList prep-list"></div>
         <div class="prep-nav">
-          <button class="mini-btn" id="prepPrev">← 上一页</button>
-          <span id="prepPage" class="muted"></span>
-          <button class="mini-btn" id="prepNext">下一页 →</button>
-          <button class="mini-btn" id="prepClear">🗑 清空备课夹</button>
+          <button class="mini-btn" class="mini-btn j-prepPrev">← 上一页</button>
+          <span class="j-prepPage muted"></span>
+          <button class="mini-btn" class="mini-btn j-prepNext">下一页 →</button>
+          <button class="mini-btn" class="mini-btn j-prepClear">🗑 清空备课夹</button>
         </div>
-        <div id="prepChosen" class="prep-chosen"></div>
+        <div class="j-prepChosen prep-chosen"></div>
       </div>
       <div class="card" style="margin-top:13px">
         <div class="sec-t"><span class="dot"></span>🎓 课堂互动（投屏上课用）</div>
@@ -1083,6 +1085,56 @@ body.arena-mode .app{max-width:none}
       <div style="height:13px"></div>
       <div id="wrongList"></div>
     </div>
+  </div>
+
+  <!-- ============ 排行榜（客户端 tab） ============ -->
+  <div id="honorPage" class="panel hidden">
+    <header><div class="h-title">🏆 排行榜 · 荣誉墙</div>
+      <button class="h-btn" id="honorNavBack" title="后退">←</button>
+      <button class="h-btn" id="honorNavFwd" title="前进">→</button>
+    </header>
+    <div class="wrap"><div class="card" id="honorPageBody"></div></div>
+  </div>
+
+  <!-- ============ 备课夹（客户端 tab） ============ -->
+  <div id="prepPage" class="panel hidden">
+    <header><div class="h-title">📋 备课夹（按勾选顺序出题）</div>
+      <button class="h-btn" id="prepNavBack" title="后退">←</button>
+      <button class="h-btn" id="prepNavFwd" title="前进">→</button>
+    </header>
+    <div class="wrap">
+      <div class="card">
+        <div class="prep-bar">
+          <select class="j-prepMod prep-sel"></select>
+          <select class="j-prepQt prep-sel">
+            <option value="">全部题型</option><option>单选</option><option>判断</option><option>多选</option>
+          </select>
+          <input class="j-prepKw prep-kw" placeholder="题干关键词">
+          <span class="muted j-prepStat"></span>
+        </div>
+        <div class="j-prepList prep-list"></div>
+        <div class="prep-nav">
+          <button class="mini-btn j-prepPrev">← 上一页</button>
+          <span class="muted j-prepPage"></span>
+          <button class="mini-btn j-prepNext">下一页 →</button>
+          <button class="mini-btn j-prepClear">🗑 清空备课夹</button>
+        </div>
+        <div class="j-prepChosen prep-chosen"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 点名台（客户端 tab） ============ -->
+  <div id="classPage" class="panel hidden">
+    <header><div class="h-title">🎲 点名台</div>
+      <button class="h-btn" id="classNavBack" title="后退">←</button>
+      <button class="h-btn" id="classNavFwd" title="前进">→</button>
+    </header>
+    <div class="wrap"><div class="card" style="text-align:center">
+      <div class="muted" id="classRosterStat"></div>
+      <button class="btn" id="clsDrawBtn" style="font-size:22px;margin:18px auto">🎲 随机点名</button>
+      <div class="muted">点名动画全屏展示（TTS 播报姓名）</div>
+    </div></div>
   </div>
 
   <!-- ============ 考点诊断 ============ -->
@@ -1793,9 +1845,9 @@ body.arena-mode .app{max-width:none}
     }
     var weekly = [], standing = null, curWeek = null, streak = 0;
     function closeWeek(w) { if (w && standing) weekly.push({ week: w, name: standing.name, sid: standing.sid, streak: streak }); }
-    ((arenaLog || {}).results || []).filter(function (r) { return r && r.ts; })
-      .sort(function (a, b) { return a.ts - b.ts; })
-      .forEach(function (r) {
+    var timeline = ((arenaLog || {}).results || []).filter(function (r) { return r && r.ts; })
+      .sort(function (a, b) { return a.ts - b.ts; });   // forEach 返回 undefined，绝不能链在赋值尾部
+    timeline.forEach(function (r) {
         var w = weekOf(r.ts);
         if (curWeek === null) curWeek = w;
         if (w !== curWeek) { closeWeek(curWeek); curWeek = w; streak = 0; }
@@ -1805,7 +1857,40 @@ body.arena-mode .app{max-width:none}
       });
     closeWeek(curWeek);
     weekly.reverse();
-    return { pkTop: pkTop, weekly: weekly };
+    /* 月擂主：同构周逻辑（自然月分组重放） */
+    function monthOf(ts) {
+      var d = new Date(ts);
+      return d.getFullYear() + '-' + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1);
+    }
+    var monthly = [], mStanding = null, curMonth = null, mStreak = 0;
+    function closeMonth(m) { if (m && mStanding) monthly.push({ month: m, name: mStanding.name, sid: mStanding.sid, streak: mStreak }); }
+    timeline.forEach(function (r) {
+      var m = monthOf(r.ts);
+      if (curMonth === null) curMonth = m;
+      if (m !== curMonth) { closeMonth(curMonth); curMonth = m; mStreak = 0; }
+      if (r.winner === 'chal') { mStanding = { sid: r.chalSid, name: r.chalName }; mStreak = 1; }
+      else { mStanding = { sid: r.champSid, name: r.champName }; mStreak = mStreak + 1; }
+    });
+    closeMonth(curMonth);
+    monthly.reverse();
+    /* 本周 PK 胜场榜（本周一 00:00 起）与今日战况 */
+    var now = new Date();
+    var mon = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (now.getDay() + 6) % 7);
+    var monTs = mon.getTime(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var wBy = {}, todayGames = 0, todayWinners = [];
+    (matches || []).forEach(function (m) {
+      if (!m || !m.left || !m.right || !(m.ts >= monTs)) return;
+      var w = m.winner === 'L' ? m.left : (m.winner === 'R' ? m.right : null);
+      if (!w) return;
+      var id = w.sid || w.name;
+      var e = wBy[id] = wBy[id] || { name: w.name || w.sid || '未知', wins: 0 };
+      e.wins++;
+      if (m.ts >= t0) { todayGames++; todayWinners.push(w.name || w.sid || '未知'); }
+    });
+    var weekWins = Object.keys(wBy).map(function (k) { return wBy[k]; })
+      .sort(function (a, b) { return b.wins - a.wins; }).slice(0, 5);
+    return { pkTop: pkTop, weekly: weekly, monthly: monthly, weekWins: weekWins,
+             today: { games: todayGames, winners: todayWinners } };
   }
 
   /* ---------- 档案导入导出校验 ---------- */
@@ -2356,7 +2441,7 @@ body.arena-mode .app{max-width:none}
 
 </script>
 <script>window.BANK_VER='20261106';</script>
-<script src="data.js?v=202611070931"></script>
+<script src="data.js?v=202611071058"></script>
 <script>
 /* =====================================================================
  * 学考冲刺通 · 应用层（依赖同页内嵌的 engine.js 与 data.js）
@@ -2403,8 +2488,8 @@ body.arena-mode .app{max-width:none}
   function refreshBadges() {
     var wq = XK.wrongQueue(BANK, P).length;
     var wk = XK.weakSpots(BANK, META, P, 8).weak.length;
-    $('badgeWrong').textContent = wq > 0 ? wq : '';
-    $('badgeDiag').textContent = wk > 0 ? wk : '';
+    var bw = $('badgeWrong'); if (bw) bw.textContent = wq > 0 ? wq : '';
+    var bd = $('badgeDiag'); if (bd) bd.textContent = wk > 0 ? wk : '';
   }
 
   /* ---------- 语音朗读（多音色） ---------- */
@@ -2644,6 +2729,12 @@ body.arena-mode .app{max-width:none}
 
   /* ---------- 面板切换 ---------- */
   var TABS = ['home', 'setup', 'wrong', 'diag', 'pk'];
+  function markTab(name) {
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (el) {
+      el.classList.toggle('on', el.getAttribute('data-t') === name);
+    });
+  }
+
   function showPanel(name) {
     // PK / 擂台赛要占满整屏（投屏两侧各一半），其余页保持 760px 居中列
     document.body.classList.toggle('pk-mode', name === 'pk');
@@ -2656,6 +2747,13 @@ body.arena-mode .app{max-width:none}
     if (pkEl) pkEl.classList.add('hidden');
     var arEl = document.getElementById('arenaPage');
     if (arEl) arEl.classList.add('hidden');
+    ['prep', 'class', 'honor'].forEach(function (t) {
+      var el = document.getElementById(t + 'Page');
+      if (el) el.classList.add('hidden');
+    });
+    var npEl = document.getElementById(name + 'Page');
+    if (npEl) npEl.classList.remove('hidden');
+    markTab(name);
     if (name === 'arena') {
       if (arEl) arEl.classList.remove('hidden');
       if (window.__ARENA_MOUNT) window.__ARENA_MOUNT();
@@ -2687,6 +2785,29 @@ body.arena-mode .app{max-width:none}
     });
     window.scrollTo(0, 0);
   }
+  /* ---------- 客户端模式（?client=1，启动器专用） ---------- */
+  var IS_CLIENT = false;
+  try {
+    if (location.search.indexOf('client=1') !== -1 || localStorage.getItem('xkc.client') === '1') {
+      IS_CLIENT = true;
+      localStorage.setItem('xkc.client', '1');
+      document.body.classList.add('client');
+    }
+  } catch (e) { }
+  function renderTabs() {
+    var bar = $('tabs');
+    if (!bar) return;
+    var defs = IS_CLIENT
+      ? [['home', '🏠', '首页'], ['pk', '⚔️', 'PK'], ['arena', '🥊', '擂台'], ['honor', '🏆', '排行榜'], ['prep', '📋', '备课夹'], ['class', '🎲', '点名台']]
+      : [['home', '🏠', '首页'], ['setup', '📝', '刷题'], ['wrong', '📕', '错题', '<span id="badgeWrong" style="color:#dc2626;font-weight:800"></span>'], ['diag', '📊', '诊断', '<span id="badgeDiag" style="color:#d97706;font-weight:800"></span>'], ['pk', '⚔️', 'PK']];
+    bar.innerHTML = defs.map(function (d) {
+      return '<button class="tab" data-t="' + d[0] + '"><span class="ti">' + d[1] + '</span>' + d[2] + (d[3] || '') + '</button>';
+    }).join('');
+    Array.prototype.forEach.call(bar.querySelectorAll('.tab'), function (el) {
+      el.onclick = function () { switchTab(el.getAttribute('data-t')); };
+    });
+  }
+
   /* ---------- 前进/后退导航（hash 路由：#/home #/setup #/wrong #/diag #/pk #/arena #/quiz #/result） ---------- */
   var NAV = { routing: false, cur: null };
   function navPush(name) {
@@ -2712,7 +2833,8 @@ body.arena-mode .app{max-width:none}
       else { try { history.replaceState({ nav: true }, '', '#/home'); } catch (e) { } switchTab('home'); }
       return;
     }
-    if (TABS.indexOf(name) !== -1 || name === 'arena') switchTab(name);
+    var tabsAvail = IS_CLIENT ? ['home', 'pk', 'arena', 'honor', 'prep', 'class'] : TABS;
+    if (tabsAvail.indexOf(name) !== -1) switchTab(name);
     else { try { history.replaceState({ nav: true }, '', '#/home'); } catch (e) { } switchTab('home'); }
   }
   function navBack() { try { history.back(); } catch (e) { } }
@@ -2738,12 +2860,16 @@ body.arena-mode .app{max-width:none}
     if (name === 'home') renderHome();
     if (name === 'wrong') renderWrong();
     if (name === 'diag') renderDiag();
+    if (name === 'honor') { try { renderHonorPage(); } catch (e) { } }
+    if (name === 'prep') { try { renderPrepMgr(); } catch (e) { } }
+    if (name === 'class') { try { renderClassPage(); } catch (e) { } }
     showPanel(name);
   }
 
   /* ---------- 首页 ---------- */
   /* ---------- 备课夹（课前挑题 → PK/擂台按勾选顺序出） ---------- */
   var PREP_KEY = 'xkc.prep.v1', prepPage = 0;
+  var prepFilter = { m: '', qt: '', kw: '' };
   function prepIds() { try { var v = JSON.parse(localStorage.getItem(PREP_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
   function prepSave(ids) {
     try { localStorage.setItem(PREP_KEY, JSON.stringify(ids)); } catch (e) { }
@@ -2755,9 +2881,7 @@ body.arena-mode .app{max-width:none}
     prepSave(ids);
   }
   function prepFiltered() {
-    var mod = ($('prepMod') || {}).value || '';
-    var qt = ($('prepQt') || {}).value || '';
-    var kw = (($('prepKw') || {}).value || '').trim().toLowerCase();
+    var mod = prepFilter.m, qt = prepFilter.qt, kw = prepFilter.kw;
     return BANK.filter(function (q) {
       if (mod && q.m !== mod) return false;
       if (qt && q.qt !== qt) return false;
@@ -2766,22 +2890,24 @@ body.arena-mode .app{max-width:none}
     });
   }
   function renderPrepMgr() {
-    var modSel = $('prepMod');
-    if (modSel && !modSel.options.length) {
-      var o0 = document.createElement('option'); o0.value = ''; o0.textContent = '全部模块';
-      modSel.appendChild(o0);
-      (window.BANK_META || []).forEach(function (m) {
-        var op = document.createElement('option'); op.value = m.code; op.textContent = m.disp;
-        modSel.appendChild(op);
-      });
-    }
+    var modSels = document.querySelectorAll('.j-prepMod');
+    Array.prototype.forEach.call(modSels, function (modSel) {
+      if (!modSel.options.length) {
+        var o0 = document.createElement('option'); o0.value = ''; o0.textContent = '全部模块';
+        modSel.appendChild(o0);
+        (window.BANK_META || []).forEach(function (m) {
+          var op = document.createElement('option'); op.value = m.code; op.textContent = m.disp;
+          modSel.appendChild(op);
+        });
+        modSel.value = prepFilter.m;
+      }
+    });
     var ids = prepIds(), chosen = new Set(ids);
     var list = prepFiltered();
     var PER = 30, pages = Math.max(1, Math.ceil(list.length / PER));
     if (prepPage >= pages) prepPage = pages - 1;
     if (prepPage < 0) prepPage = 0;
-    var box = $('prepList');
-    if (box) {
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepList'), function (box) {
       var html = '';
       list.slice(prepPage * PER, prepPage * PER + PER).forEach(function (q) {
         var id = XK.qidOf(q), on = chosen.has(id);
@@ -2793,13 +2919,14 @@ body.arena-mode .app{max-width:none}
       Array.prototype.forEach.call(box.querySelectorAll('.prep-item'), function (el) {
         el.onclick = function () { prepToggle(el.getAttribute('data-qid')); renderPrepMgr(); };
       });
-    }
-    var pg = $('prepPage');
-    if (pg) pg.textContent = '第 ' + (prepPage + 1) + '/' + pages + ' 页 · 符合 ' + list.length + ' 题';
-    var st = $('prepStat');
-    if (st) st.textContent = '已夹 ' + ids.length + ' 题';
-    var ch = $('prepChosen');
-    if (ch) {
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepPage'), function (pg) {
+      pg.textContent = '第 ' + (prepPage + 1) + '/' + pages + ' 页 · 符合 ' + list.length + ' 题';
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepStat'), function (st) {
+      st.textContent = '已夹 ' + ids.length + ' 题';
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepChosen'), function (ch) {
       var r = XK.resolvePrep(BANK, ids);
       var chips = r.list.map(function (q, i) {
         return '<span class="chip">' + (i + 1) + '. ' + esc(String(q.s).slice(0, 18)) + '</span>';
@@ -2807,7 +2934,21 @@ body.arena-mode .app{max-width:none}
       ch.innerHTML = '出题顺序（勾选顺序）：<br>' +
         (chips || '<span class="muted">还没挑题——点上面列表里的题目加入备课夹</span>') +
         (r.missing ? '<br><span class="muted">（' + r.missing + ' 题因题库更新已失效，自动跳过）</span>' : '');
-    }
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepMod'), function (sel) {
+      if (prepFilter.m !== undefined && sel.value !== prepFilter.m) sel.value = prepFilter.m;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepQt'), function (sel) {
+      if (prepFilter.qt !== undefined && sel.value !== prepFilter.qt) sel.value = prepFilter.qt;
+    });
+  }
+  function renderClassPage() {
+    var el = $('classRosterStat');
+    if (!el) return;
+    var n = ROSTER.list.length;
+    el.textContent = n
+      ? ('名单已就绪：' + n + ' 人（剩余未点 ' + (DRAW.queue.length || n) + ' 人）——点下方按钮开始随机点名')
+      : '名单为空——回首页「课堂互动」导入名单后再点名';
   }
   function syncPrepBtn() {
     try {
@@ -2823,12 +2964,19 @@ body.arena-mode .app{max-width:none}
   function renderHonor() {
     var body = $('honorBody');
     if (!body) return;
+    try { renderHonorPage(); } catch (e) { }
     var matches = [], arenaLog = {};
     try { matches = JSON.parse(localStorage.getItem('pk.matches') || '[]') || []; } catch (e) { }
     try { arenaLog = JSON.parse(localStorage.getItem('pk.arena.v1') || '{}') || {}; } catch (e) { }
     // 数据以合并后的 localStorage 为准（CSYNC 已在页面加载时从服务端恢复）
     var h = XK.aggregateHonor(matches, arenaLog);
-    var html = '<div class="h-sec">⚔️ PK 获胜 Top10</div>';
+    var king = h.pkTop[0];
+    var html = '<div class="hb-king">👑 班级擂王：<b>' + esc(king ? king.name : '虚位以待') + '</b>' +
+      '<span class="muted">（累计获胜 ' + (king ? king.wins : 0) + ' 场）</span></div>';
+    html += '<div>📅 今日：' + (h.today.games ? h.today.games + ' 场 PK，胜者 ' + esc(h.today.winners.join('、')) : '还没开打') +
+      ' ｜ 🥊 本周擂主：' + esc(h.weekly.length ? h.weekly[0].name : '虚位以待') + '</div>';
+    html += '<details><summary>📋 展开完整榜单</summary>' +
+      '<div class="h-sec">⚔️ PK 获胜 Top10</div>';
     if (h.pkTop.length) {
       html += '<table><tr><th>#</th><th>姓名</th><th>胜场</th><th>参赛</th></tr>';
       h.pkTop.forEach(function (e, i) {
@@ -2843,10 +2991,49 @@ body.arena-mode .app{max-width:none}
         html += '<tr><td>' + w.week + '</td><td>' + esc(w.name) + '</td><td>' + w.streak + '</td></tr>';
       });
       html += '</table>';
-    } else html += '<div class="empty">还没打过擂台赛——第一场打完就有周擂主</div>';
+    } else html += '<div class="empty">还没打过擂台赛</div>';
+    html += '</details>';
+    body.innerHTML = html;
+  }
+
+  /* ---------- 排行榜页（客户端 tab，投屏荣誉墙大字版） ---------- */
+  function renderHonorPage() {
+    var body = $('honorPageBody');
+    if (!body) return;
+    var matches = [], arenaLog = {};
+    try { matches = JSON.parse(localStorage.getItem('pk.matches') || '[]') || []; } catch (e) { }
+    try { arenaLog = JSON.parse(localStorage.getItem('pk.arena.v1') || '{}') || {}; } catch (e) { }
+    var h = XK.aggregateHonor(matches, arenaLog);
+    var king = h.pkTop[0];
+    function table(rows, head) {
+      if (!rows.length) return '<div class="empty">还没有数据——打一场就有了</div>';
+      return '<table><tr>' + head.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '</tr>' + rows + '</table>';
+    }
+    var html = '<div class="hb-king">👑 班级擂王<br><b>' + esc(king ? king.name : '虚位以待') + '</b><br>' +
+      '<span class="muted">截至当前累计获胜 ' + (king ? king.wins : 0) + ' 场 · 参赛 ' + (king ? king.games : 0) + ' 场</span></div>';
+    html += '<div class="h-sec">📅 今日战况</div>' +
+      (h.today.games ? '<div>今天打了 <b>' + h.today.games + '</b> 场 PK，胜者：' + esc(h.today.winners.join('、')) + '</div>'
+                     : '<div class="empty">今天还没开打——下面的历史战绩继续有效</div>');
+    html += '<div class="h-sec">🥊 周擂主</div>' + table(
+      h.weekly.map(function (w, i) {
+        return '<tr' + (i === 0 ? ' class="rank1"' : '') + '><td>' + w.week + '</td><td>' + esc(w.name) + '</td><td>' + w.streak + '</td></tr>';
+      }), ['周（周一起算）', '擂主', '连胜']);
+    html += '<div class="h-sec">🥊 月擂主</div>' + table(
+      h.monthly.map(function (w, i) {
+        return '<tr' + (i === 0 ? ' class="rank1"' : '') + '><td>' + w.month + '</td><td>' + esc(w.name) + '</td><td>' + w.streak + '</td></tr>';
+      }), ['月（自然月）', '擂主', '连胜']);
+    html += '<div class="h-sec">⚔️ 本周 PK 获胜榜</div>' + table(
+      h.weekWins.map(function (e, i) {
+        return '<tr><td>' + (i + 1) + '</td><td>' + esc(e.name) + '</td><td>' + e.wins + '</td></tr>';
+      }), ['#', '姓名', '本周胜场']);
+    html += '<div class="h-sec">⚔️ PK 获胜总榜 Top10（截至当前）</div>' + table(
+      h.pkTop.map(function (e, i) {
+        return '<tr><td class="rank' + (i + 1) + '">' + (i + 1) + '</td><td>' + esc(e.name) + '</td><td>' + e.wins + '</td><td>' + e.games + '</td></tr>';
+      }), ['#', '姓名', '胜场', '参赛']);
     body.innerHTML = html;
   }
   function renderHome() {
+    try { renderTabs(); } catch (e) { }
     try { renderPrepMgr(); } catch (e) { }
     try { renderHonor(); } catch (e) { }
     var est = XK.estimateScore(BANK, META, P);
@@ -2956,15 +3143,24 @@ body.arena-mode .app{max-width:none}
     on('drawGo', 'onclick', closeDraw);
     on('drawRead', 'onclick', function () { closeDraw(); speakCurrent(); });
     // 备课夹
-    on('prepMod', 'onchange', function () { prepPage = 0; renderPrepMgr(); });
-    on('prepQt', 'onchange', function () { prepPage = 0; renderPrepMgr(); });
-    on('prepKw', 'oninput', function () { prepPage = 0; renderPrepMgr(); });
-    on('prepPrev', 'onclick', function () { prepPage--; renderPrepMgr(); });
-    on('prepNext', 'onclick', function () { prepPage++; renderPrepMgr(); });
-    on('prepClear', 'onclick', function () {
-      if (!prepIds().length) { renderPrepMgr(); return; }
-      if (confirm('清空备课夹？（不影响题库与成绩）')) { prepSave([]); renderPrepMgr(); }
+    document.querySelectorAll('.j-prepMod').forEach(function (el) { el.onchange = function () { prepFilter.m = this.value; prepPage = 0; renderPrepMgr(); }; });
+    document.querySelectorAll('.j-prepQt').forEach(function (el) { el.onchange = function () { prepFilter.qt = this.value; prepPage = 0; renderPrepMgr(); }; });
+    document.querySelectorAll('.j-prepKw').forEach(function (el) { el.oninput = function () { prepFilter.kw = this.value.trim().toLowerCase(); prepPage = 0; renderPrepMgr(); }; });
+    document.querySelectorAll('.j-prepPrev').forEach(function (el) { el.onclick = function () { prepPage--; renderPrepMgr(); }; });
+    document.querySelectorAll('.j-prepNext').forEach(function (el) { el.onclick = function () { prepPage++; renderPrepMgr(); }; });
+    document.querySelectorAll('.j-prepClear').forEach(function (el) {
+      el.onclick = function () {
+        if (!prepIds().length) { renderPrepMgr(); return; }
+        if (confirm('清空备课夹？（不影响题库与成绩）')) { prepSave([]); renderPrepMgr(); }
+      };
     });
+    on('clsDrawBtn', 'onclick', function () { runDraw(); });
+    on('honorNavBack', 'onclick', navBack);
+    on('honorNavFwd', 'onclick', navFwd);
+    on('prepNavBack', 'onclick', navBack);
+    on('prepNavFwd', 'onclick', navFwd);
+    on('classNavBack', 'onclick', navBack);
+    on('classNavFwd', 'onclick', navFwd);
     on('prepBtn', 'onclick', function () {
       if (!S.list || !S.list.length) return;
       var q = S.list[S.idx];

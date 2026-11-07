@@ -117,6 +117,34 @@ t('解析契约：/api/bank 的「行内提取 window.BANK=」在含 MIGRATE 行
   assert.strictEqual(JSON.parse(s2.slice(a + 12, b).trim().replace(/;$/, '')).length, 3982);
 });
 
+console.log('== 5½. aggregateHonor 扩展（月擂主/本周胜榜/今日战况） ==');
+t('月擂主：跨月重放、守擂延续', () => {
+  const d = (x) => new Date(x).getTime();
+  const arena = { results: [
+    { ts: d('2026-11-20T10:00:00Z'), winner: 'champ', champSid: 'A', champName: '甲', chalSid: 'B', chalName: '乙' },
+    { ts: d('2026-12-05T10:00:00Z'), winner: 'chal', champSid: 'A', champName: '甲', chalSid: 'D', chalName: '丁' }
+  ] };
+  const h = XK.aggregateHonor([], arena);
+  assert.strictEqual(h.monthly.length, 2);
+  assert.strictEqual(h.monthly[1].month, '2026-11');
+  assert.strictEqual(h.monthly[1].name, '甲');
+  assert.strictEqual(h.monthly[0].month, '2026-12');
+  assert.strictEqual(h.monthly[0].name, '丁');
+});
+t('本周胜榜与今日战况（按当前时间过滤）', () => {
+  const now = Date.now();
+  const matches = [
+    { ts: now - 3600e3, winner: 'L', left: { sid: 'A', name: '甲', score: 3 }, right: { sid: 'B', name: '乙', score: 1 } },
+    { ts: now - 7200e3, winner: 'L', left: { sid: 'A', name: '甲', score: 2 }, right: { sid: 'C', name: '丙', score: 0 } },
+    { ts: now - 40 * 86400e3, winner: 'L', left: { sid: 'OLD', name: '上周', score: 9 }, right: { sid: 'B', name: '乙', score: 0 } }
+  ];
+  const h = XK.aggregateHonor(matches, {});
+  assert.strictEqual(h.weekWins.length >= 1, true);
+  assert.strictEqual(h.weekWins[0].name, '甲');
+  assert.strictEqual(h.today.games, 2);
+  assert.strictEqual(h.today.winners[0], '甲');
+});
+
 console.log('== 5. aggregateHonor（荣誉榜聚合） ==');
 t('PK Top10 按胜场排序、参赛场次统计', () => {
   const matches = [

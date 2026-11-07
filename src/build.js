@@ -133,21 +133,21 @@ ${arenaStyle}
       <div class="card" id="prepCard">
         <div class="sec-t"><span class="dot"></span>📋 备课夹（课前挑题 → PK/擂台按勾选顺序出）</div>
         <div class="prep-bar">
-          <select id="prepMod" class="prep-sel"></select>
-          <select id="prepQt" class="prep-sel">
+          <select class="j-prepMod prep-sel" class="prep-sel"></select>
+          <select class="j-prepQt prep-sel">
             <option value="">全部题型</option><option>单选</option><option>判断</option><option>多选</option>
           </select>
-          <input id="prepKw" class="prep-kw" placeholder="题干关键词">
-          <span class="muted" id="prepStat"></span>
+          <input class="j-prepKw prep-kw" placeholder="题干关键词">
+          <span class="muted" class="j-prepStat muted"></span>
         </div>
-        <div id="prepList" class="prep-list"></div>
+        <div class="j-prepList prep-list"></div>
         <div class="prep-nav">
-          <button class="mini-btn" id="prepPrev">← 上一页</button>
-          <span id="prepPage" class="muted"></span>
-          <button class="mini-btn" id="prepNext">下一页 →</button>
-          <button class="mini-btn" id="prepClear">🗑 清空备课夹</button>
+          <button class="mini-btn" class="mini-btn j-prepPrev">← 上一页</button>
+          <span class="j-prepPage muted"></span>
+          <button class="mini-btn" class="mini-btn j-prepNext">下一页 →</button>
+          <button class="mini-btn" class="mini-btn j-prepClear">🗑 清空备课夹</button>
         </div>
-        <div id="prepChosen" class="prep-chosen"></div>
+        <div class="j-prepChosen prep-chosen"></div>
       </div>
       <div class="card" style="margin-top:13px">
         <div class="sec-t"><span class="dot"></span>🎓 课堂互动（投屏上课用）</div>
@@ -241,6 +241,56 @@ ${arenaStyle}
       <div style="height:13px"></div>
       <div id="wrongList"></div>
     </div>
+  </div>
+
+  <!-- ============ 排行榜（客户端 tab） ============ -->
+  <div id="honorPage" class="panel hidden">
+    <header><div class="h-title">🏆 排行榜 · 荣誉墙</div>
+      <button class="h-btn" id="honorNavBack" title="后退">←</button>
+      <button class="h-btn" id="honorNavFwd" title="前进">→</button>
+    </header>
+    <div class="wrap"><div class="card" id="honorPageBody"></div></div>
+  </div>
+
+  <!-- ============ 备课夹（客户端 tab） ============ -->
+  <div id="prepPage" class="panel hidden">
+    <header><div class="h-title">📋 备课夹（按勾选顺序出题）</div>
+      <button class="h-btn" id="prepNavBack" title="后退">←</button>
+      <button class="h-btn" id="prepNavFwd" title="前进">→</button>
+    </header>
+    <div class="wrap">
+      <div class="card">
+        <div class="prep-bar">
+          <select class="j-prepMod prep-sel"></select>
+          <select class="j-prepQt prep-sel">
+            <option value="">全部题型</option><option>单选</option><option>判断</option><option>多选</option>
+          </select>
+          <input class="j-prepKw prep-kw" placeholder="题干关键词">
+          <span class="muted j-prepStat"></span>
+        </div>
+        <div class="j-prepList prep-list"></div>
+        <div class="prep-nav">
+          <button class="mini-btn j-prepPrev">← 上一页</button>
+          <span class="muted j-prepPage"></span>
+          <button class="mini-btn j-prepNext">下一页 →</button>
+          <button class="mini-btn j-prepClear">🗑 清空备课夹</button>
+        </div>
+        <div class="j-prepChosen prep-chosen"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 点名台（客户端 tab） ============ -->
+  <div id="classPage" class="panel hidden">
+    <header><div class="h-title">🎲 点名台</div>
+      <button class="h-btn" id="classNavBack" title="后退">←</button>
+      <button class="h-btn" id="classNavFwd" title="前进">→</button>
+    </header>
+    <div class="wrap"><div class="card" style="text-align:center">
+      <div class="muted" id="classRosterStat"></div>
+      <button class="btn" id="clsDrawBtn" style="font-size:22px;margin:18px auto">🎲 随机点名</button>
+      <div class="muted">点名动画全屏展示（TTS 播报姓名）</div>
+    </div></div>
   </div>
 
   <!-- ============ 考点诊断 ============ -->

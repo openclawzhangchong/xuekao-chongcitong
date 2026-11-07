@@ -211,6 +211,7 @@ async function pickLetters(page, rootSel, letters) {
       if (st.next) { await page.evaluate((id) => { const b = document.getElementById(id); if (b) b.click(); }, subId); await sleep(220); continue; }
       if (st.wait) { await sleep(300); continue; }
       await pickLetters(page, rootSel, st.pick);
+      await sleep(250);   // 选项点击后稍等渲染（负载下防竞态）
       await page.evaluate((id) => { const b = document.getElementById(id); if (b) b.click(); }, subId);
       await sleep(650);
     }
@@ -228,6 +229,14 @@ async function pickLetters(page, rootSel, letters) {
   const stL = await pkDriveSide(true, true);
   const stR = await pkDriveSide(false, false);
   check('I2 左侧全对 ' + (stL && stL.score) + '/' + (stL && stL.n), stL && stL.done && stL.score === stL.n, '');
+  if (!stR) {
+    const dump = await page.evaluate(() => {
+      const P = window.__PK_TEST.pk().right;
+      const btn = document.getElementById('rSubmit');
+      return { idx: P.idx, done: P.done, locked: P.locked, btn: btn ? btn.textContent : '(no btn)', state: window.__PK_TEST.pk().state };
+    });
+    console.log('  ⚠ R 侧卡住现场: ' + JSON.stringify(dump));
+  }
   check('I3 右侧低于左侧', stR && stL && stR.score < stL.score, 'R=' + (stR && stR.score));
   const maskShown = await page.evaluate(() => { const m = document.getElementById('endMask'); return m ? !m.classList.contains('hidden') : false; });
   check('I4 结算弹层出现', maskShown, '');
@@ -336,7 +345,7 @@ async function pickLetters(page, rootSel, letters) {
   });
   await page.reload(); await page.waitForFunction('window.BANK && window.BANK.length'); await sleep(300);
   await page.evaluate(() => document.querySelector('.tab[data-t="home"]').click()); await sleep(250);
-  const chosen = await page.evaluate(() => (document.getElementById('prepChosen') || {}).innerText || '');
+  const chosen = await page.evaluate(() => (document.querySelector('.j-prepChosen') || {}).innerText || '');
   check('P1 备课夹清单（勾选顺序 3 题）', chosen.indexOf('1.') !== -1 && chosen.indexOf('2.') !== -1 && chosen.indexOf('3.') !== -1, '');
   await page.evaluate(() => document.querySelector('.tab[data-t="pk"]').click()); await sleep(250);
   await page.evaluate(() => {
@@ -399,7 +408,7 @@ async function pickLetters(page, rootSel, letters) {
   await page.reload(); await page.waitForFunction('window.BANK && window.BANK.length'); await sleep(300);
   await page.evaluate(() => document.querySelector('.tab[data-t="home"]').click()); await sleep(250);
   const honorTxt = await page.evaluate(() => (document.getElementById('honorBody') || {}).innerText || '');
-  check('H1 荣誉榜 Top10（按胜场）', honorTxt.indexOf('荣誉甲') !== -1 && honorTxt.indexOf('胜场') !== -1, '');
+  check('H1 荣誉榜摘要（班级擂王+今日战况）', honorTxt.indexOf('班级擂王') !== -1 && honorTxt.indexOf('今日') !== -1, honorTxt.slice(0, 60));
   check('H2 周擂主（被踢馆换人）', honorTxt.indexOf('荣誉丙') !== -1, '');
   await page.evaluate(() => document.querySelector('.tab[data-t="pk"]').click()); await sleep(250);
   await page.evaluate(() => { window.__PK_TEST.bgm().setList(['/m/a.mp3', '/m/b.wav'], ['a.mp3', 'b.wav']); });
@@ -410,6 +419,60 @@ async function pickLetters(page, rootSel, letters) {
   check('H4 BGM 开启即播第一首', bgmState.on === true && bgmState.src.indexOf('a.mp3') !== -1, JSON.stringify(bgmState).slice(0, 80));
   await page.evaluate(() => { const b = window.__PK_TEST.bgm(); if (b.cfg.on) b.toggle(); });
   await page.evaluate(() => { localStorage.removeItem('pk.matches'); localStorage.removeItem('pk.arena.v1'); });
+
+  /* ---------- CL. 客户端模式（?client=1：tab 六项/排行榜页/点名台/对战隐藏） ---------- */
+  const clientURL = (IS_HTTP ? PAGE : PAGE) + '?client=1';
+  const p2 = await browser.newPage({ viewport: { width: VP[0], height: VP[1] } });
+  p2.on('pageerror', (e) => ERRORS.push('client pageerror: ' + String(e.message).slice(0, 150)));
+  await p2.goto(clientURL); await p2.waitForFunction('window.BANK && window.BANK.length');
+  await sleep(600);
+  // 客户端页同样会弹学号登录（班级模式）——独立页面需要自己登录
+  const p2Dlg = await p2.evaluate(() => { const m = document.getElementById('dlgMask'); return m && !m.classList.contains('hidden'); });
+  if (p2Dlg && IS_CLASS) {
+    const keys = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'cloud', 'keys.json'), 'utf8'));
+    await p2.evaluate((code) => {
+      document.getElementById('dlgSid').value = '99002';
+      document.getElementById('dlgName').value = '客户端测试';
+      document.getElementById('dlgCode').value = code;
+      document.getElementById('dlgOk').click();
+    }, keys.classCode);
+    await sleep(1000);
+  } else if (p2Dlg) {
+    await p2.evaluate(() => { const b = document.getElementById('dlgCancel'); if (b) b.click(); });
+    await sleep(300);
+  }
+  await sleep(300);
+  const tabsN = await p2.evaluate(() => document.querySelectorAll('#tabs .tab').length);
+  check('CL1 客户端 tab 六项', tabsN === 6, String(tabsN));
+  const honorTab = await p2.evaluate(() => !!document.querySelector('#tabs .tab[data-t="honor"]'));
+  check('CL2 排行榜 tab 存在', honorTab, '');
+  await p2.evaluate(() => {
+    localStorage.setItem('pk.matches', JSON.stringify([
+      { ts: 1, winner: 'L', left: { sid: 'HA', name: '榜甲', score: 3 }, right: { sid: 'HB', name: '榜乙', score: 1 }, qcount: 3 }
+    ]));
+    localStorage.setItem('pk.arena.v1', JSON.stringify({ round: 1, streak: 1, champ: { sid: 'HA', name: '榜甲' }, results: [
+      { ts: Date.now(), winner: 'champ', champSid: 'HA', champName: '榜甲', chalSid: 'HB', chalName: '榜乙', champScore: 3, chalScore: 1 }
+    ] }));
+  });
+  await p2.evaluate(() => document.querySelector('#tabs .tab[data-t="honor"]').click()); await sleep(250);
+  const honorTxt2 = await p2.evaluate(() => (document.getElementById('honorPageBody') || {}).innerText || '');
+  check('CL3 排行榜页六区块', ['班级擂王', '今日战况', '周擂主', '月擂主', '本周', '总榜'].every(t => honorTxt2.indexOf(t) !== -1), honorTxt2.slice(0, 50));
+  await p2.evaluate(() => document.querySelector('#tabs .tab[data-t="prep"]').click()); await sleep(250);
+  const prepChosen = await p2.evaluate(() => { const el = document.querySelector('#prepPage .j-prepChosen'); return el ? el.innerText : ''; });
+  check('CL4 备课夹独立页（清单同步渲染）', prepChosen.indexOf('出题顺序') !== -1, prepChosen.slice(0, 40));
+  await p2.evaluate(() => document.querySelector('#tabs .tab[data-t="class"]').click()); await sleep(200);
+  check('CL5 点名台大按钮', await p2.evaluate(() => !!document.getElementById('clsDrawBtn')), '');
+  await p2.evaluate(() => document.querySelector('#tabs .tab[data-t="pk"]').click()); await sleep(250);
+  await p2.evaluate(() => {
+    const L = document.getElementById('pkSelL'), R = document.getElementById('pkSelR');
+    L.selectedIndex = 1; L.dispatchEvent(new Event('change'));
+    R.selectedIndex = 2; R.dispatchEvent(new Event('change'));
+  }); await sleep(150);
+  await p2.click('#btnStart'); await sleep(600);
+  const tabsHidden = await p2.evaluate(() => { const t = document.getElementById('tabs'); return t && getComputedStyle(t).display === 'none'; });
+  check('CL6 对战进行中 tab 隐藏（投屏一屏）', tabsHidden, '');
+  await p2.evaluate(() => { const b = document.getElementById('btnReset'); if (b) b.onclick = null; });
+  await p2.close();
 
   /* ---------- L. 班级版专属（只在本机 8953 服务跑，绝不碰线上真实数据；登录已在 A+ 完成） ---------- */
   if (IS_CLASS) {

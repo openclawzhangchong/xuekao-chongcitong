@@ -1,12 +1,12 @@
 {
   "page": "https://coral-beacon-g4jx.here.now/",
   "viewport": "1366x768",
-  "loadMs": 3508,
+  "loadMs": 4703,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 3508ms"
+      "note": "BANK=3982，就绪耗时 4703ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -36,7 +36,7 @@
     {
       "name": "C1 出题面板渲染",
       "ok": true,
-      "note": "2 个选项"
+      "note": "4 个选项"
     },
     {
       "name": "C2 全组答完出报告",
@@ -136,7 +136,7 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=林泽豪"
+      "note": "results=3 擂主=宋政烨"
     },
     {
       "name": "P1 备课夹清单（勾选顺序 3 题）",
@@ -204,9 +204,9 @@
       "note": "null"
     },
     {
-      "name": "H1 荣誉榜 Top10（按胜场）",
+      "name": "H1 荣誉榜摘要（班级擂王+今日战况）",
       "ok": true,
-      "note": ""
+      "note": "👑 班级擂王：荣誉甲（累计获胜 2 场）\n📅 今日：还没开打 ｜ 🥊 本周擂主：荣誉丙\n📋 展开完整榜单"
     },
     {
       "name": "H2 周擂主（被踢馆换人）",
@@ -222,9 +222,40 @@
       "name": "H4 BGM 开启即播第一首",
       "ok": true,
       "note": "{\"on\":true,\"src\":\"https://coral-beacon-g4jx.here.now/m/a.mp3\"}"
+    },
+    {
+      "name": "CL1 客户端 tab 六项",
+      "ok": true,
+      "note": "6"
+    },
+    {
+      "name": "CL2 排行榜 tab 存在",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "CL3 排行榜页六区块",
+      "ok": true,
+      "note": "👑 班级擂王\n榜甲\n截至当前累计获胜 1 场 · 参赛 1 场\n📅 今日战况\n今天还没开打——下"
+    },
+    {
+      "name": "CL4 备课夹独立页（清单同步渲染）",
+      "ok": true,
+      "note": "出题顺序（勾选顺序）：\n还没挑题——点上面列表里的题目加入备课夹"
+    },
+    {
+      "name": "CL5 点名台大按钮",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "CL6 对战进行中 tab 隐藏（投屏一屏）",
+      "ok": true,
+      "note": ""
     }
   ],
   "errors": [
+    "console: Failed to load resource: the server responded with a status of 404 ()",
     "console: Failed to load resource: the server responded with a status of 404 ()",
     "console: Failed to load resource: the server responded with a status of 404 ()",
     "console: Failed to load resource: the server responded with a status of 404 ()",

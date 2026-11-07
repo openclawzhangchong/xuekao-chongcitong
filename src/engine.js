@@ -283,9 +283,9 @@
     }
     var weekly = [], standing = null, curWeek = null, streak = 0;
     function closeWeek(w) { if (w && standing) weekly.push({ week: w, name: standing.name, sid: standing.sid, streak: streak }); }
-    ((arenaLog || {}).results || []).filter(function (r) { return r && r.ts; })
-      .sort(function (a, b) { return a.ts - b.ts; })
-      .forEach(function (r) {
+    var timeline = ((arenaLog || {}).results || []).filter(function (r) { return r && r.ts; })
+      .sort(function (a, b) { return a.ts - b.ts; });   // forEach 返回 undefined，绝不能链在赋值尾部
+    timeline.forEach(function (r) {
         var w = weekOf(r.ts);
         if (curWeek === null) curWeek = w;
         if (w !== curWeek) { closeWeek(curWeek); curWeek = w; streak = 0; }
@@ -295,7 +295,40 @@
       });
     closeWeek(curWeek);
     weekly.reverse();
-    return { pkTop: pkTop, weekly: weekly };
+    /* 月擂主：同构周逻辑（自然月分组重放） */
+    function monthOf(ts) {
+      var d = new Date(ts);
+      return d.getFullYear() + '-' + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1);
+    }
+    var monthly = [], mStanding = null, curMonth = null, mStreak = 0;
+    function closeMonth(m) { if (m && mStanding) monthly.push({ month: m, name: mStanding.name, sid: mStanding.sid, streak: mStreak }); }
+    timeline.forEach(function (r) {
+      var m = monthOf(r.ts);
+      if (curMonth === null) curMonth = m;
+      if (m !== curMonth) { closeMonth(curMonth); curMonth = m; mStreak = 0; }
+      if (r.winner === 'chal') { mStanding = { sid: r.chalSid, name: r.chalName }; mStreak = 1; }
+      else { mStanding = { sid: r.champSid, name: r.champName }; mStreak = mStreak + 1; }
+    });
+    closeMonth(curMonth);
+    monthly.reverse();
+    /* 本周 PK 胜场榜（本周一 00:00 起）与今日战况 */
+    var now = new Date();
+    var mon = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (now.getDay() + 6) % 7);
+    var monTs = mon.getTime(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var wBy = {}, todayGames = 0, todayWinners = [];
+    (matches || []).forEach(function (m) {
+      if (!m || !m.left || !m.right || !(m.ts >= monTs)) return;
+      var w = m.winner === 'L' ? m.left : (m.winner === 'R' ? m.right : null);
+      if (!w) return;
+      var id = w.sid || w.name;
+      var e = wBy[id] = wBy[id] || { name: w.name || w.sid || '未知', wins: 0 };
+      e.wins++;
+      if (m.ts >= t0) { todayGames++; todayWinners.push(w.name || w.sid || '未知'); }
+    });
+    var weekWins = Object.keys(wBy).map(function (k) { return wBy[k]; })
+      .sort(function (a, b) { return b.wins - a.wins; }).slice(0, 5);
+    return { pkTop: pkTop, weekly: weekly, monthly: monthly, weekWins: weekWins,
+             today: { games: todayGames, winners: todayWinners } };
   }
 
   /* ---------- 档案导入导出校验 ---------- */

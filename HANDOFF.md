@@ -299,6 +299,15 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 
 ---
 
+## 八⅞½、客户端模式 + 排行榜页（2026-11-07 晚）
+
+- 启动器窗口 URL 带 `?client=1` → 底部 tab 换六项课堂组（含 🏆排行榜页：班级擂王/
+  今日/周擂主/月擂主/本周胜榜/总榜，实时聚合）；PK/擂台对战中 tab 仍隐藏
+- 「输入学号」弹窗保留现状（用户拍板）；备课夹/课堂互动 = 首页卡片的 class-hook
+  双渲染复用（改其一记得两处一致）
+- 陷阱记录：renderTabs 重绘 tab 会丢徽章元素——refreshBadges 已空安全，别回退；
+  timeline 链尾不得接 forEach（返回 undefined）
+
 ## 八⅞、Windows 客户端（2026-11-07 傍晚交付）
 
 - **产物**：`dist-client/学考冲刺通课堂版-免安装.zip` + `学考冲刺通安装包.exe`（各 19.8MB）

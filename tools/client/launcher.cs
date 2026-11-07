@@ -27,7 +27,8 @@ static class Program {
 
 class TrayContext : ApplicationContext {
     const int PORT = 8953;
-    const string URL = "http://127.0.0.1:8953/";
+    const string URL = "http://127.0.0.1:8953/?client=1";
+    const string TEACHER_URL = "http://127.0.0.1:8953/teacher";
     Process server;
     NotifyIcon tray;
     string root = AppDomain.CurrentDomain.BaseDirectory;
@@ -35,7 +36,7 @@ class TrayContext : ApplicationContext {
     public TrayContext() {
         var menu = new ContextMenu();
         menu.MenuItems.Add("打开主界面", delegate { OpenApp(); });
-        menu.MenuItems.Add("教师学情页（本机）", delegate { OpenUrl(URL + "teacher"); });
+        menu.MenuItems.Add("教师学情页（本机）", delegate { OpenUrl(TEACHER_URL); });
         menu.MenuItems.Add("数据文件夹", delegate { OpenDataFolder(); });
         menu.MenuItems.Add(new MenuItem("-"));
         menu.MenuItems.Add("退出并停止服务", delegate { ExitAll(); });

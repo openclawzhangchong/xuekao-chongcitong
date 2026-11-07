@@ -43,8 +43,8 @@
   function refreshBadges() {
     var wq = XK.wrongQueue(BANK, P).length;
     var wk = XK.weakSpots(BANK, META, P, 8).weak.length;
-    $('badgeWrong').textContent = wq > 0 ? wq : '';
-    $('badgeDiag').textContent = wk > 0 ? wk : '';
+    var bw = $('badgeWrong'); if (bw) bw.textContent = wq > 0 ? wq : '';
+    var bd = $('badgeDiag'); if (bd) bd.textContent = wk > 0 ? wk : '';
   }
 
   /* ---------- 语音朗读（多音色） ---------- */
@@ -284,6 +284,12 @@
 
   /* ---------- 面板切换 ---------- */
   var TABS = ['home', 'setup', 'wrong', 'diag', 'pk'];
+  function markTab(name) {
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (el) {
+      el.classList.toggle('on', el.getAttribute('data-t') === name);
+    });
+  }
+
   function showPanel(name) {
     // PK / 擂台赛要占满整屏（投屏两侧各一半），其余页保持 760px 居中列
     document.body.classList.toggle('pk-mode', name === 'pk');
@@ -296,6 +302,13 @@
     if (pkEl) pkEl.classList.add('hidden');
     var arEl = document.getElementById('arenaPage');
     if (arEl) arEl.classList.add('hidden');
+    ['prep', 'class', 'honor'].forEach(function (t) {
+      var el = document.getElementById(t + 'Page');
+      if (el) el.classList.add('hidden');
+    });
+    var npEl = document.getElementById(name + 'Page');
+    if (npEl) npEl.classList.remove('hidden');
+    markTab(name);
     if (name === 'arena') {
       if (arEl) arEl.classList.remove('hidden');
       if (window.__ARENA_MOUNT) window.__ARENA_MOUNT();
@@ -327,6 +340,29 @@
     });
     window.scrollTo(0, 0);
   }
+  /* ---------- 客户端模式（?client=1，启动器专用） ---------- */
+  var IS_CLIENT = false;
+  try {
+    if (location.search.indexOf('client=1') !== -1 || localStorage.getItem('xkc.client') === '1') {
+      IS_CLIENT = true;
+      localStorage.setItem('xkc.client', '1');
+      document.body.classList.add('client');
+    }
+  } catch (e) { }
+  function renderTabs() {
+    var bar = $('tabs');
+    if (!bar) return;
+    var defs = IS_CLIENT
+      ? [['home', '🏠', '首页'], ['pk', '⚔️', 'PK'], ['arena', '🥊', '擂台'], ['honor', '🏆', '排行榜'], ['prep', '📋', '备课夹'], ['class', '🎲', '点名台']]
+      : [['home', '🏠', '首页'], ['setup', '📝', '刷题'], ['wrong', '📕', '错题', '<span id="badgeWrong" style="color:#dc2626;font-weight:800"></span>'], ['diag', '📊', '诊断', '<span id="badgeDiag" style="color:#d97706;font-weight:800"></span>'], ['pk', '⚔️', 'PK']];
+    bar.innerHTML = defs.map(function (d) {
+      return '<button class="tab" data-t="' + d[0] + '"><span class="ti">' + d[1] + '</span>' + d[2] + (d[3] || '') + '</button>';
+    }).join('');
+    Array.prototype.forEach.call(bar.querySelectorAll('.tab'), function (el) {
+      el.onclick = function () { switchTab(el.getAttribute('data-t')); };
+    });
+  }
+
   /* ---------- 前进/后退导航（hash 路由：#/home #/setup #/wrong #/diag #/pk #/arena #/quiz #/result） ---------- */
   var NAV = { routing: false, cur: null };
   function navPush(name) {
@@ -352,7 +388,8 @@
       else { try { history.replaceState({ nav: true }, '', '#/home'); } catch (e) { } switchTab('home'); }
       return;
     }
-    if (TABS.indexOf(name) !== -1 || name === 'arena') switchTab(name);
+    var tabsAvail = IS_CLIENT ? ['home', 'pk', 'arena', 'honor', 'prep', 'class'] : TABS;
+    if (tabsAvail.indexOf(name) !== -1) switchTab(name);
     else { try { history.replaceState({ nav: true }, '', '#/home'); } catch (e) { } switchTab('home'); }
   }
   function navBack() { try { history.back(); } catch (e) { } }
@@ -378,12 +415,16 @@
     if (name === 'home') renderHome();
     if (name === 'wrong') renderWrong();
     if (name === 'diag') renderDiag();
+    if (name === 'honor') { try { renderHonorPage(); } catch (e) { } }
+    if (name === 'prep') { try { renderPrepMgr(); } catch (e) { } }
+    if (name === 'class') { try { renderClassPage(); } catch (e) { } }
     showPanel(name);
   }
 
   /* ---------- 首页 ---------- */
   /* ---------- 备课夹（课前挑题 → PK/擂台按勾选顺序出） ---------- */
   var PREP_KEY = 'xkc.prep.v1', prepPage = 0;
+  var prepFilter = { m: '', qt: '', kw: '' };
   function prepIds() { try { var v = JSON.parse(localStorage.getItem(PREP_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
   function prepSave(ids) {
     try { localStorage.setItem(PREP_KEY, JSON.stringify(ids)); } catch (e) { }
@@ -395,9 +436,7 @@
     prepSave(ids);
   }
   function prepFiltered() {
-    var mod = ($('prepMod') || {}).value || '';
-    var qt = ($('prepQt') || {}).value || '';
-    var kw = (($('prepKw') || {}).value || '').trim().toLowerCase();
+    var mod = prepFilter.m, qt = prepFilter.qt, kw = prepFilter.kw;
     return BANK.filter(function (q) {
       if (mod && q.m !== mod) return false;
       if (qt && q.qt !== qt) return false;
@@ -406,22 +445,24 @@
     });
   }
   function renderPrepMgr() {
-    var modSel = $('prepMod');
-    if (modSel && !modSel.options.length) {
-      var o0 = document.createElement('option'); o0.value = ''; o0.textContent = '全部模块';
-      modSel.appendChild(o0);
-      (window.BANK_META || []).forEach(function (m) {
-        var op = document.createElement('option'); op.value = m.code; op.textContent = m.disp;
-        modSel.appendChild(op);
-      });
-    }
+    var modSels = document.querySelectorAll('.j-prepMod');
+    Array.prototype.forEach.call(modSels, function (modSel) {
+      if (!modSel.options.length) {
+        var o0 = document.createElement('option'); o0.value = ''; o0.textContent = '全部模块';
+        modSel.appendChild(o0);
+        (window.BANK_META || []).forEach(function (m) {
+          var op = document.createElement('option'); op.value = m.code; op.textContent = m.disp;
+          modSel.appendChild(op);
+        });
+        modSel.value = prepFilter.m;
+      }
+    });
     var ids = prepIds(), chosen = new Set(ids);
     var list = prepFiltered();
     var PER = 30, pages = Math.max(1, Math.ceil(list.length / PER));
     if (prepPage >= pages) prepPage = pages - 1;
     if (prepPage < 0) prepPage = 0;
-    var box = $('prepList');
-    if (box) {
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepList'), function (box) {
       var html = '';
       list.slice(prepPage * PER, prepPage * PER + PER).forEach(function (q) {
         var id = XK.qidOf(q), on = chosen.has(id);
@@ -433,13 +474,14 @@
       Array.prototype.forEach.call(box.querySelectorAll('.prep-item'), function (el) {
         el.onclick = function () { prepToggle(el.getAttribute('data-qid')); renderPrepMgr(); };
       });
-    }
-    var pg = $('prepPage');
-    if (pg) pg.textContent = '第 ' + (prepPage + 1) + '/' + pages + ' 页 · 符合 ' + list.length + ' 题';
-    var st = $('prepStat');
-    if (st) st.textContent = '已夹 ' + ids.length + ' 题';
-    var ch = $('prepChosen');
-    if (ch) {
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepPage'), function (pg) {
+      pg.textContent = '第 ' + (prepPage + 1) + '/' + pages + ' 页 · 符合 ' + list.length + ' 题';
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepStat'), function (st) {
+      st.textContent = '已夹 ' + ids.length + ' 题';
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepChosen'), function (ch) {
       var r = XK.resolvePrep(BANK, ids);
       var chips = r.list.map(function (q, i) {
         return '<span class="chip">' + (i + 1) + '. ' + esc(String(q.s).slice(0, 18)) + '</span>';
@@ -447,7 +489,21 @@
       ch.innerHTML = '出题顺序（勾选顺序）：<br>' +
         (chips || '<span class="muted">还没挑题——点上面列表里的题目加入备课夹</span>') +
         (r.missing ? '<br><span class="muted">（' + r.missing + ' 题因题库更新已失效，自动跳过）</span>' : '');
-    }
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepMod'), function (sel) {
+      if (prepFilter.m !== undefined && sel.value !== prepFilter.m) sel.value = prepFilter.m;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepQt'), function (sel) {
+      if (prepFilter.qt !== undefined && sel.value !== prepFilter.qt) sel.value = prepFilter.qt;
+    });
+  }
+  function renderClassPage() {
+    var el = $('classRosterStat');
+    if (!el) return;
+    var n = ROSTER.list.length;
+    el.textContent = n
+      ? ('名单已就绪：' + n + ' 人（剩余未点 ' + (DRAW.queue.length || n) + ' 人）——点下方按钮开始随机点名')
+      : '名单为空——回首页「课堂互动」导入名单后再点名';
   }
   function syncPrepBtn() {
     try {
@@ -463,12 +519,19 @@
   function renderHonor() {
     var body = $('honorBody');
     if (!body) return;
+    try { renderHonorPage(); } catch (e) { }
     var matches = [], arenaLog = {};
     try { matches = JSON.parse(localStorage.getItem('pk.matches') || '[]') || []; } catch (e) { }
     try { arenaLog = JSON.parse(localStorage.getItem('pk.arena.v1') || '{}') || {}; } catch (e) { }
     // 数据以合并后的 localStorage 为准（CSYNC 已在页面加载时从服务端恢复）
     var h = XK.aggregateHonor(matches, arenaLog);
-    var html = '<div class="h-sec">⚔️ PK 获胜 Top10</div>';
+    var king = h.pkTop[0];
+    var html = '<div class="hb-king">👑 班级擂王：<b>' + esc(king ? king.name : '虚位以待') + '</b>' +
+      '<span class="muted">（累计获胜 ' + (king ? king.wins : 0) + ' 场）</span></div>';
+    html += '<div>📅 今日：' + (h.today.games ? h.today.games + ' 场 PK，胜者 ' + esc(h.today.winners.join('、')) : '还没开打') +
+      ' ｜ 🥊 本周擂主：' + esc(h.weekly.length ? h.weekly[0].name : '虚位以待') + '</div>';
+    html += '<details><summary>📋 展开完整榜单</summary>' +
+      '<div class="h-sec">⚔️ PK 获胜 Top10</div>';
     if (h.pkTop.length) {
       html += '<table><tr><th>#</th><th>姓名</th><th>胜场</th><th>参赛</th></tr>';
       h.pkTop.forEach(function (e, i) {
@@ -483,10 +546,49 @@
         html += '<tr><td>' + w.week + '</td><td>' + esc(w.name) + '</td><td>' + w.streak + '</td></tr>';
       });
       html += '</table>';
-    } else html += '<div class="empty">还没打过擂台赛——第一场打完就有周擂主</div>';
+    } else html += '<div class="empty">还没打过擂台赛</div>';
+    html += '</details>';
+    body.innerHTML = html;
+  }
+
+  /* ---------- 排行榜页（客户端 tab，投屏荣誉墙大字版） ---------- */
+  function renderHonorPage() {
+    var body = $('honorPageBody');
+    if (!body) return;
+    var matches = [], arenaLog = {};
+    try { matches = JSON.parse(localStorage.getItem('pk.matches') || '[]') || []; } catch (e) { }
+    try { arenaLog = JSON.parse(localStorage.getItem('pk.arena.v1') || '{}') || {}; } catch (e) { }
+    var h = XK.aggregateHonor(matches, arenaLog);
+    var king = h.pkTop[0];
+    function table(rows, head) {
+      if (!rows.length) return '<div class="empty">还没有数据——打一场就有了</div>';
+      return '<table><tr>' + head.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '</tr>' + rows + '</table>';
+    }
+    var html = '<div class="hb-king">👑 班级擂王<br><b>' + esc(king ? king.name : '虚位以待') + '</b><br>' +
+      '<span class="muted">截至当前累计获胜 ' + (king ? king.wins : 0) + ' 场 · 参赛 ' + (king ? king.games : 0) + ' 场</span></div>';
+    html += '<div class="h-sec">📅 今日战况</div>' +
+      (h.today.games ? '<div>今天打了 <b>' + h.today.games + '</b> 场 PK，胜者：' + esc(h.today.winners.join('、')) + '</div>'
+                     : '<div class="empty">今天还没开打——下面的历史战绩继续有效</div>');
+    html += '<div class="h-sec">🥊 周擂主</div>' + table(
+      h.weekly.map(function (w, i) {
+        return '<tr' + (i === 0 ? ' class="rank1"' : '') + '><td>' + w.week + '</td><td>' + esc(w.name) + '</td><td>' + w.streak + '</td></tr>';
+      }), ['周（周一起算）', '擂主', '连胜']);
+    html += '<div class="h-sec">🥊 月擂主</div>' + table(
+      h.monthly.map(function (w, i) {
+        return '<tr' + (i === 0 ? ' class="rank1"' : '') + '><td>' + w.month + '</td><td>' + esc(w.name) + '</td><td>' + w.streak + '</td></tr>';
+      }), ['月（自然月）', '擂主', '连胜']);
+    html += '<div class="h-sec">⚔️ 本周 PK 获胜榜</div>' + table(
+      h.weekWins.map(function (e, i) {
+        return '<tr><td>' + (i + 1) + '</td><td>' + esc(e.name) + '</td><td>' + e.wins + '</td></tr>';
+      }), ['#', '姓名', '本周胜场']);
+    html += '<div class="h-sec">⚔️ PK 获胜总榜 Top10（截至当前）</div>' + table(
+      h.pkTop.map(function (e, i) {
+        return '<tr><td class="rank' + (i + 1) + '">' + (i + 1) + '</td><td>' + esc(e.name) + '</td><td>' + e.wins + '</td><td>' + e.games + '</td></tr>';
+      }), ['#', '姓名', '胜场', '参赛']);
     body.innerHTML = html;
   }
   function renderHome() {
+    try { renderTabs(); } catch (e) { }
     try { renderPrepMgr(); } catch (e) { }
     try { renderHonor(); } catch (e) { }
     var est = XK.estimateScore(BANK, META, P);
@@ -596,15 +698,24 @@
     on('drawGo', 'onclick', closeDraw);
     on('drawRead', 'onclick', function () { closeDraw(); speakCurrent(); });
     // 备课夹
-    on('prepMod', 'onchange', function () { prepPage = 0; renderPrepMgr(); });
-    on('prepQt', 'onchange', function () { prepPage = 0; renderPrepMgr(); });
-    on('prepKw', 'oninput', function () { prepPage = 0; renderPrepMgr(); });
-    on('prepPrev', 'onclick', function () { prepPage--; renderPrepMgr(); });
-    on('prepNext', 'onclick', function () { prepPage++; renderPrepMgr(); });
-    on('prepClear', 'onclick', function () {
-      if (!prepIds().length) { renderPrepMgr(); return; }
-      if (confirm('清空备课夹？（不影响题库与成绩）')) { prepSave([]); renderPrepMgr(); }
+    document.querySelectorAll('.j-prepMod').forEach(function (el) { el.onchange = function () { prepFilter.m = this.value; prepPage = 0; renderPrepMgr(); }; });
+    document.querySelectorAll('.j-prepQt').forEach(function (el) { el.onchange = function () { prepFilter.qt = this.value; prepPage = 0; renderPrepMgr(); }; });
+    document.querySelectorAll('.j-prepKw').forEach(function (el) { el.oninput = function () { prepFilter.kw = this.value.trim().toLowerCase(); prepPage = 0; renderPrepMgr(); }; });
+    document.querySelectorAll('.j-prepPrev').forEach(function (el) { el.onclick = function () { prepPage--; renderPrepMgr(); }; });
+    document.querySelectorAll('.j-prepNext').forEach(function (el) { el.onclick = function () { prepPage++; renderPrepMgr(); }; });
+    document.querySelectorAll('.j-prepClear').forEach(function (el) {
+      el.onclick = function () {
+        if (!prepIds().length) { renderPrepMgr(); return; }
+        if (confirm('清空备课夹？（不影响题库与成绩）')) { prepSave([]); renderPrepMgr(); }
+      };
     });
+    on('clsDrawBtn', 'onclick', function () { runDraw(); });
+    on('honorNavBack', 'onclick', navBack);
+    on('honorNavFwd', 'onclick', navFwd);
+    on('prepNavBack', 'onclick', navBack);
+    on('prepNavFwd', 'onclick', navFwd);
+    on('classNavBack', 'onclick', navBack);
+    on('classNavFwd', 'onclick', navFwd);
     on('prepBtn', 'onclick', function () {
       if (!S.list || !S.list.length) return;
       var q = S.list[S.idx];

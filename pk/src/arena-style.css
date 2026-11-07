@@ -16,6 +16,8 @@
 
 .ar-btn{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:10px;
   padding:9px 15px;font-size:15px;font-weight:700;cursor:pointer}
+/* 工具排按钮紧凑化：换一题/导航加入后横幅不得增高（否则席位字号跌破 20px 闸门） */
+.ar-tools .ar-btn{padding:6px 11px;font-size:14px}
 .ar-btn:active{transform:translateY(1px)}
 .ar-btn.primary{background:var(--ar-champ);border-color:var(--ar-champ);color:#fff}
 .ar-btn:disabled{opacity:.4;cursor:not-allowed}

@@ -1,12 +1,12 @@
 {
   "page": "file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html",
   "viewport": "390x844",
-  "loadMs": 297,
+  "loadMs": 853,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 297ms"
+      "note": "BANK=3982，就绪耗时 853ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -136,7 +136,7 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=朱炫杰"
+      "note": "results=3 擂主=郑子添"
     },
     {
       "name": "P1 备课夹清单（勾选顺序 3 题）",
@@ -169,9 +169,44 @@
       "note": ""
     },
     {
-      "name": "H1 荣誉榜 Top10（按胜场）",
+      "name": "N1 切页入历史栈",
       "ok": true,
-      "note": ""
+      "note": "#/diag"
+    },
+    {
+      "name": "N2 后退回 diag",
+      "ok": true,
+      "note": "#/diag"
+    },
+    {
+      "name": "N3 前进回 home",
+      "ok": true,
+      "note": "#/home"
+    },
+    {
+      "name": "N3b 首页顶栏导航按钮",
+      "ok": true,
+      "note": "←"
+    },
+    {
+      "name": "N4 favicon 为课字 logo（data-URI PNG）",
+      "ok": true,
+      "note": "data:image/png;base64,"
+    },
+    {
+      "name": "N5 无版本号文案",
+      "ok": true,
+      "note": "共 3982 题 · 考纲 150 分制 · 表扬语库 1000 条"
+    },
+    {
+      "name": "N6 BGM 默认音量 50%（未设置时）",
+      "ok": true,
+      "note": "null"
+    },
+    {
+      "name": "H1 荣誉榜摘要（班级擂王+今日战况）",
+      "ok": true,
+      "note": "👑 班级擂王：荣誉甲（累计获胜 2 场）\n📅 今日：还没开打 ｜ 🥊 本周擂主：荣誉丙\n📋 展开完整榜单"
     },
     {
       "name": "H2 周擂主（被踢馆换人）",
@@ -187,6 +222,36 @@
       "name": "H4 BGM 开启即播第一首",
       "ok": true,
       "note": "{\"on\":true,\"src\":\"file:///C:/m/a.mp3\"}"
+    },
+    {
+      "name": "CL1 客户端 tab 六项",
+      "ok": true,
+      "note": "6"
+    },
+    {
+      "name": "CL2 排行榜 tab 存在",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "CL3 排行榜页六区块",
+      "ok": true,
+      "note": "👑 班级擂王\n榜甲\n截至当前累计获胜 1 场 · 参赛 1 场\n📅 今日战况\n今天还没开打——下"
+    },
+    {
+      "name": "CL4 备课夹独立页（清单同步渲染）",
+      "ok": true,
+      "note": "出题顺序（勾选顺序）：\n还没挑题——点上面列表里的题目加入备课夹"
+    },
+    {
+      "name": "CL5 点名台大按钮",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "CL6 对战进行中 tab 隐藏（投屏一屏）",
+      "ok": false,
+      "note": ""
     }
   ],
   "errors": [
