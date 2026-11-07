@@ -1,12 +1,12 @@
 {
   "page": "file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html",
   "viewport": "390x844",
-  "loadMs": 354,
+  "loadMs": 325,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 354ms"
+      "note": "BANK=3982，就绪耗时 325ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -27,6 +27,16 @@
       "name": "A5 课堂互动名单默认填充 PK 花名册（36 人）",
       "ok": true,
       "note": "已存 36 人（含学号 36 人）· 剩余未点 36 人"
+    },
+    {
+      "name": "A6 学生入口二维码弹窗（img+网址）",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "A6b 二维码弹窗关闭",
+      "ok": true,
+      "note": ""
     },
     {
       "name": "B1 主题切换落盘",
@@ -100,18 +110,18 @@
     },
     {
       "name": "I3 右侧低于左侧",
-      "ok": true,
-      "note": "R=0"
+      "ok": false,
+      "note": "R=null"
     },
     {
       "name": "I4 结算弹层出现",
-      "ok": true,
+      "ok": false,
       "note": ""
     },
     {
       "name": "I5 排行榜有参赛记录",
       "ok": true,
-      "note": "3 行"
+      "note": "2 行"
     },
     {
       "name": "J1 擂台页打开",
@@ -135,13 +145,13 @@
     },
     {
       "name": "K1 PK 战绩持久化",
-      "ok": true,
-      "note": "1 场"
+      "ok": false,
+      "note": "0 场"
     },
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=黄凯杰"
+      "note": "results=3 擂主=李航"
     },
     {
       "name": "P1 备课夹清单（勾选顺序 3 题）",

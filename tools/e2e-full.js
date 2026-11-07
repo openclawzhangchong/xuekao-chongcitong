@@ -83,6 +83,12 @@ async function pickLetters(page, rootSel, letters) {
   await sleep(700);   // 等名单种子（异步重试，缺省=PK 花名册 36 人）
   const rosterTxt = await page.evaluate(() => (document.getElementById('rosterCount') || {}).textContent || '');
   check('A5 课堂互动名单默认填充 PK 花名册（36 人）', rosterTxt.indexOf('36 人') !== -1, rosterTxt.slice(0, 50));
+  await page.evaluate(() => document.getElementById('qrBtn').click()); await sleep(200);
+  const qrVisible = await page.evaluate(() => { const m = document.getElementById('qrMask'); return m && !m.classList.contains('hidden') && !!document.getElementById('qrImg'); });
+  check('A6 学生入口二维码弹窗（img+网址）', qrVisible, '');
+  await page.evaluate(() => document.getElementById('qrClose').click()); await sleep(150);
+  const qrClosed = await page.evaluate(() => { const m = document.getElementById('qrMask'); return m && m.classList.contains('hidden'); });
+  check('A6b 二维码弹窗关闭', qrClosed, '');
 
   /* ---------- A+. 班级/云端模式先处理学号弹窗（会挡住一切） ---------- */
   if (IS_HTTP) {
