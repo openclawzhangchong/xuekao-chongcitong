@@ -164,4 +164,9 @@ function copyDir(src, dest) {
     console.log('  dist-client/' + n + '  ' + sz);
   });
   console.log('文件数: ' + all.length + '（白名单校验通过：无密钥/无学生数据）');
+
+  // Release 上传用 ASCII 名副本（gh 上传中文路径会被终端编码毁名）
+  copy(path.join(DIST, '学考冲刺通课堂版-免安装.zip'), path.join(DIST, 'xuekao-classroom-portable.zip'));
+  copy(path.join(DIST, '学考冲刺通安装包.exe'), path.join(DIST, 'xuekao-classroom-setup.exe'));
+  console.log('  Release 上传副本: dist-client/xuekao-classroom-portable.zip + xuekao-classroom-setup.exe');
 })().catch((e) => { console.error('BUILD FAIL:', e.message); process.exit(1); });

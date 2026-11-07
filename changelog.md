@@ -7,6 +7,22 @@
 
 ---
 
+## 2026-11-07（晚 · ZCode 第七轮：GitHub 发布与双形态防混淆）
+
+- **仓库描述/topics 更新**：描述明确「网页版（在线/离线单文件）+ Windows 课堂版（免安装/安装包
+  exe，Release 下载）双形态，勿混淆」；topics 增补 classroom/education/offline-first/
+  vocational-education/windows
+- **GitHub Release 发布**：tag `client-v1.0` → 两个资产（各 19.8MB）：
+  `xuekao-classroom-portable-v1.0.zip`（免安装）+ `xuekao-classroom-setup-v1.0.exe`（安装向导），
+  下载可达（302→200）验证
+- README 顶部新增「📦 两种形态，别搞混」导航表（网页版 vs 课堂版：使用者/数据位置/获取方式）
+- 教训：Git Bash 向 gh 传中文文件路径会被终端编码毁名（资产名变 `-.zip`）——
+  build-client.js 现自动产出 ASCII 名上传副本；坏资产按 API id 删除
+- 提交：`bc51232`（计划）、`8963fb1`（README）、Release 页
+  https://github.com/openclawzhangchong/xuekao-chongcitong/releases/tag/client-v1.0
+
+---
+
 ## 2026-11-07（晚 · ZCode 第六轮：客户端模式壳层 + 排行榜页，网页端零变化）
 
 > 按用户拍板：「输入学号」弹窗保留现状；客户端底部 tab 换成上课组；排行榜独立成页。
