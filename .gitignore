@@ -25,3 +25,4 @@ tools/_patch_*.js
 # Windows 客户端构建产物与内嵌运行时（大文件不入库）
 dist-client/
 tools/client/python-embed.zip
+tools/python-embed.zip
