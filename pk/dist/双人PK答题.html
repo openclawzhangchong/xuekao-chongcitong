@@ -1623,43 +1623,9 @@ window.__CLASSROOM_SYNC = {
 };
 CSYNC.init();
 
-window.__PK_MOUNT = function () {
-  'use strict';
-  if (window.__PK_MOUNTED) { window.__PK_REFRESH && window.__PK_REFRESH(); return; }
-  window.__PK_MOUNTED = true;
-  var $ = function (id) { return document.getElementById(id); };
-  function esc(s) { return (s == null ? '' : String(s)).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-
-  /* ================= 存储适配层 =================
-   * 页面逻辑只调用 Store.*，不直接触碰存储介质。
-   * 现实现：localStorage。后续迁移 D1 时，实现同接口的
-   * CloudflareStore（fetch /api/...）并 Store.use(CloudflareStore) 即可，
-   * 页面逻辑零改动。
-   * ============================================== */
-  var LocalStore = {
-    name: 'localStorage',
-    load: function (key, fallback) {
-      try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
-    },
-    save: function (key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { } }
-  };
-  /* D1 预留实现（接口签名与 LocalStore 完全一致，均为异步）：
-  var CloudflareStore = {
-    name: 'd1',
-    load: function (key, fb) { return fetch('/api/kv/' + key).then(r => r.json()).catch(() => fb); },
-    save: function (key, val) { return fetch('/api/kv/' + key, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(val) }); }
-  };
-  */
-  var Store = {
-    use: function (impl) { this.impl = impl; },
-    load: function (key, fb) { return this.impl.load(key, fb); },
-    save: function (key, val) { return this.impl.save(key, val); },
-    impl: LocalStore
-  };
-
-  /* ================= 默认班级（首次打开自动载入） ================= */
-  var DEFAULT_CLASS_NAME = '25计算机01班';
-  var DEFAULT_ROSTER = [
+/* 内置班级花名册（25 计算机 01 班）：PK 花名册缺省 + 首页课堂互动点名名单缺省共用
+ * 单一数据源：改名单改这里（或 PK 管理花名册后保存到 pk.roster） */
+window.XK_DEFAULT_ROSTER = [
     { sid: '2025001', name: '陈博杰' },
     { sid: '2025002', name: '陈嘉伟' },
     { sid: '2025003', name: '陈凯棋' },
@@ -1697,6 +1663,45 @@ window.__PK_MOUNT = function () {
     { sid: '2025035', name: '朱炫杰' },
     { sid: '2025036', name: '朱紫寒' }
   ];
+
+window.__PK_MOUNT = function () {
+  'use strict';
+  if (window.__PK_MOUNTED) { window.__PK_REFRESH && window.__PK_REFRESH(); return; }
+  window.__PK_MOUNTED = true;
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return (s == null ? '' : String(s)).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* ================= 存储适配层 =================
+   * 页面逻辑只调用 Store.*，不直接触碰存储介质。
+   * 现实现：localStorage。后续迁移 D1 时，实现同接口的
+   * CloudflareStore（fetch /api/...）并 Store.use(CloudflareStore) 即可，
+   * 页面逻辑零改动。
+   * ============================================== */
+  var LocalStore = {
+    name: 'localStorage',
+    load: function (key, fallback) {
+      try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
+    },
+    save: function (key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { } }
+  };
+  /* D1 预留实现（接口签名与 LocalStore 完全一致，均为异步）：
+  var CloudflareStore = {
+    name: 'd1',
+    load: function (key, fb) { return fetch('/api/kv/' + key).then(r => r.json()).catch(() => fb); },
+    save: function (key, val) { return fetch('/api/kv/' + key, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(val) }); }
+  };
+  */
+  var Store = {
+    use: function (impl) { this.impl = impl; },
+    load: function (key, fb) { return this.impl.load(key, fb); },
+    save: function (key, val) { return this.impl.save(key, val); },
+    impl: LocalStore
+  };
+
+  /* ================= 默认班级（首次打开自动载入） ================= */
+  var DEFAULT_CLASS_NAME = '25计算机01班';
+  var DEFAULT_ROSTER = window.XK_DEFAULT_ROSTER;
+
 
   var K_ROSTER = 'pk.roster', K_MATCHES = 'pk.matches', K_CFG = 'pk.cfg';
 

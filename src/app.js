@@ -122,10 +122,35 @@
     return ROSTER.list.map(function (s) { return s.name + (s.sid ? ':' + s.sid : ''); }).join('|');
   }
   function loadRoster() {
-    try {
-      var raw = JSON.parse(localStorage.getItem('xkc.roster') || '{}');
-      if (Array.isArray(raw.list)) ROSTER.list = raw.list;
-    } catch (e) { }
+    var raw = null;
+    try { raw = JSON.parse(localStorage.getItem('xkc.roster') || 'null'); } catch (e) { }
+    if (Array.isArray(raw && raw.list)) {
+      ROSTER.list = raw.list;
+    } else if (raw === null) {
+      // 名单缺省：沿用 PK 内置班级花名册（36 人）——首次运行种子一次；
+      // 「🗑 清空名单」会写入空列表（键存在），不会被本逻辑再次覆盖
+      var seedTries = 0;
+      (function seedTry() {
+        try {
+          // 页面还在解析时（readyState=loading）pk-app 尚未执行：等它就绪再种子
+          if ((!window.XK_DEFAULT_ROSTER || !window.XK_DEFAULT_ROSTER.length) && seedTries < 40) {
+            seedTries++;
+            setTimeout(seedTry, 50);
+            return;
+          }
+          var pkRoster = null;
+          try { pkRoster = JSON.parse(localStorage.getItem('pk.roster') || 'null'); } catch (e) { }
+          var src = (Array.isArray(pkRoster) && pkRoster.length) ? pkRoster : window.XK_DEFAULT_ROSTER;
+          if (Array.isArray(src) && src.length) {
+            ROSTER.list = src.map(function (s) {
+              return { sid: s.sid || '', name: s.name || '' };
+            }).filter(function (s) { return s.name; });
+            saveRoster();
+            try { renderClassroom(); } catch (e) { }
+          }
+        } catch (e) { }
+      })();
+    }
     try {
       var bag = JSON.parse(localStorage.getItem('xkc.drawbag') || '{}');
       if (bag.hash === rosterHash() && Array.isArray(bag.queue)) DRAW.queue = bag.queue;

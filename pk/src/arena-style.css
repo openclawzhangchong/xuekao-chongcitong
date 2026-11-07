@@ -7,8 +7,8 @@
 
 /* ---------- 顶部横幅 ---------- */
 .ar-banner{position:sticky;top:0;z-index:40;background:var(--ar-stage-bg);border-bottom:3px solid var(--ar-accent);
-  padding:10px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.ar-brand{font-size:22px;font-weight:900;color:var(--ar-champ);letter-spacing:1px}
+  padding:7px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ar-brand{font-size:20px;font-weight:900;color:var(--ar-champ);letter-spacing:1px}
 .ar-champ-line{flex:1;min-width:220px;font-size:26px;font-weight:900;color:var(--txt);text-align:center;line-height:1.25}
 .ar-champ-line b{color:var(--ar-champ)}
 .ar-meta{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--sub);font-weight:700}
@@ -17,7 +17,7 @@
 .ar-btn{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:10px;
   padding:9px 15px;font-size:15px;font-weight:700;cursor:pointer}
 /* 工具排按钮紧凑化：换一题/导航加入后横幅不得增高（否则席位字号跌破 20px 闸门） */
-.ar-tools .ar-btn{padding:6px 11px;font-size:14px}
+.ar-tools .ar-btn{padding:5px 9px;font-size:13px}
 .ar-btn:active{transform:translateY(1px)}
 .ar-btn.primary{background:var(--ar-champ);border-color:var(--ar-champ);color:#fff}
 .ar-btn:disabled{opacity:.4;cursor:not-allowed}

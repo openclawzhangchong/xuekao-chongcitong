@@ -742,8 +742,8 @@ body.pk-mode .app{max-width:none}
 
 /* ---------- 顶部横幅 ---------- */
 .ar-banner{position:sticky;top:0;z-index:40;background:var(--ar-stage-bg);border-bottom:3px solid var(--ar-accent);
-  padding:10px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.ar-brand{font-size:22px;font-weight:900;color:var(--ar-champ);letter-spacing:1px}
+  padding:7px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ar-brand{font-size:20px;font-weight:900;color:var(--ar-champ);letter-spacing:1px}
 .ar-champ-line{flex:1;min-width:220px;font-size:26px;font-weight:900;color:var(--txt);text-align:center;line-height:1.25}
 .ar-champ-line b{color:var(--ar-champ)}
 .ar-meta{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--sub);font-weight:700}
@@ -752,7 +752,7 @@ body.pk-mode .app{max-width:none}
 .ar-btn{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:10px;
   padding:9px 15px;font-size:15px;font-weight:700;cursor:pointer}
 /* 工具排按钮紧凑化：换一题/导航加入后横幅不得增高（否则席位字号跌破 20px 闸门） */
-.ar-tools .ar-btn{padding:6px 11px;font-size:14px}
+.ar-tools .ar-btn{padding:5px 9px;font-size:13px}
 .ar-btn:active{transform:translateY(1px)}
 .ar-btn.primary{background:var(--ar-champ);border-color:var(--ar-champ);color:#fff}
 .ar-btn:disabled{opacity:.4;cursor:not-allowed}
@@ -2441,7 +2441,7 @@ body.arena-mode .app{max-width:none}
 
 </script>
 <script>window.BANK_VER='20261106';</script>
-<script src="data.js?v=202611071058"></script>
+<script src="data.js?v=202611071221"></script>
 <script>
 /* =====================================================================
  * 学考冲刺通 · 应用层（依赖同页内嵌的 engine.js 与 data.js）
@@ -2567,10 +2567,35 @@ body.arena-mode .app{max-width:none}
     return ROSTER.list.map(function (s) { return s.name + (s.sid ? ':' + s.sid : ''); }).join('|');
   }
   function loadRoster() {
-    try {
-      var raw = JSON.parse(localStorage.getItem('xkc.roster') || '{}');
-      if (Array.isArray(raw.list)) ROSTER.list = raw.list;
-    } catch (e) { }
+    var raw = null;
+    try { raw = JSON.parse(localStorage.getItem('xkc.roster') || 'null'); } catch (e) { }
+    if (Array.isArray(raw && raw.list)) {
+      ROSTER.list = raw.list;
+    } else if (raw === null) {
+      // 名单缺省：沿用 PK 内置班级花名册（36 人）——首次运行种子一次；
+      // 「🗑 清空名单」会写入空列表（键存在），不会被本逻辑再次覆盖
+      var seedTries = 0;
+      (function seedTry() {
+        try {
+          // 页面还在解析时（readyState=loading）pk-app 尚未执行：等它就绪再种子
+          if ((!window.XK_DEFAULT_ROSTER || !window.XK_DEFAULT_ROSTER.length) && seedTries < 40) {
+            seedTries++;
+            setTimeout(seedTry, 50);
+            return;
+          }
+          var pkRoster = null;
+          try { pkRoster = JSON.parse(localStorage.getItem('pk.roster') || 'null'); } catch (e) { }
+          var src = (Array.isArray(pkRoster) && pkRoster.length) ? pkRoster : window.XK_DEFAULT_ROSTER;
+          if (Array.isArray(src) && src.length) {
+            ROSTER.list = src.map(function (s) {
+              return { sid: s.sid || '', name: s.name || '' };
+            }).filter(function (s) { return s.name; });
+            saveRoster();
+            try { renderClassroom(); } catch (e) { }
+          }
+        } catch (e) { }
+      })();
+    }
     try {
       var bag = JSON.parse(localStorage.getItem('xkc.drawbag') || '{}');
       if (bag.hash === rosterHash() && Array.isArray(bag.queue)) DRAW.queue = bag.queue;
@@ -3936,43 +3961,9 @@ window.__CLASSROOM_SYNC = {
 };
 CSYNC.init();
 
-window.__PK_MOUNT = function () {
-  'use strict';
-  if (window.__PK_MOUNTED) { window.__PK_REFRESH && window.__PK_REFRESH(); return; }
-  window.__PK_MOUNTED = true;
-  var $ = function (id) { return document.getElementById(id); };
-  function esc(s) { return (s == null ? '' : String(s)).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-
-  /* ================= 存储适配层 =================
-   * 页面逻辑只调用 Store.*，不直接触碰存储介质。
-   * 现实现：localStorage。后续迁移 D1 时，实现同接口的
-   * CloudflareStore（fetch /api/...）并 Store.use(CloudflareStore) 即可，
-   * 页面逻辑零改动。
-   * ============================================== */
-  var LocalStore = {
-    name: 'localStorage',
-    load: function (key, fallback) {
-      try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
-    },
-    save: function (key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { } }
-  };
-  /* D1 预留实现（接口签名与 LocalStore 完全一致，均为异步）：
-  var CloudflareStore = {
-    name: 'd1',
-    load: function (key, fb) { return fetch('/api/kv/' + key).then(r => r.json()).catch(() => fb); },
-    save: function (key, val) { return fetch('/api/kv/' + key, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(val) }); }
-  };
-  */
-  var Store = {
-    use: function (impl) { this.impl = impl; },
-    load: function (key, fb) { return this.impl.load(key, fb); },
-    save: function (key, val) { return this.impl.save(key, val); },
-    impl: LocalStore
-  };
-
-  /* ================= 默认班级（首次打开自动载入） ================= */
-  var DEFAULT_CLASS_NAME = '25计算机01班';
-  var DEFAULT_ROSTER = [
+/* 内置班级花名册（25 计算机 01 班）：PK 花名册缺省 + 首页课堂互动点名名单缺省共用
+ * 单一数据源：改名单改这里（或 PK 管理花名册后保存到 pk.roster） */
+window.XK_DEFAULT_ROSTER = [
     { sid: '2025001', name: '陈博杰' },
     { sid: '2025002', name: '陈嘉伟' },
     { sid: '2025003', name: '陈凯棋' },
@@ -4010,6 +4001,45 @@ window.__PK_MOUNT = function () {
     { sid: '2025035', name: '朱炫杰' },
     { sid: '2025036', name: '朱紫寒' }
   ];
+
+window.__PK_MOUNT = function () {
+  'use strict';
+  if (window.__PK_MOUNTED) { window.__PK_REFRESH && window.__PK_REFRESH(); return; }
+  window.__PK_MOUNTED = true;
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return (s == null ? '' : String(s)).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* ================= 存储适配层 =================
+   * 页面逻辑只调用 Store.*，不直接触碰存储介质。
+   * 现实现：localStorage。后续迁移 D1 时，实现同接口的
+   * CloudflareStore（fetch /api/...）并 Store.use(CloudflareStore) 即可，
+   * 页面逻辑零改动。
+   * ============================================== */
+  var LocalStore = {
+    name: 'localStorage',
+    load: function (key, fallback) {
+      try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
+    },
+    save: function (key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { } }
+  };
+  /* D1 预留实现（接口签名与 LocalStore 完全一致，均为异步）：
+  var CloudflareStore = {
+    name: 'd1',
+    load: function (key, fb) { return fetch('/api/kv/' + key).then(r => r.json()).catch(() => fb); },
+    save: function (key, val) { return fetch('/api/kv/' + key, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(val) }); }
+  };
+  */
+  var Store = {
+    use: function (impl) { this.impl = impl; },
+    load: function (key, fb) { return this.impl.load(key, fb); },
+    save: function (key, val) { return this.impl.save(key, val); },
+    impl: LocalStore
+  };
+
+  /* ================= 默认班级（首次打开自动载入） ================= */
+  var DEFAULT_CLASS_NAME = '25计算机01班';
+  var DEFAULT_ROSTER = window.XK_DEFAULT_ROSTER;
+
 
   var K_ROSTER = 'pk.roster', K_MATCHES = 'pk.matches', K_CFG = 'pk.cfg';
 

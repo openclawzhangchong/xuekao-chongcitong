@@ -1,12 +1,12 @@
 {
   "page": "file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html",
   "viewport": "1366x768",
-  "loadMs": 1938,
+  "loadMs": 367,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 1938ms"
+      "note": "BANK=3982，就绪耗时 367ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -24,6 +24,11 @@
       "note": ""
     },
     {
+      "name": "A5 课堂互动名单默认填充 PK 花名册（36 人）",
+      "ok": true,
+      "note": "已存 36 人（含学号 36 人）· 剩余未点 36 人"
+    },
+    {
       "name": "B1 主题切换落盘",
       "ok": true,
       "note": "light → dark"
@@ -36,7 +41,7 @@
     {
       "name": "C1 出题面板渲染",
       "ok": true,
-      "note": "4 个选项"
+      "note": "2 个选项"
     },
     {
       "name": "C2 全组答完出报告",
@@ -136,7 +141,7 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=郑杨鸿"
+      "note": "results=3 擂主=刘晨希"
     },
     {
       "name": "P1 备课夹清单（勾选顺序 3 题）",
@@ -251,7 +256,7 @@
     {
       "name": "CL6 对战进行中 tab 隐藏（投屏一屏）",
       "ok": true,
-      "note": ""
+      "note": "实际 true"
     }
   ],
   "errors": [

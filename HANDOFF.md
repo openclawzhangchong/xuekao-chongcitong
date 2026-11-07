@@ -299,6 +299,14 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 
 ---
 
+## 八⅞¾、课堂互动名单种子（2026-11-07 夜）
+
+- 课堂互动点名名单（xkc.roster）**缺省自动填充 PK 内置花名册**（25计算机01班 36 人）：
+  数据源 = `window.XK_DEFAULT_ROSTER`（pk-app 顶层常量，单一数据源）
+- 种子条件：`xkc.roster` 键**不存在**（首次运行）；「清空名单」写入空列表后不再覆盖
+- 陷阱记录：种子回调可能跑在页面解析中（readyState=loading，pk-app 未加载）——
+  必须重试等待 XK_DEFAULT_ROSTER 就绪；改 loadRoster 别动这个重试循环
+
 ## 八⅞½、客户端模式 + 排行榜页（2026-11-07 晚）
 
 - 启动器窗口 URL 带 `?client=1` → 底部 tab 换六项课堂组（含 🏆排行榜页：班级擂王/

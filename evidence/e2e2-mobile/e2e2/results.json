@@ -1,12 +1,12 @@
 {
   "page": "file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html",
   "viewport": "390x844",
-  "loadMs": 853,
+  "loadMs": 354,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 853ms"
+      "note": "BANK=3982，就绪耗时 354ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -22,6 +22,11 @@
       "name": "A4 首页有预估分卡",
       "ok": true,
       "note": ""
+    },
+    {
+      "name": "A5 课堂互动名单默认填充 PK 花名册（36 人）",
+      "ok": true,
+      "note": "已存 36 人（含学号 36 人）· 剩余未点 36 人"
     },
     {
       "name": "B1 主题切换落盘",
@@ -136,7 +141,7 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=郑子添"
+      "note": "results=3 擂主=黄凯杰"
     },
     {
       "name": "P1 备课夹清单（勾选顺序 3 题）",
@@ -249,9 +254,9 @@
       "note": ""
     },
     {
-      "name": "CL6 对战进行中 tab 隐藏（投屏一屏）",
-      "ok": false,
-      "note": ""
+      "name": "CL6 对战进行中 tab 保留（手机窄屏照旧）",
+      "ok": true,
+      "note": "实际 false"
     }
   ],
   "errors": [

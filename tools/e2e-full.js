@@ -80,6 +80,9 @@ async function pickLetters(page, rootSel, letters) {
   check('A3 底部页签 5 个', (await page.evaluate(() => document.querySelectorAll('.tab').length)) === 5);
   const scoreTxt = await page.evaluate(() => (document.getElementById('home') || {}).innerText || '');
   check('A4 首页有预估分卡', /预估/.test(scoreTxt));
+  await sleep(700);   // 等名单种子（异步重试，缺省=PK 花名册 36 人）
+  const rosterTxt = await page.evaluate(() => (document.getElementById('rosterCount') || {}).textContent || '');
+  check('A5 课堂互动名单默认填充 PK 花名册（36 人）', rosterTxt.indexOf('36 人') !== -1, rosterTxt.slice(0, 50));
 
   /* ---------- A+. 班级/云端模式先处理学号弹窗（会挡住一切） ---------- */
   if (IS_HTTP) {
@@ -470,7 +473,8 @@ async function pickLetters(page, rootSel, letters) {
   }); await sleep(150);
   await p2.click('#btnStart'); await sleep(600);
   const tabsHidden = await p2.evaluate(() => { const t = document.getElementById('tabs'); return t && getComputedStyle(t).display === 'none'; });
-  check('CL6 对战进行中 tab 隐藏（投屏一屏）', tabsHidden, '');
+  const expectHidden = VP[0] >= 901;   // 宽屏投屏隐藏页签（一屏让给题目）；手机窄屏照旧保留
+  check('CL6 对战进行中 tab ' + (expectHidden ? '隐藏（投屏一屏）' : '保留（手机窄屏照旧）'), tabsHidden === expectHidden, '实际 ' + tabsHidden);
   await p2.evaluate(() => { const b = document.getElementById('btnReset'); if (b) b.onclick = null; });
   await p2.close();
 
