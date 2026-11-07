@@ -18,7 +18,7 @@
 福建省中职学业水平考试《信息技术基础》的**学生刷题 + 课堂 PK 系统**，作者是厦门工商旅游学校教师。
 
 **核心功能**：
-- 3999 题题库（单选 3316 / 判断 511 / 多选 172），每题带解析 + 生活类比 + 易错提醒
+- 3982 题题库（3999 - 17 道同题双版本去重），每题带解析 + 生活类比 + 易错提醒
 - 150 分制预估分（按 9 模块考纲分值加权）
 - 错题本（连对 2 次自动毕业）、考点诊断雷达图、弱项特训、模拟考组卷
 - 课堂互动：随机点名、音效、多音色 TTS 朗读、1000 条带姓名表扬语 + 500 条鼓励语
@@ -46,7 +46,7 @@ C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通
 **关键目录结构**：
 ```
 src/
-  data.js          ← 题库唯一真源（3999 题，2.9MB）
+  data.js          ← 题库唯一真源（3982 题，含 window.XK_QID_MIGRATE 迁移映射）
   engine.js        ← 纯逻辑引擎（判分/预估分/错题毕业/弱项诊断/组卷）
   app.js           ← 主应用界面逻辑
   style.css        ← 主站样式（变量驱动）
@@ -105,7 +105,7 @@ node tools/gate-fit.js                 # 默认 1366×768 抽 200 题；要更�
 
 # 2. 题库规模
 node -e "global.window={};eval(require('fs').readFileSync('src/data.js','utf8'));console.log(window.BANK.length)"
-# 期望 3999
+# 期望 3982
 
 # 3. 构建可用
 node src/build.js                      # 单文件，期望 3227KB
@@ -119,7 +119,7 @@ node src/build.js --split site/index.html   # 拆分版，期望 index 234KB + d
 
 | 类别 | 旧文档 | 实测 | 现状 |
 |---|---|---|---|
-| 题面残留选项标记 | 53 | **64 题，全部在 M3** | 渲染层已由 `XK.cleanStem` 剥离（**data.js 未改，qid 不变**）；根治要改题干 → 会断学生记录，暂缓 |
+| 题面残留选项标记 | 53 | **0 题（已根治）** | 2026-11-07 二轮：47 题题干直接清洗改名 + 17 题同题双版本并入干净版；旧 qid 全部进 `window.XK_QID_MIGRATE`（214 条含全历史考古），读档自动迁移，学生记录零断链 |
 | 重复选项 | 3 | 曾实测 **3 题**（旧「5 题」是把「1 2 3」和「123」折叠空格后的假阳性） | **已归零**：改写落库（只动 `o`/`e`，不动题干），基线 0 |
 | 过短解析（<20 字） | 61 | 曾实测 70 题 | **已清零**：70 题逐题补写（新解析 70-181 字，平均 119 字），只动 `e` 字段 → qid 不变。逐条对照见 `evidence/qbank-audit/v6-explanations-review.md`，其中 17 题标了「请教师复核」 |
 | 选项截断 | 22 | **不成立** | 两种启发式命中 97 / 372 题，抽样几乎全是正常干扰项；文档举的实例「最基本的系统软件是办公」其实选项完整。只出候选清单，不计入闸门 |
@@ -150,9 +150,10 @@ node tools/apply-v5fix.js fix-你的修正.json    # 支持 a/e/s/o 四种字段
 
 ### 任务 2：续做 AI agent 全库审读（方案 B）
 
-未完成的批次：
-- `evidence/qbank-audit/v5-batch-0.json` + `v5-batch-1.json`（i=0~1999）
-- `evidence/qbank-audit/v5-batch-2.json`（i≥2000 部分）+ `v5-batch-3.json`
+**已全部完成（2026-11-07 二轮）**：i=0~1999 由子代理补审（批 0 单代理 1000 题 + 批 1 四路并发各 250 题），
+384 条修正落库（329 解析 / 31 答案 / 17 选项 / 7 混合）。i≥2000 此前已应用 1093 条。
+遗留弱缺陷（agents 实测记录在 evidence/qbank-audit/v5fix-1*.json 的 issue 字段与复述里）：
+M7/M8 约 130 题解析主题错位、部分「以上都是」式选项、多错选项的选错误题——不误导但推不出答案，待专项。
 
 **注意**：agent 有并发限制，**串行跑，一次 1 个**，每批 500~1000 题。曾遇 `exceed quota limit`。
 
@@ -291,6 +292,7 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 | `tools/scan-defects.js` | 四类缺陷复扫 + 基线对比闸门 | `--save-baseline` 存基线，`--json` 机器可读 |
 | `tools/gate-fit.js` | 无头 Edge 真渲染真题，量「投屏一屏装不装得下」 | `[宽 高 抽样数]`，默认 1366 768 200；`GATE_SCROLL_MAX` / `GATE_FS_MIN` 调线 |
 | `tools/shot-arena.js` | PK 与擂台 5 张对比截图 + 布局数字 | 产物进 `evidence/arena-shots/`；`[宽 高]` 换分辨率 |
+| `tools/qid-migrate.js` | 题干残留根治 + qid 全历史迁移映射（git 考古，幂等可重跑） | `node tools/qid-migrate.js`（`--map-only` 只重建映射）；产出 XK_QID_MIGRATE 写入 data.js |
 | `tools/e2e-full.js` | 全站 E2E：无头 Edge 真点真答（答题/PK/擂台/持久化/教师页闸门） | `node tools/e2e-full.js [URL]`，缺省本地拆分版；可传 `http://127.0.0.1:8953/`（班级版多测 6 项）或线上站（只冒烟不写云端数据）；`E2E_VIEWPORT=390x844` / `E2E_OUT=目录` 调视口与产物目录；退出码即验收 |
 
 **注意**：生成器有防递归守卫（输入题数不对会报错），这是保护机制，**不要移除**。

@@ -1,12 +1,12 @@
 {
-  "page": "http://127.0.0.1:8953/",
+  "page": "https://coral-beacon-g4jx.here.now/",
   "viewport": "1366x768",
-  "loadMs": 292,
+  "loadMs": 11387,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 292ms"
+      "note": "BANK=3982，就绪耗时 11387ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -22,16 +22,6 @@
       "name": "A4 首页有预估分卡",
       "ok": true,
       "note": ""
-    },
-    {
-      "name": "L1 班级模式弹学号登录",
-      "ok": true,
-      "note": ""
-    },
-    {
-      "name": "L2 学号登录成功（弹窗关闭+同步条出现）",
-      "ok": true,
-      "note": "弹窗已关=true"
     },
     {
       "name": "B1 主题切换落盘",
@@ -146,28 +136,12 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=谢志豪"
-    },
-    {
-      "name": "L3 擂台页不被学号弹窗盖住",
-      "ok": true,
-      "note": "擂台可见=true 弹窗遮挡=false"
-    },
-    {
-      "name": "L4 教师页本机可开、非本机 403",
-      "ok": true,
-      "note": "本机=200 LAN(192.168.3.110)=403"
-    },
-    {
-      "name": "L5 CSV 导出 200",
-      "ok": true,
-      "note": ""
-    },
-    {
-      "name": "L6 /api/hello 班级模式",
-      "ok": true,
-      "note": "{\"mode\":\"class\"}"
+      "note": "results=3 擂主=朱紫寒"
     }
   ],
-  "errors": []
+  "errors": [
+    "console: Failed to load resource: the server responded with a status of 404 ()",
+    "console: Failed to load resource: the server responded with a status of 404 ()",
+    "console: Failed to load resource: the server responded with a status of 404 ()"
+  ]
 }
