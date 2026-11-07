@@ -3321,6 +3321,105 @@ window.XK_QID_MIGRATE={"M3-1859kao":"M3-sv3avx","M3-4k0n9p":"M3-1xl8hep","M3-1yo
  * 双人课堂 PK 答题 · 应用逻辑
  * 存储适配层：localStorage 实现（D1 预留同接口，见 Store 注释）
  * ===================================================================== */
+/* ================= 课堂数据落盘同步（本地数据库） =================
+ * 班级版服务在跑（http 且 /api/hello=class 且非云端模式）时：PK 战绩/擂台战绩/备课夹
+ * 推送到 data/classroom.json（按 section 时间戳合并，服务端 .bak 滚动备份），页面加载即
+ * 拉取合并恢复——浏览器 localStorage 只是缓存，清了也能从服务端恢复。
+ * file://、无服务、云端模式（worker 无该端点）：静默跳过，行为与旧版完全一致。
+ * 擂台/备课夹经 window.__CLASSROOM_SYNC.mark('arena'|'prep') 复用同一通道；
+ * 拉取在页面加载即发生（早于 __PK_MOUNT），挂载后读到的已是合并结果。 */
+var CSYNC = {
+  on: false, timer: null,
+  KEYS: { matches: 'pk.matches', arena: 'pk.arena.v1', prep: 'xkc.prep.v1' },
+  get: function (k, fb) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } },
+  set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } },
+  stamps: function () { return this.get('pk.csync', {}) || {}; },
+  mark: function (name) {
+    try {
+      var s = this.stamps(); s[name] = Date.now();
+      this.set('pk.csync', s);
+      if (this.on) this.schedule();
+    } catch (e) { }
+  },
+  schedule: function () {
+    var self = this;
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = setTimeout(function () { self.push(); }, 1500);
+  },
+  snapshot: function (names) {
+    var out = { updated: Date.now(), sections: {} }, st = this.stamps();
+    for (var i = 0; i < names.length; i++) {
+      var n = names[i], data = this.get(this.KEYS[n], null);
+      if (data === null || data === undefined) continue;
+      out.sections[n] = { ts: st[n] || 0, data: data };
+    }
+    return out;
+  },
+  push: function (names) {
+    if (!this.on) return;
+    names = names || ['matches', 'arena', 'prep'];
+    try {
+      fetch('/api/classroom', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(this.snapshot(names))
+      }).catch(function () { });
+    } catch (e) { }
+  },
+  pull: function () {
+    if (!this.on) return;
+    var self = this;
+    try {
+      fetch('/api/classroom').then(function (r) { return r.json(); }).then(function (j) {
+        var sec = (j && j.sections) || {}, st = self.stamps(), changed = false;
+        Object.keys(sec).forEach(function (n) {
+          var s = sec[n];
+          if (!s || typeof s.ts !== 'number' || s.data === undefined) return;
+          if ((st[n] || 0) >= s.ts) return;            // 本地不比服务端旧，不动
+          if (n === 'matches' && Object.prototype.toString.call(s.data) === '[object Array]') {
+            // 战绩并集去重（本地 + 服务端新增），按时间降序，上限 500
+            var local = self.get(self.KEYS[n], []) || [], seen = {}, all = [];
+            var key = function (m) {
+              return (m.ts || 0) + '|' + ((m.left || {}).sid || '') + '|' + ((m.right || {}).sid || '') +
+                '|' + ((m.left || {}).score || 0) + '/' + ((m.right || {}).score || 0);
+            };
+            local.concat(s.data).forEach(function (m) {
+              if (!m || typeof m !== 'object') return;
+              var k = key(m);
+              if (!seen[k]) { seen[k] = 1; all.push(m); }
+            });
+            all.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+            self.set(self.KEYS[n], all.slice(0, 500));
+          } else {
+            self.set(self.KEYS[n], s.data);
+          }
+          st[n] = s.ts; changed = true;
+        });
+        if (changed) {
+          self.set('pk.csync', st);
+          try { window.__PK_REFRESH && window.__PK_REFRESH(); } catch (e) { }
+        }
+      }).catch(function () { });
+    } catch (e) { }
+  },
+  init: function () {
+    try {
+      if (location.protocol === 'file:') return;
+      var self = this;
+      fetch('/api/hello').then(function (r) { return r.json(); }).then(function (j) {
+        // 云端模式（worker 带 label:'cloud'）没有 /api/classroom，不激活
+        if (!j || j.mode !== 'class' || j.label === 'cloud') return;
+        self.on = true;
+        self.pull();
+      }).catch(function () { });
+    } catch (e) { }
+  }
+};
+window.__CLASSROOM_SYNC = {
+  mark: function (n) { CSYNC.mark(n); },
+  pull: function () { CSYNC.pull(); }
+};
+CSYNC.init();
+
 window.__PK_MOUNT = function () {
   'use strict';
   if (window.__PK_MOUNTED) { window.__PK_REFRESH && window.__PK_REFRESH(); return; }
@@ -3485,7 +3584,8 @@ window.__PK_MOUNT = function () {
 
   /* ================= 比赛记录 ================= */
   var MATCHES = Store.load(K_MATCHES, []);
-  function saveMatch(m) { MATCHES.push(m); Store.save(K_MATCHES, MATCHES.slice(-500)); }
+  function saveMatch(m) { MATCHES.push(m); Store.save(K_MATCHES, MATCHES.slice(-500)); CSYNC.mark('matches'); }
+
 
   /* ================= 音效 & TTS ================= */
   var sndOn = Store.load('pk.snd', true);
@@ -4348,7 +4448,10 @@ window.__ARENA_MOUNT = function () {
   var LOG = load(K_LOG, null);
   if (!LOG || typeof LOG !== 'object' || !Array.isArray(LOG.results)) LOG = blankLog();
   if (!LOG.allPlayed) LOG.allPlayed = {};
-  function saveLog() { save(K_LOG, LOG); }
+  function saveLog() {
+    save(K_LOG, LOG);
+    try { window.__CLASSROOM_SYNC && window.__CLASSROOM_SYNC.mark('arena'); } catch (e) { }
+  }
 
   /* ================= 本局状态 ================= */
   var AR = { running: false, left: null, right: null, timerId: null, leftSec: 0,

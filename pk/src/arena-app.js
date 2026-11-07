@@ -65,7 +65,10 @@ window.__ARENA_MOUNT = function () {
   var LOG = load(K_LOG, null);
   if (!LOG || typeof LOG !== 'object' || !Array.isArray(LOG.results)) LOG = blankLog();
   if (!LOG.allPlayed) LOG.allPlayed = {};
-  function saveLog() { save(K_LOG, LOG); }
+  function saveLog() {
+    save(K_LOG, LOG);
+    try { window.__CLASSROOM_SYNC && window.__CLASSROOM_SYNC.mark('arena'); } catch (e) { }
+  }
 
   /* ================= 本局状态 ================= */
   var AR = { running: false, left: null, right: null, timerId: null, leftSec: 0,

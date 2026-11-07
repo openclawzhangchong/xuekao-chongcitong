@@ -21,6 +21,7 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(BASE, 'site')
 DATA = os.path.join(BASE, 'data')
 INDEX = os.path.join(SITE, 'index.html')
+CLASSROOM_FILE = os.path.join(DATA, 'classroom.json')  # 课堂数据本地库（PK战绩/擂台/备课夹）
 PORT = 8953
 
 # 考纲分值（与前端 BANK_META 一致；qid 前缀即模块码）
@@ -40,6 +41,96 @@ def safe_sid(s):
         return None
     s = s.strip()
     return s if SID_RE.fullmatch(s) else None
+
+
+def merge_classroom(stored, incoming):
+    """课堂数据按 section 合并：
+    - matches：并集去重（ts+双方学号+比分），按 ts 降序，上限 5000 —— 旧端点的新战绩也能并入
+    - arena / prep：整段替换，时间戳新者胜
+    容错：任何畸形输入都不抛错，只按缺省处理。"""
+    def _as_dict(x):
+        return x if isinstance(x, dict) else {}
+
+    out = dict(_as_dict(stored))
+    old_sec = _as_dict(out.get('sections'))
+    new_sec = _as_dict(_as_dict(incoming).get('sections'))
+    merged = dict(old_sec)
+
+    def _mkey(m):
+        left = m.get('left') or {}
+        right = m.get('right') or {}
+        return '|'.join(str(m.get('ts') or 0), ) + '|' + '|'.join([
+            str(left.get('sid') or ''), str(right.get('sid') or ''),
+            str(left.get('score') or 0), str(right.get('score') or 0),
+            str(m.get('qcount') or 0)])
+
+    try:
+        old_m = (old_sec.get('matches') or {}).get('data') or []
+        new_m = (new_sec.get('matches') or {}).get('data') or []
+        if not isinstance(old_m, list):
+            old_m = []
+        if not isinstance(new_m, list):
+            new_m = []
+        seen, allm = set(), []
+        for m in list(new_m) + list(old_m):
+            if not isinstance(m, dict):
+                continue
+            k = _mkey(m)
+            if k in seen:
+                continue
+            seen.add(k)
+            allm.append(m)
+        allm.sort(key=lambda m: m.get('ts') or 0, reverse=True)
+        ts_old = (old_sec.get('matches') or {}).get('ts') or 0
+        ts_new = (new_sec.get('matches') or {}).get('ts') or 0
+        if allm or ts_old or ts_new:      # 空进空出，不制造空 section
+            merged['matches'] = {'ts': max(ts_old, ts_new), 'data': allm[:5000]}
+    except Exception:
+        pass
+    for name in ('arena', 'prep'):
+        try:
+            inc = new_sec.get(name)
+            if isinstance(inc, dict) and 'ts' in inc and 'data' in inc:
+                prev = old_sec.get(name) or {}
+                if int(inc.get('ts') or 0) >= int(prev.get('ts') or -1):
+                    merged[name] = inc
+        except Exception:
+            pass
+    try:
+        out['sections'] = merged
+        out['updated'] = max(int(out.get('updated') or 0), int((incoming or {}).get('updated') or 0))
+    except Exception:
+        out['sections'] = merged
+    return out
+
+
+def load_classroom():
+    """读课堂数据本地库；不存在/损坏返回空骨架（.bak 在写入时滚动）"""
+    try:
+        with open(CLASSROOM_FILE, encoding='utf-8') as f:
+            doc = json.load(f)
+        if isinstance(doc, dict) and 'sections' in doc:
+            return doc
+    except (OSError, ValueError):
+        pass
+    return {'sections': {}}
+
+
+def save_classroom(doc):
+    """写入课堂数据本地库；旧内容滚动到 .bak（单份备份，够教师机场景）"""
+    os.makedirs(DATA, exist_ok=True)
+    try:
+        if os.path.exists(CLASSROOM_FILE):
+            with open(CLASSROOM_FILE, encoding='utf-8') as f:
+                old = f.read()
+            with open(CLASSROOM_FILE + '.bak', 'w', encoding='utf-8') as f:
+                f.write(old)
+    except OSError:
+        pass
+    tmp = CLASSROOM_FILE + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as f:
+        json.dump(doc, f, ensure_ascii=False)
+    os.replace(tmp, CLASSROOM_FILE)
 
 
 def merge_profile(old, new):
@@ -256,6 +347,30 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _post_classroom(self):
+        if not self._local_only():
+            self._send(403, json.dumps({'ok': False, 'err': 'forbidden'}).encode('utf-8'), 'application/json')
+            return
+        try:
+            length = min(int(self.headers.get('Content-Length') or 0), 8 * 1024 * 1024)
+            incoming = json.loads(self.rfile.read(length).decode('utf-8'))
+        except (ValueError, OSError):
+            self._send(400, json.dumps({'ok': False, 'err': 'bad json'}).encode('utf-8'), 'application/json')
+            return
+        if not isinstance(incoming, dict) or not isinstance(incoming.get('sections') or {}, dict):
+            self._send(400, json.dumps({'ok': False, 'err': 'bad sections'}).encode('utf-8'), 'application/json')
+            return
+        merged = merge_classroom(load_classroom(), incoming)
+        try:
+            save_classroom(merged)
+        except OSError as e:
+            self._send(500, json.dumps({'ok': False, 'err': str(e)[:120]}).encode('utf-8'), 'application/json')
+            return
+        sec = merged.get('sections') or {}
+        self._send(200, json.dumps({'ok': True,
+                                    'matches': len((sec.get('matches') or {}).get('data') or [])},
+                                   ensure_ascii=False).encode('utf-8'), 'application/json')
+
     def do_GET(self):
         path = self.path.split('?')[0]
         if path in ('/', '/index.html'):
@@ -293,6 +408,14 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(200, payload.encode('utf-8'), 'application/json; charset=utf-8')
             except (OSError, ValueError) as e:
                 self._send(500, json.dumps({'ok': False, 'err': str(e)[:120]}).encode('utf-8'), 'application/json')
+        elif path == '/api/classroom':
+            # 课堂数据本地库（PK战绩/擂台/备课夹）——教师机数据，仅本机可读写
+            if not self._local_only():
+                self._send(403, json.dumps({'ok': False, 'err': 'forbidden'}).encode('utf-8'), 'application/json')
+                return
+            doc = load_classroom()
+            self._send(200, json.dumps({'ok': True, 'sections': doc.get('sections') or {}},
+                                       ensure_ascii=False).encode('utf-8'), 'application/json')
         elif path == '/api/students':
             # 云端/局域网名单拉取（供学生端「课堂互动·从云端拉取」；仅本机，学生设备够不着）
             if not self._local_only():
@@ -319,6 +442,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = self.path.split('?')[0]
+        if path == '/api/classroom':
+            self._post_classroom()
+            return
         if path != '/api/sync':
             self._send(404, '404'.encode('utf-8'))
             return

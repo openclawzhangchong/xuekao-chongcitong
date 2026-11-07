@@ -110,5 +110,38 @@ t("非法值返回 -", lambda: assert_eq(cls.fmt_time("abc"), "-"))
 t("负值返回 -", lambda: assert_eq(cls.fmt_time(-5), "-"))
 t("0 返回 -", lambda: assert_eq(cls.fmt_time(0), "-"))
 
+print("\n== 9. 课堂数据合并 merge_classroom ==")
+t("matches 并集去重（新旧两端的新战绩都保留）", lambda: assert_eq(
+    len(cls.merge_classroom(
+        {'sections': {'matches': {'ts': 100, 'data': [{'ts': 100, 'left': {'sid': 'A'}, 'right': {'sid': 'B'}, 'score': ''}]}}},
+        {'sections': {'matches': {'ts': 200, 'data': [
+            {'ts': 100, 'left': {'sid': 'A'}, 'right': {'sid': 'B'}, 'score': ''},
+            {'ts': 200, 'left': {'sid': 'C'}, 'right': {'sid': 'D'}, 'score': ''}]}}}
+    ).get('sections', {}).get('matches', {}).get('data') or []), 2))
+t("matches 完全相同的一条只保留一份", lambda: assert_eq(
+    len(cls.merge_classroom(
+        {'sections': {'matches': {'ts': 100, 'data': [{'ts': 100, 'left': {'sid': 'A'}, 'right': {'sid': 'B'}, 'score': ''}]}}},
+        {'sections': {'matches': {'ts': 100, 'data': [{'ts': 100, 'left': {'sid': 'A'}, 'right': {'sid': 'B'}, 'score': ''}]}}}
+    ).get('sections', {}).get('matches', {}).get('data') or []), 1))
+t("arena 时间戳新者胜", lambda: assert_eq(
+    cls.merge_classroom(
+        {'sections': {'arena': {'ts': 100, 'data': {'round': 1}}}},
+        {'sections': {'arena': {'ts': 200, 'data': {'round': 3}}}}
+    ).get('sections', {}).get('arena', {}).get('data', {}).get('round'), 3))
+t("arena 时间戳旧的不覆盖新的", lambda: assert_eq(
+    cls.merge_classroom(
+        {'sections': {'arena': {'ts': 200, 'data': {'round': 3}}}},
+        {'sections': {'arena': {'ts': 100, 'data': {'round': 1}}}}
+    ).get('sections', {}).get('arena', {}).get('data', {}).get('round'), 3))
+t("畸形输入不抛错（sections 非 dict）", lambda: assert_eq(
+    isinstance(cls.merge_classroom({'sections': {}}, {'sections': 'oops'}).get('sections'), dict), True))
+t("空存储 + 空 incoming 返回空骨架", lambda: assert_eq(
+    cls.merge_classroom(None, None).get('sections'), {}))
+t("matches 上限 5000 条且按 ts 降序截断", lambda: assert_eq(
+    (lambda doc: len(doc['sections']['matches']['data']) <= 5000 and doc['sections']['matches']['data'][0]['ts'] == 999999)(
+        cls.merge_classroom({'sections': {}}, {'sections': {'matches': {'ts': 999999, 'data': [
+            {'ts': i, 'left': {'sid': str(i)}, 'right': {'sid': 'x'}, 'score': ''} for i in range(999000, 1000000)]}}})
+    ), True))
+
 print("\n结果: %d 通过, %d 失败" % (passed, failed))
 sys.exit(1 if failed else 0)

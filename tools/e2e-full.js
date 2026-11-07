@@ -357,6 +357,19 @@ async function pickLetters(page, rootSel, letters) {
     check('L4 教师页本机可开、非本机 403', tRes.ok === 200 && lanRes === 403, '本机=' + tRes.ok + ' LAN(' + lanIp + ')=' + lanRes);
     check('L5 CSV 导出 200', tRes.csv === 200, '');
     check('L6 /api/hello 班级模式', tRes.hello && tRes.hello.mode === 'class', JSON.stringify(tRes.hello));
+    // L7 课堂数据落盘与恢复（本地数据库）：战绩已同步到服务端，清空本地后可拉回
+    await sleep(2200); // 等 CSYNC 1.5s 防抖推送
+    const srv = await page.evaluate(async () => {
+      const j = await (await fetch('/api/classroom')).json();
+      return { matches: (((j.sections || {}).matches || {}).data || []).length };
+    });
+    const localMatches = await page.evaluate(() => (JSON.parse(localStorage.getItem('pk.matches') || '[]')).length);
+    check('L7a 战绩已落盘服务端', srv.matches >= 1 && srv.matches >= localMatches, '服务端 ' + srv.matches + ' 场 / 本地 ' + localMatches + ' 场');
+    await page.evaluate(() => { localStorage.removeItem('pk.matches'); localStorage.removeItem('pk.csync'); });
+    await page.evaluate(() => window.__CLASSROOM_SYNC.pull());
+    await sleep(800);
+    const restored = await page.evaluate(() => (JSON.parse(localStorage.getItem('pk.matches') || '[]')).length);
+    check('L7b 清空本地后从服务端恢复', restored >= 1, '恢复 ' + restored + ' 场');
   }
 
   /* ---------- M. 汇总 ---------- */
