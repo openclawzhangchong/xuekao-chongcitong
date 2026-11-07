@@ -222,8 +222,8 @@ t('null/非对象输入 → 返回 null 表示拒绝导入（不抛异常）', (
 });
 
 console.log('== 9. 真实题库结构回归 ==');
-t('题库 3999 题 / 9 模块 / 必填字段完整（解析/类比/提醒允许空串）', () => {
-  assert.strictEqual(BANK.length, 3999); // 3714 + 选择题扩容 285
+t('题库 3982 题（3999 - 17 道同题双版本去重）/ 9 模块 / 必填字段完整（解析/类比/提醒允许空串）', () => {
+  assert.strictEqual(BANK.length, 3982);
   assert.strictEqual(META.length, 9);
   BANK.forEach(q => {
     ['m', 'kd', 'qt', 's', 'o', 'a'].forEach(k => assert.ok(q[k], '缺必填字段 ' + k));
@@ -254,28 +254,34 @@ t('没有「选项里塞整段案例」的病态长选项（≥80 字即判病�
   assert.ok(max <= 76, '最长选项 ' + max + ' 字，超过已复核的 76 字上限');
 });
 
-console.log('== 10. 题干清洗 cleanStem（M3 生成器把选项列表混进了题干）==');
-t('全库恰好 64 道残留题被改动，其余 3935 题一字不改', () => {
-  const changed = BANK.filter(q => XK.cleanStem(q.s) !== q.s);
-  assert.strictEqual(changed.length, 64, '被改动的题数不是 64：' + changed.length);
-  assert.ok(changed.every(q => q.m === 'M3'), '改动溢出到 M3 之外');
+console.log('== 10. 题干清洗 cleanStem：纯函数单测 + 残留已根治落库的回归 ==');
+t('题面残留已根治：存储题干即干净题干（cleanStem(s)===s 全库成立），题库 3982 题', () => {
+  assert.strictEqual(BANK.length, 3982); // 3999 - 17 道同题双版本去重
+  BANK.forEach((q) => assert.strictEqual(XK.cleanStem(q.s), q.s, '仍有残留: ' + q.s.slice(0, 30)));
 });
-t('64 题清洗后不再含选项标记，且必须是原题干的前缀', () => {
-  BANK.filter(q => XK.cleanStem(q.s) !== q.s).forEach(q => {
-    const c = XK.cleanStem(q.s);
-    assert.ok(!/[A-D][.、．]/.test(c), '仍残留选项标记：' + c);
-    assert.ok(q.s.startsWith(c) && c.length >= 8, '不是原题干前缀：' + c);
+t('根治清单：47 题清洗均为原题干前缀且不再含选项标记；17 题并入干净版', () => {
+  const d = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'evidence', 'qbank-audit', 'qid-migrate-map.json'), 'utf8'));
+  const cur = new Set(BANK.map(q => XK.qidOf(q)));
+  let fixes = 0, merges = 0;
+  d.stemList.forEach((e) => {
+    if (e.mergedIntoTwin === undefined) {
+      fixes++;
+      assert.ok(e.oldS.startsWith(e.newS) && e.newS.length >= 8, '清洗版不是原题干前缀: ' + e.newS);
+      assert.ok(!/[B-D][.、．]/.test(e.newS.split('A')[0] + e.newS), '清洗版仍残留选项标记: ' + e.newS);
+    } else merges++;
   });
+  assert.strictEqual(fixes, 47);
+  assert.strictEqual(merges, 17);
+  d.stemList.forEach((e) => assert.ok(cur.has(e.newQid), '清单目标不在库: ' + e.newQid));
 });
-t('判断题残留清洗后剩下陈述句', () => {
+t('全库不存在「（ ）A.」形态的存储题干（残留形态已绝迹）', () => {
+  const bad = BANK.filter(x => /（\s*）\s*A[.、．]/.test(x.s));
+  assert.deepStrictEqual(bad.map(x => x.s.slice(0, 24)), []);
+});
+t('判断题根治后存储的正是干净陈述句', () => {
   const q = BANK.filter(x => x.qt === '判断' && x.s.indexOf('可以通过拖拽填充柄') === 0)[0];
-  assert.ok(q, '用例前提不成立：找不到该判断题');
-  assert.strictEqual(XK.cleanStem(q.s), '可以通过拖拽填充柄来快速填充单元格内容。（ ）');
-});
-t('单选题残留清洗后结尾括号还在', () => {
-  const q = BANK.filter(x => x.qt === '单选' && /（\s*）\s*A[.、．]/.test(x.s))[0];
-  assert.ok(q, '用例前提不成立：找不到该单选题');
-  assert.ok(/（\s*）$/.test(XK.cleanStem(q.s)), '结尾括号丢了：' + XK.cleanStem(q.s));
+  assert.ok(q, '找不到该判断题');
+  assert.strictEqual(q.s, '可以通过拖拽填充柄来快速填充单元格内容。（ ）');
 });
 t('只出现一个 A. 不截断（保守规则：A. 之后必须还能看到 B.）', () => {
   const s = '下列说法正确的是（ ）A. 只有一项标记';
@@ -293,11 +299,15 @@ t('空值安全：空串/null/undefined 返回空串', () => {
   assert.strictEqual(XK.cleanStem(null), '');
   assert.strictEqual(XK.cleanStem(undefined), '');
 });
-t('qid 仍按原题干计算（清洗只影响显示，学生记录不断链）', () => {
-  const q = BANK.filter(x => XK.cleanStem(x.s) !== x.s)[0];
-  assert.notStrictEqual(XK.qidOf(q), XK.qidOf({ m: q.m, qt: q.qt, s: XK.cleanStem(q.s) }),
-    '用例前提：清洗后的题干本应算出不同 qid，否则这条测试没意义');
-  assert.strictEqual(XK.qidOf(q), XK.qidOf({ m: q.m, qt: q.qt, s: q.s }));
+t('qid 按清洗后题干计算；旧 qid 走 XK_QID_MIGRATE 迁移（学生记录零断链）', () => {
+  const d = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'evidence', 'qbank-audit', 'qid-migrate-map.json'), 'utf8'));
+  assert.ok(Object.keys(d.map).length >= 200, '映射条数异常');
+  const byQid = new Map(BANK.map(q => [XK.qidOf(q), q]));
+  const e = d.stemList.filter(x => x.mergedIntoTwin === undefined)[0];
+  const q = byQid.get(e.newQid);
+  assert.ok(q, '清洗后的题在库');
+  assert.strictEqual(XK.qidOf(q), e.newQid, 'qid 不按当前题干计算了？');
+  assert.strictEqual(d.map[e.oldQid], e.newQid, '旧 qid 未映射到新 qid');
 });
 
 console.log('== 11. 抽题池与一屏自适应纯函数（擂台赛与双人 PK 共用）==');

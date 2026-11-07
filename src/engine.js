@@ -242,6 +242,29 @@
 
   /* ---------- 档案导入导出校验 ---------- */
 
+  /* ---------- qid 迁移（学生记录零断链） ----------
+   * qid = djb2(m|qt|s)，题干参与计算：题干修正、同题去重都会让旧 qid 失效。
+   * data.js 提供 window.XK_QID_MIGRATE（旧 qid → 现 qid，tools/qid-migrate.js
+   * 从 git 历史自动重建）。读档时把旧键搬到新键：冲突逐字段 max 合并
+   * （与云端「逐题取 max」同口径），幂等可重复执行。 */
+  function migrateProfileKeys(map, p) {
+    if (!map || !p || !p.answers) return p;
+    Object.keys(map).forEach(function (oldId) {
+      var rec = p.answers[oldId];
+      if (!rec) return;
+      delete p.answers[oldId];
+      var cur = p.answers[map[oldId]];
+      if (!cur) { p.answers[map[oldId]] = rec; return; }
+      p.answers[map[oldId]] = {
+        a: Math.max(cur.a || 0, rec.a || 0),
+        w: Math.max(cur.w || 0, rec.w || 0),
+        k: Math.max(cur.k || 0, rec.k || 0),
+        t: Math.max(cur.t || 0, rec.t || 0)
+      };
+    });
+    return p;
+  }
+
   function validateProfile(obj) {
     if (!obj || typeof obj !== 'object') return null;
     var p = newProfile();
@@ -278,7 +301,7 @@
       });
     }
     if (obj.created) p.created = Number(obj.created) || Date.now();
-    return p;
+    return migrateProfileKeys(root.XK_QID_MIGRATE || null, p);
   }
 
   /* ---------- 导出 ---------- */
@@ -304,7 +327,8 @@
     weakSpots: weakSpots,
     weakTraining: weakTraining,
     buildSimPaper: buildSimPaper,
-    validateProfile: validateProfile
+    validateProfile: validateProfile,
+    migrateProfileKeys: migrateProfileKeys
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = XK;

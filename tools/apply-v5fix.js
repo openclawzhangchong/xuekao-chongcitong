@@ -14,7 +14,7 @@ global.window = {};
 eval(fs.readFileSync(path.join(__dirname, '..', 'src', 'data.js'), 'utf8'));
 const BANK = window.BANK;
 const META = window.BANK_META;
-if (BANK.length !== 3999) throw new Error('输入必须是 3999 题库（当前 ' + BANK.length + '）');
+if (BANK.length < 3900) throw new Error('题库规模异常（当前 ' + BANK.length + '），拒绝应用（防跑错库）；如确需小库请改此守卫');
 
 function djb2(str) { let h = 5381; for (let i = 0; i < str.length; i++) h = (((h << 5) + h) ^ str.charCodeAt(i)) >>> 0; return h.toString(36); }
 const stemOwner = {};

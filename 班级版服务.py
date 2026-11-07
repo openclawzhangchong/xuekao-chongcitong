@@ -280,8 +280,11 @@ class Handler(BaseHTTPRequestHandler):
                 with open(os.path.join(SITE, 'data.js'), encoding='utf-8') as f:
                     text = f.read()
                 start = text.index('window.BANK=')
-                body = text[start + len('window.BANK='):text.rindex(';')]
-                bank = json.loads(body)
+                # 只取 window.BANK= 所在那一行（文件尾部还有 BANK_META/XK_QID_MIGRATE 语句）
+                line = text[start:text.index(chr(10), start)].strip()
+                if line.endswith(';'):
+                    line = line[:-1]
+                bank = json.loads(line[len('window.BANK='):])
                 ver = ''
                 if "window.BANK_VER='" in text:
                     ver = text.split("window.BANK_VER='")[1].split("'")[0]

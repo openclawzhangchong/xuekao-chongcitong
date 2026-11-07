@@ -234,8 +234,10 @@ export default {
         const startIdx = text.indexOf('window.BANK=');
         if (startIdx === -1) return json({ ok: false, err: 'bank_not_found' }, 500);
         const from = startIdx + 'window.BANK='.length;
-        const endIdx = text.lastIndexOf(';');
-        const bank = JSON.parse(text.slice(from, endIdx));
+        // 只取 window.BANK= 所在那一行（文件尾部还有 BANK_META/XK_QID_MIGRATE 语句）
+        let line = text.slice(from, text.indexOf(String.fromCharCode(10), startIdx)).trim();
+        if (line.endsWith(';')) line = line.slice(0, -1);
+        const bank = JSON.parse(line);
         const vm = text.match(/window\.BANK_VER='([^']+)'/);
         const mm = text.match(/window\.BANK_META=(\[[^\n]*?\]);/);
         return new Response(JSON.stringify({

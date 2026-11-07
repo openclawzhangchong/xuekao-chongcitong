@@ -72,7 +72,7 @@ async function pickLetters(page, rootSel, letters) {
   await page.waitForFunction('window.BANK && window.BANK.length>0', { timeout: 60000 });
   const loadMs = Date.now() - t0;
   const bankN = await page.evaluate(() => window.BANK.length);
-  check('A1 题库载入', bankN === 3999, 'BANK=' + bankN + '，就绪耗时 ' + loadMs + 'ms');
+  check('A1 题库载入', bankN >= 3900, 'BANK=' + bankN + '，就绪耗时 ' + loadMs + 'ms');
   const cards = await page.evaluate(() =>
     ['entCardPractice', 'entCardWrong', 'entCardDiag', 'entCardSim', 'entCardPk', 'entCardArena']
       .filter((i) => !document.getElementById(i)));
