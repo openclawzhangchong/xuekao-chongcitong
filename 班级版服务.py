@@ -336,7 +336,13 @@ class Handler(BaseHTTPRequestHandler):
     server_version = 'XueKaoClass/1.0'
 
     def log_message(self, fmt, *args):
-        sys.stderr.write('[%s] %s\n' % (self.log_date_time_string(), fmt % args))
+        # pythonw（无控制台）下 sys.stderr 为 None，写日志会让每个请求空回复
+        try:
+            if sys.stderr is None:
+                return
+            sys.stderr.write('[%s] %s' % (self.log_date_time_string(), fmt % args))
+        except Exception:
+            pass
 
     def _local_only(self):
         return self.client_address[0] in ('127.0.0.1', '::1')
