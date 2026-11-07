@@ -1,12 +1,12 @@
 {
   "page": "https://coral-beacon-g4jx.here.now/",
   "viewport": "1366x768",
-  "loadMs": 12019,
+  "loadMs": 3508,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 12019ms"
+      "note": "BANK=3982，就绪耗时 3508ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -36,7 +36,7 @@
     {
       "name": "C1 出题面板渲染",
       "ok": true,
-      "note": "4 个选项"
+      "note": "2 个选项"
     },
     {
       "name": "C2 全组答完出报告",
@@ -136,7 +136,7 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=林烨凯"
+      "note": "results=3 擂主=林泽豪"
     },
     {
       "name": "P1 备课夹清单（勾选顺序 3 题）",
@@ -169,6 +169,41 @@
       "note": ""
     },
     {
+      "name": "N1 切页入历史栈",
+      "ok": true,
+      "note": "#/diag"
+    },
+    {
+      "name": "N2 后退回 diag",
+      "ok": true,
+      "note": "#/diag"
+    },
+    {
+      "name": "N3 前进回 home",
+      "ok": true,
+      "note": "#/home"
+    },
+    {
+      "name": "N3b 首页顶栏导航按钮",
+      "ok": true,
+      "note": "←"
+    },
+    {
+      "name": "N4 favicon 为课字 logo（data-URI PNG）",
+      "ok": true,
+      "note": "data:image/png;base64,"
+    },
+    {
+      "name": "N5 无版本号文案",
+      "ok": true,
+      "note": "共 3982 题 · 考纲 150 分制 · 表扬语库 1000 条"
+    },
+    {
+      "name": "N6 BGM 默认音量 50%（未设置时）",
+      "ok": true,
+      "note": "null"
+    },
+    {
       "name": "H1 荣誉榜 Top10（按胜场）",
       "ok": true,
       "note": ""
@@ -190,6 +225,8 @@
     }
   ],
   "errors": [
+    "console: Failed to load resource: the server responded with a status of 404 ()",
+    "console: Failed to load resource: the server responded with a status of 404 ()",
     "console: Failed to load resource: the server responded with a status of 404 ()",
     "console: Failed to load resource: the server responded with a status of 404 ()",
     "console: Failed to load resource: the server responded with a status of 404 ()",

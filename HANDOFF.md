@@ -299,6 +299,15 @@ git push origin main   # remote 已配置为 git@github-xuekao:openclawzhangchon
 
 ---
 
+## 八⅞、Windows 客户端（2026-11-07 傍晚交付）
+
+- **产物**：`dist-client/学考冲刺通课堂版-免安装.zip` + `学考冲刺通安装包.exe`（各 19.8MB）
+- **重新打包**：`node tools/build-client.js`（自动：site 构建 + logo + 内嵌 Python + csc 编译）
+- **客户端结构**：内嵌 Python 3.14 跑班级版服务（本地数据库/music 歌单）+ Edge 应用窗口
+- **已知**：exe 未签名（SmartScreen 提示点仍要运行）；pythonw 下日志已做 None 守卫
+  （Handler.log_message），改服务端注意保持
+- 计划与验收：`docs/Windows客户端升级计划-20261107.md`
+
 ## 八¾、课堂增强（2026-11-07 下午，教师场景定制）
 
 上课禁带手机、单班、教师机+投影。已交付：
