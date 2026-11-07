@@ -216,6 +216,7 @@ window.__PK_MOUNT = function () {
   })();
 
   var CFG = Store.load(K_CFG, { count: 10, minutes: 10 });
+  if (CFG.source !== 'prep') CFG.source = 'bank';   // 题源：bank=全库随机 / prep=备课夹按勾选顺序
   function saveCfg() { Store.save(K_CFG, CFG); }
 
   /* ================= 章节过滤 =================
@@ -335,7 +336,71 @@ window.__PK_MOUNT = function () {
     return sel.slice().map(normAns).sort().join('') === normAns(q.a);
   }
   function shuffled(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  function pickQuestions(n) { return window.XK.pickFromBank(BANK, CFG.mods, n); }
+  function prepList() { return CSYNC.get('xkc.prep.v1', []) || []; }
+  function renderPrepSource() {
+    var prep = prepList(), isPrep = CFG.source === 'prep';
+    var b1 = $('pkSrcBank'), b2 = $('pkSrcPrep'), c = $('pkPrepCount');
+    if (b1) b1.classList.toggle('on', !isPrep);
+    if (b2) b2.classList.toggle('on', isPrep);
+    if (c) c.textContent = '备课夹 ' + prep.length + ' 题' + (isPrep && prep.length ? '（按勾选顺序出题）' : '');
+  }
+  /* 换一题：跳过当前题，双方同步换成一库名新题（备课夹题量不变，只影响本场） */
+  function changeCurrentQ() {
+    if (PK.state !== 'running') return;
+    if ((PK.left.locked && !PK.left.done) || (PK.right.locked && !PK.right.done)) { toast('当前题已提交，先点「下一题」再换'); return; }
+    var used = {}, XK = window.XK;
+    [PK.left, PK.right].forEach(function (P) {
+      (P.seq || []).forEach(function (q, i) { if (i !== P.idx) used[XK.qidOf(q)] = 1; });
+    });
+    var fresh = null;
+    for (var t = 0; t < 60 && !fresh; t++) {
+      var q = BANK[Math.floor(Math.random() * BANK.length)];
+      if (q && !used[XK.qidOf(q)]) fresh = q;
+    }
+    if (!fresh) { toast('换题失败：题库都被用完了'); return; }
+    [PK.left, PK.right].forEach(function (P) {
+      if (P.done || P.idx >= P.seq.length) return;
+      P.seq[P.idx] = fresh;
+      delete P.answered[P.idx];
+      renderSide(P.side);
+    });
+    tts('换一题');
+  }
+  /* 舞台键盘快答：左侧 A–F 选 + 回车提交；右侧 1–6 选 + 空格提交 */
+  function stageKeys(e) {
+    if (PK.state !== 'running') return;
+    var tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+    var k = (e.key || '').toLowerCase();
+    var L = PK.left, R = PK.right;
+    if (!L || !R) return;
+    function optAt(q, i) { return (q && q.o && i >= 0 && i < q.o.length) ? q.o[i][0] : null; }
+    if (k === 'enter') {
+      if (!L.locked && !L.done) { var b = $('LSubmit'); if (b && !b.disabled) { b.click(); e.preventDefault(); } }
+      return;
+    }
+    if (k === ' ') {
+      if (!R.locked && !R.done) { var b2 = $('rSubmit'); if (b2 && !b2.disabled) { b2.click(); e.preventDefault(); } }
+      return;
+    }
+    var iL = 'abcdef'.indexOf(k);
+    if (iL >= 0 && !L.locked && !L.done) {
+      var kl = optAt(L.seq[L.idx], iL);
+      if (kl) { pickOpt('L', kl); e.preventDefault(); return; }
+    }
+    var iR = '123456'.indexOf(k);
+    if (iR >= 0 && !R.locked && !R.done) {
+      var kr = optAt(R.seq[R.idx], iR);
+      if (kr) { pickOpt('r', kr); e.preventDefault(); return; }
+    }
+  }
+  function pickQuestions(n) {
+    if (CFG.source === 'prep') {
+      var r = window.XK.resolvePrep(BANK, prepList());
+      if (r.list.length) return r.list.slice(0, n);   // 备课夹：按勾选顺序出题
+    }
+    return window.XK.pickFromBank(BANK, CFG.mods, n);
+  }
 
   /* ================= 渲染：首页/选人 =================
    * option 的 value 用花名册下标：sid 允许为空（批量导入只填姓名），
@@ -368,6 +433,7 @@ window.__PK_MOUNT = function () {
   }
   function renderHome() {
     $('bankInfo').textContent = '题库：' + bankInfo();
+    renderPrepSource();
     pickL = rebind(pickL); pickR = rebind(pickR);
     if (pickL && pickL === pickR) pickR = null; // 以左为准
     fillSelect($('pkSelL'), pickR, pickL);
@@ -406,13 +472,13 @@ window.__PK_MOUNT = function () {
     CFG.minutes = Math.max(1, Math.min(60, parseInt($('pkCfgMinutes').value, 10) || 10));
     saveCfg();
     var qs = pickQuestions(CFG.count);
-    if (!qs.length) { toast('没有勾中任何题目，请在「开赛设置」里勾上出题章节'); return; }
-    if (qs.length < CFG.count) { toast('所选章节只有 ' + qs.length + ' 题，本轮按 ' + qs.length + ' 题进行'); }
+    if (!qs.length) { toast(CFG.source === 'prep' ? '备课夹是空的：先去首页「📋 备课夹」勾题，或把题源切回全库' : '没有勾中任何题目，请在「开赛设置」里勾上出题章节'); return; }
+    if (qs.length < CFG.count) { toast((CFG.source === 'prep' ? '备课夹只有 ' : '所选章节只有 ') + qs.length + ' 题，本轮按 ' + qs.length + ' 题进行'); }
     PK.left = sideObj('L', L.sid, L.name); PK.right = sideObj('r', R.sid, R.name);
     // seq 存题目对象本身。早先存的是 BANK 下标 0..n-1，随机抽题结果被丢弃，
     // 每局做的都是题库最前面 n 题（左右只是顺序不同）。
     PK.left.seq = qs.slice();
-    PK.right.seq = shuffled(qs.length).map(function (i) { return qs[i]; }); // 同一批题，各自乱序
+    PK.right.seq = CFG.source === 'prep' ? qs.slice() : shuffled(qs.length).map(function (i) { return qs[i]; }); // 备课夹按勾选顺序（讲完就打）；全库各自乱序
     PK.state = 'running';
     syncStageClass();
     PK.durationSec = CFG.minutes * 60;
@@ -422,6 +488,7 @@ window.__PK_MOUNT = function () {
     $('pkArena').classList.remove('hidden');
     $('btnStart').disabled = true;
     $('btnReset').disabled = false;
+    $('btnChangeQ').disabled = false;
     renderSide('L'); renderSide('r');
     updateTop();
     startTimer();
@@ -634,6 +701,7 @@ window.__PK_MOUNT = function () {
     PK.state = 'finished';
     syncStageClass();
     stopTimer();
+    $('btnChangeQ').disabled = true;
     PK.left.done = true; PK.right.done = true;
     PK.left.locked = true; PK.right.locked = true;
     renderSide('L'); renderSide('r');
@@ -822,6 +890,13 @@ window.__PK_MOUNT = function () {
       if (PK.state === 'running' && !confirm('本轮还在进行中，确定重置？')) return;
       resetRound();
     };
+    $('btnChangeQ').onclick = changeCurrentQ;
+    $('pkSrcBank').onclick = function () { CFG.source = 'bank'; saveCfg(); renderPrepSource(); };
+    $('pkSrcPrep').onclick = function () {
+      CFG.source = 'prep'; saveCfg(); renderPrepSource();
+      if (!prepList().length) toast('备课夹还是空的：先去首页「📋 备课夹」勾题');
+    };
+    document.addEventListener('keydown', stageKeys);
     $('btnLb').onclick = function () { renderLeaderboard('score'); $('lbMask').classList.remove('hidden'); };
     $('lbClose').onclick = function () { $('lbMask').classList.add('hidden'); };
     $('lbFromEnd').onclick = function () { renderLeaderboard('score'); $('endMask').classList.add('hidden'); $('lbMask').classList.remove('hidden'); };
@@ -906,6 +981,7 @@ window.__PK_MOUNT = function () {
     $('pkSetup').classList.remove('hidden');
     $('btnStart').disabled = false;
     $('btnReset').disabled = true;
+    $('btnChangeQ').disabled = true;
     $('pkTimer').textContent = '10:00';
     $('pkTimer').className = 'timer';
     $('pkLeadTag').textContent = '🏆 待开赛';

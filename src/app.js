@@ -337,7 +337,86 @@
   }
 
   /* ---------- 首页 ---------- */
+  /* ---------- 备课夹（课前挑题 → PK/擂台按勾选顺序出） ---------- */
+  var PREP_KEY = 'xkc.prep.v1', prepPage = 0;
+  function prepIds() { try { var v = JSON.parse(localStorage.getItem(PREP_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+  function prepSave(ids) {
+    try { localStorage.setItem(PREP_KEY, JSON.stringify(ids)); } catch (e) { }
+    try { window.__CLASSROOM_SYNC && window.__CLASSROOM_SYNC.mark('prep'); } catch (e) { }
+  }
+  function prepToggle(qid) {
+    var ids = prepIds(), i = ids.indexOf(qid);
+    if (i === -1) ids.push(qid); else ids.splice(i, 1);
+    prepSave(ids);
+  }
+  function prepFiltered() {
+    var mod = ($('prepMod') || {}).value || '';
+    var qt = ($('prepQt') || {}).value || '';
+    var kw = (($('prepKw') || {}).value || '').trim().toLowerCase();
+    return BANK.filter(function (q) {
+      if (mod && q.m !== mod) return false;
+      if (qt && q.qt !== qt) return false;
+      if (kw && String(q.s).toLowerCase().indexOf(kw) === -1) return false;
+      return true;
+    });
+  }
+  function renderPrepMgr() {
+    var modSel = $('prepMod');
+    if (modSel && !modSel.options.length) {
+      var o0 = document.createElement('option'); o0.value = ''; o0.textContent = '全部模块';
+      modSel.appendChild(o0);
+      (window.BANK_META || []).forEach(function (m) {
+        var op = document.createElement('option'); op.value = m.code; op.textContent = m.disp;
+        modSel.appendChild(op);
+      });
+    }
+    var ids = prepIds(), chosen = new Set(ids);
+    var list = prepFiltered();
+    var PER = 30, pages = Math.max(1, Math.ceil(list.length / PER));
+    if (prepPage >= pages) prepPage = pages - 1;
+    if (prepPage < 0) prepPage = 0;
+    var box = $('prepList');
+    if (box) {
+      var html = '';
+      list.slice(prepPage * PER, prepPage * PER + PER).forEach(function (q) {
+        var id = XK.qidOf(q), on = chosen.has(id);
+        html += '<div class="prep-item' + (on ? ' on' : '') + '" data-qid="' + id + '">' +
+          '<span class="ptag">[' + esc(q.qt) + ']</span><span class="pt">' + esc(String(q.s).slice(0, 46)) + '</span>' +
+          '<span class="pact">' + (on ? '✓ 已夹' : '＋ 加入') + '</span></div>';
+      });
+      box.innerHTML = html || '<div class="empty">没有符合条件的题目</div>';
+      Array.prototype.forEach.call(box.querySelectorAll('.prep-item'), function (el) {
+        el.onclick = function () { prepToggle(el.getAttribute('data-qid')); renderPrepMgr(); };
+      });
+    }
+    var pg = $('prepPage');
+    if (pg) pg.textContent = '第 ' + (prepPage + 1) + '/' + pages + ' 页 · 符合 ' + list.length + ' 题';
+    var st = $('prepStat');
+    if (st) st.textContent = '已夹 ' + ids.length + ' 题';
+    var ch = $('prepChosen');
+    if (ch) {
+      var r = XK.resolvePrep(BANK, ids);
+      var chips = r.list.map(function (q, i) {
+        return '<span class="chip">' + (i + 1) + '. ' + esc(String(q.s).slice(0, 18)) + '</span>';
+      }).join('');
+      ch.innerHTML = '出题顺序（勾选顺序）：<br>' +
+        (chips || '<span class="muted">还没挑题——点上面列表里的题目加入备课夹</span>') +
+        (r.missing ? '<br><span class="muted">（' + r.missing + ' 题因题库更新已失效，自动跳过）</span>' : '');
+    }
+  }
+  function syncPrepBtn() {
+    try {
+      var b = $('prepBtn');
+      if (!b || !S.list || !S.list.length) return;
+      var q = S.list[S.idx];
+      if (!q) return;
+      var on = prepIds().indexOf(XK.qidOf(q)) !== -1;
+      b.textContent = on ? '📋 已夹' : '📋 备课';
+      b.classList.toggle('on', on);
+    } catch (e) { }
+  }
   function renderHome() {
+    try { renderPrepMgr(); } catch (e) { }
     var est = XK.estimateScore(BANK, META, P);
     $('estScore').textContent = est.score;
     $('estCap').textContent = est.tested > 0
@@ -444,6 +523,23 @@
     on('drawClose', 'onclick', function () { stopSpeak(); closeDraw(); });
     on('drawGo', 'onclick', closeDraw);
     on('drawRead', 'onclick', function () { closeDraw(); speakCurrent(); });
+    // 备课夹
+    on('prepMod', 'onchange', function () { prepPage = 0; renderPrepMgr(); });
+    on('prepQt', 'onchange', function () { prepPage = 0; renderPrepMgr(); });
+    on('prepKw', 'oninput', function () { prepPage = 0; renderPrepMgr(); });
+    on('prepPrev', 'onclick', function () { prepPage--; renderPrepMgr(); });
+    on('prepNext', 'onclick', function () { prepPage++; renderPrepMgr(); });
+    on('prepClear', 'onclick', function () {
+      if (!prepIds().length) { renderPrepMgr(); return; }
+      if (confirm('清空备课夹？（不影响题库与成绩）')) { prepSave([]); renderPrepMgr(); }
+    });
+    on('prepBtn', 'onclick', function () {
+      if (!S.list || !S.list.length) return;
+      var q = S.list[S.idx];
+      if (!q) return;
+      prepToggle(XK.qidOf(q));
+      syncPrepBtn();
+    });
     on('rosterSave', 'onclick', function () {
       var list = parseRoster($('rosterText').value);
       if (!list.length) { alert('没有解析出有效名单。每行一个姓名，或「学号,姓名」'); return; }
@@ -615,6 +711,7 @@
       row.appendChild(b); body.appendChild(row);
     }
     syncSpeakBtn();
+    try { syncPrepBtn(); } catch (e) { }
     body.scrollTop = 0;
   }
 

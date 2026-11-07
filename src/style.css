@@ -275,3 +275,19 @@ body.big .stat .v{font-size:26px}
 .pill{display:inline-block;font-size:11px;padding:1px 9px;border-radius:20px;margin-left:6px}
 .pill.ok{background:var(--ok-l);color:var(--ok)}
 .pill.warn{background:var(--warn-l);color:var(--warn)}
+
+/* 备课夹（课前挑题） */
+.prep-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.prep-sel{padding:7px 9px;border:2px solid var(--line);border-radius:9px;background:var(--bg);color:var(--txt);font-size:14px;max-width:180px}
+.prep-kw{flex:1;min-width:120px;padding:7px 10px;border:2px solid var(--line);border-radius:9px;background:var(--bg);color:var(--txt);font-size:14px}
+.prep-list{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin:6px 0}
+.prep-item{display:flex;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px}
+.prep-item:last-child{border-bottom:none}
+.prep-item.on{background:var(--pri-ll)}
+.prep-item .pt{flex:1;color:var(--txt)}
+.prep-item .ptag{font-size:11px;color:var(--mut);white-space:nowrap}
+.prep-item .pact{white-space:nowrap}
+.prep-nav{display:flex;gap:8px;align-items:center;margin:6px 0}
+.prep-chosen{font-size:13px;color:var(--txt);line-height:1.9}
+.prep-chosen .chip{display:inline-block;background:var(--pri-ll);color:var(--pri-d);border-radius:999px;padding:2px 10px;margin:2px 4px 2px 0;font-size:12px}
+.mini-btn.warn{color:var(--err)}

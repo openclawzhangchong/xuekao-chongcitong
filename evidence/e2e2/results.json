@@ -1,12 +1,12 @@
 {
   "page": "file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html",
   "viewport": "1366x768",
-  "loadMs": 255,
+  "loadMs": 348,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 255ms"
+      "note": "BANK=3982，就绪耗时 348ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -136,8 +136,40 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=郑子添"
+      "note": "results=3 擂主=刘晨希"
+    },
+    {
+      "name": "P1 备课夹清单（勾选顺序 3 题）",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "P2 备课夹按勾选顺序出题",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "P2b 备课夹两侧同序（讲完就打）",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "P3 键盘 A 键选左侧首选项",
+      "ok": true,
+      "note": "A vs A"
+    },
+    {
+      "name": "P4 键盘 1 键选右侧首选项",
+      "ok": true,
+      "note": "A vs A"
+    },
+    {
+      "name": "P5 换一题双方同步换新",
+      "ok": true,
+      "note": ""
     }
   ],
-  "errors": []
+  "errors": [
+    "console: [ARENA] bind: ReferenceError: changeArenaQ is not defined\n    at bind (file:///C:/Users/Administrator/Desktop/%E4%BF%A1%E6%81%AF%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80/%E5%AD%A6%E8%80%83%E5%86%B2%E5%88%B"
+  ]
 }

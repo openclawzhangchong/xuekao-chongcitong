@@ -123,6 +123,25 @@ ${arenaStyle}
         </div>
       </div>
 
+      <div class="card" id="prepCard">
+        <div class="sec-t"><span class="dot"></span>📋 备课夹（课前挑题 → PK/擂台按勾选顺序出）</div>
+        <div class="prep-bar">
+          <select id="prepMod" class="prep-sel"></select>
+          <select id="prepQt" class="prep-sel">
+            <option value="">全部题型</option><option>单选</option><option>判断</option><option>多选</option>
+          </select>
+          <input id="prepKw" class="prep-kw" placeholder="题干关键词">
+          <span class="muted" id="prepStat"></span>
+        </div>
+        <div id="prepList" class="prep-list"></div>
+        <div class="prep-nav">
+          <button class="mini-btn" id="prepPrev">← 上一页</button>
+          <span id="prepPage" class="muted"></span>
+          <button class="mini-btn" id="prepNext">下一页 →</button>
+          <button class="mini-btn" id="prepClear">🗑 清空备课夹</button>
+        </div>
+        <div id="prepChosen" class="prep-chosen"></div>
+      </div>
       <div class="card" style="margin-top:13px">
         <div class="sec-t"><span class="dot"></span>🎓 课堂互动（投屏上课用）</div>
         <div class="muted" id="rosterCount">尚未导入名单</div>
@@ -244,6 +263,7 @@ ${arenaStyle}
       <button class="h-btn" id="exitBtn">✕</button>
       <div class="h-title" id="quizTitle" style="font-size:16px">练习</div>
       <button class="speak-btn" id="speakBtn">🔊 朗读</button>
+      <button class="speak-btn" id="prepBtn">📋 备课</button>
       <button class="speak-btn hidden" id="drawBtn">🎲 点名</button>
       <button class="h-btn" id="bigBtn">🖥 课堂</button>
     </header>

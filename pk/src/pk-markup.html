@@ -5,6 +5,7 @@
     <div class="spacer"></div>
     <button class="tbtn primary" id="btnStart">🚀 开始 PK</button>
     <button class="tbtn" id="btnReset" disabled>🔄 重置新一轮</button>
+    <button class="tbtn" id="btnChangeQ" disabled>🔀 换一题</button>
     <button class="tbtn" id="btnLb">🏆 总排行榜</button>
     <button class="tbtn" id="btnRoster">📋 管理花名册</button>
     <button class="tbtn" id="btnCfg">⚙️ 设置</button>
@@ -69,11 +70,19 @@
         <span class="modpick-quick"><button class="tbtn" id="pkModsAll">全选</button> <button class="tbtn" id="pkModsNone">清空</button></span>
       </div>
       <div class="pkmods" id="pkCfgMods"></div>
-      <div class="modpick-note">点一下即生效，不用保存。全勾＝整个题库；一都不勾就不能开赛。</div>
+      <div class="modpick-note">点一下即生效，不用保存。全勾＝整个题库；一都不勾就不能开赛。备课夹模式下章节不参与抽题。</div>
+    </div>
+    <div class="modpick">
+      <div class="modpick-h">④ 题源
+        <span class="muted" id="pkPrepCount"></span>
+        <span class="modpick-quick"><button class="tbtn" id="pkSrcBank">全库随机</button> <button class="tbtn" id="pkSrcPrep">📋 备课夹顺序</button></span>
+      </div>
+      <div class="modpick-note">备课夹在首页「📋 备课夹」里勾题；讲完就打，按勾选顺序出题。</div>
     </div>
     <div style="font-size:15px;line-height:2">
-      ④ 点右上「🚀 开始 PK」——两名选手各自独立答题，同批题目各自乱序<br>
-      ⑤ 每题 1 分，多选题全部选对才得分；先答完的一方等待对手，倒计时归零双侧锁卷
+      ⑤ 点右上「🚀 开始 PK」——两名选手各自独立答题（备课夹模式按同一顺序出）<br>
+      ⑥ 每题 1 分，多选题全部选对才得分；先答完的一方等待对手，倒计时归零双侧锁卷<br>
+      <span style="font-size:13px;color:var(--mut)">⌨ 舞台键盘：左侧 A–D 选 · 回车提交 ｜ 右侧 1–6 选 · 空格提交 ｜ 🔀 换一题随时跳过当前题</span>
     </div>
   </div>
   <div class="panel right" style="min-height:auto">

@@ -117,5 +117,20 @@ t('解析契约：/api/bank 的「行内提取 window.BANK=」在含 MIGRATE 行
   assert.strictEqual(JSON.parse(s2.slice(a + 12, b).trim().replace(/;$/, '')).length, 3982);
 });
 
+console.log('== 4. resolvePrep（备课夹解析） ==');
+t('按勾选顺序返回题目，失效 qid 跳过并计数', () => {
+  const ids = [XK.qidOf(BANK[0]), 'M1-nope', XK.qidOf(BANK[2]), XK.qidOf(BANK[0])];
+  const r = XK.resolvePrep(BANK, ids);
+  assert.strictEqual(r.list.length, 2);
+  assert.strictEqual(r.list[0], BANK[0]);
+  assert.strictEqual(r.list[1], BANK[2]);
+  assert.strictEqual(r.missing, 1);
+});
+t('空备课夹 → 空列表', () => {
+  const r = XK.resolvePrep(BANK, []);
+  assert.strictEqual(r.list.length, 0);
+  assert.strictEqual(r.missing, 0);
+});
+
 console.log('\n结果: ' + passed + ' 通过, ' + failed + ' 失败');
 process.exit(failed ? 1 : 0);

@@ -240,6 +240,22 @@
     return paper;
   }
 
+  /* ---------- 备课夹解析 ----------
+   * ids 为勾选顺序的 qid 数组；题干改过（qid 变了）/已删的题自动跳过，重复勾选去重。
+   * 返回 {list: 题目对象数组（勾选顺序）, missing: 失效跳过数} */
+  function resolvePrep(bank, ids) {
+    var byId = {};
+    (bank || []).forEach(function (q) { byId[qidOf(q)] = q; });
+    var list = [], missing = 0, seen = {};
+    (ids || []).forEach(function (id) {
+      if (seen[id]) return;
+      seen[id] = 1;
+      var q = byId[id];
+      if (q) list.push(q); else missing++;
+    });
+    return { list: list, missing: missing };
+  }
+
   /* ---------- 档案导入导出校验 ---------- */
 
   /* ---------- qid 迁移（学生记录零断链） ----------
@@ -328,7 +344,8 @@
     weakTraining: weakTraining,
     buildSimPaper: buildSimPaper,
     validateProfile: validateProfile,
-    migrateProfileKeys: migrateProfileKeys
+    migrateProfileKeys: migrateProfileKeys,
+    resolvePrep: resolvePrep
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = XK;

@@ -38,6 +38,7 @@ window.__ARENA_MOUNT = function () {
     var pk = load(K_CFG, null) || {};
     CFG = { count: 5, minutes: 2, rounds: 10, mods: pk.mods ? JSON.parse(JSON.stringify(pk.mods)) : null };
   }
+  if (CFG.source !== 'prep') CFG.source = 'bank';   // 题源：bank=全库随机 / prep=备课夹按勾选顺序
   function saveCfg() { save(K_ARCFG, CFG); }
   function modCodes() {
     var out = [];
@@ -78,6 +79,69 @@ window.__ARENA_MOUNT = function () {
   }
 
   function toast(msg) {
+
+  function renderArSource() {
+    var prep = load('xkc.prep.v1', []) || [], isPrep = CFG.source === 'prep';
+    var b1 = $('arSrcBank'), b2 = $('arSrcPrep'), c = $('arPrepCount');
+    if (b1) b1.classList.toggle('on', !isPrep);
+    if (b2) b2.classList.toggle('on', isPrep);
+    if (c) c.textContent = '备课夹 ' + prep.length + ' 题' + (isPrep && prep.length ? '（按勾选顺序出题）' : '');
+  }
+  /* 换一题：双方当前题同步换成一库名新题（备课夹题量不变，只影响本场） */
+  function changeArenaQ() {
+    if (!AR.running) return;
+    var L = AR.left, R = AR.right;
+    if ((L.answered && L.answered[L.idx]) || (R.answered && R.answered[R.idx])) {
+      toast('当前题已有人作答，等「下一题」后再换'); return;
+    }
+    var used = {}, XK = window.XK;
+    [L, R].forEach(function (S) { (S.seq || []).forEach(function (q, i) { if (i !== S.idx) used[XK.qidOf(q)] = 1; }); });
+    var fresh = null;
+    for (var t = 0; t < 60 && !fresh; t++) {
+      var q = BANK[Math.floor(Math.random() * BANK.length)];
+      if (q && !used[XK.qidOf(q)]) fresh = q;
+    }
+    if (!fresh) { toast('换题失败：题库都被用完了'); return; }
+    [L, R].forEach(function (S, i) {
+      if (!S.seq.length || S.idx >= S.seq.length) return;
+      S.seq[S.idx] = fresh;
+      delete S.answered[S.idx];
+      renderSeat(i === 0 ? 'champ' : 'chal');
+    });
+    tts('换一题');
+  }
+  /* 舞台键盘快答：擂主 A–F 选 + 回车提交；挑战者 1–6 选 + 空格提交 */
+  function arenaKeys(e) {
+    if (!AR.running) return;
+    var tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+    var k = (e.key || '').toLowerCase();
+    var L = AR.left, R = AR.right;
+    if (!L || !R) return;
+    function optAt(S, i) { return (S.seq && S.idx < S.seq.length && S.seq[S.idx].o && i < S.seq[S.idx].o.length) ? S.seq[S.idx].o[i][0] : null; }
+    function pickSeat(key, letter, S) {
+      if ((S.answered && S.answered[S.idx]) || S.idx >= S.seq.length) return false;
+      var o = letter;
+      if (o) { pickOpt(key, o); return true; }
+      return false;
+    }
+    if (k === 'enter') {
+      if (!(L.answered && L.answered[L.idx]) && L.idx < L.seq.length) {
+        var b = $('arChampSubmit'); if (b && !b.disabled) { b.click(); e.preventDefault(); }
+      }
+      return;
+    }
+    if (k === ' ') {
+      if (!(R.answered && R.answered[R.idx]) && R.idx < R.seq.length) {
+        var b2 = $('arChalSubmit'); if (b2 && !b2.disabled) { b2.click(); e.preventDefault(); }
+      }
+      return;
+    }
+    var iL = 'abcdef'.indexOf(k);
+    if (iL >= 0 && pickSeat('champ', optAt(L, iL), L)) { e.preventDefault(); return; }
+    var iR = '123456'.indexOf(k);
+    if (iR >= 0 && pickSeat('chal', optAt(R, iR), R)) { e.preventDefault(); return; }
+  }
     var t = $('arToast'); if (!t) return;
     t.textContent = msg; t.classList.add('show');
     clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, 2400);
@@ -223,9 +287,15 @@ window.__ARENA_MOUNT = function () {
     }
     if (AR.sel.length !== need) { toast(need === 1 ? '先从候选席点 1 位挑战者' : '第一场要从候选席点 2 位同学'); return; }
     normalizeMods();
-    var qs = window.XK.pickFromBank(BANK, CFG.mods, CFG.count);
-    if (!qs.length) { toast('没有勾中任何题目，请在「擂台设置」里勾上出题章节'); return; }
-    if (qs.length < CFG.count) toast('所选章节只有 ' + qs.length + ' 题，本场按 ' + qs.length + ' 题进行');
+    var qs;
+    if (CFG.source === 'prep') {
+      var pr = window.XK.resolvePrep(BANK, load('xkc.prep.v1', []) || []);
+      qs = pr.list.slice(0, CFG.count);              // 备课夹：按勾选顺序出题
+    } else {
+      qs = window.XK.pickFromBank(BANK, CFG.mods, CFG.count);
+    }
+    if (!qs.length) { toast(CFG.source === 'prep' ? '备课夹是空的：先去首页「📋 备课夹」勾题，或把题源切回全库' : '没有勾中任何题目，请在「擂台设置」里勾上出题章节'); return; }
+    if (qs.length < CFG.count) toast((CFG.source === 'prep' ? '备课夹只有 ' : '所选章节只有 ') + qs.length + ' 题，本场按 ' + qs.length + ' 题进行');
 
     var leftStu = LOG.champ ? LOG.champ : AR.sel[0];
     var rightStu = LOG.champ ? AR.sel[0] : AR.sel[1];
@@ -235,7 +305,7 @@ window.__ARENA_MOUNT = function () {
     AR.left = sideObj('champ', leftStu);
     AR.right = sideObj('chal', rightStu);
     AR.left.seq = qs.slice();
-    AR.right.seq = window.XK.shuffle(qs.slice());
+    AR.right.seq = CFG.source === 'prep' ? qs.slice() : window.XK.shuffle(qs.slice());
     AR.running = true;
     AR.leftSec = Math.max(1, CFG.minutes) * 60;
     if (!AR.isExtra) LOG.round++;     // 加赛不占正式场次
@@ -507,6 +577,10 @@ window.__ARENA_MOUNT = function () {
   /* ================= 事件绑定 ================= */
   function bind() {
     $('arGo').onclick = startRound;
+    $('arChangeQ').onclick = changeArenaQ;
+    $('arSrcBank').onclick = function () { CFG.source = 'bank'; saveCfg(); renderArSource(); };
+    $('arSrcPrep').onclick = function () { CFG.source = 'prep'; saveCfg(); renderArSource(); if (!(load('xkc.prep.v1', []) || []).length) toast('备课夹还是空的：先去首页「📋 备课夹」勾题'); };
+    document.addEventListener('keydown', arenaKeys);
     $('arRandPick').onclick = function () {
       var cs = ensurePicks();
       if (cs.length < needCount()) { toast('擂台赛至少需要 2 人名单，请先在双人 PK 里导入花名册'); return; }
@@ -544,6 +618,7 @@ window.__ARENA_MOUNT = function () {
     };
     $('arCfg').onclick = function () {
       $('arCfgCount').value = CFG.count; $('arCfgMinutes').value = CFG.minutes; $('arCfgRounds').value = CFG.rounds;
+      renderArSource();
       renderCfgMods();
       $('arCfgMask').classList.remove('hidden');
     };

@@ -324,6 +324,45 @@ async function pickLetters(page, rootSel, letters) {
   check('K1 PK 战绩持久化', persist.matches >= 1, persist.matches + ' 场');
   check('K2 擂台 3 场持久化', (persist.arena.results || []).length === 3, 'results=' + (persist.arena.results || []).length + ' 擂主=' + ((persist.arena.champ || {}).name || ''));
 
+  /* ---------- P. 备课夹 + 舞台键盘 + 换一题 ---------- */
+  await page.evaluate(() => {
+    var ids = [window.BANK[5], window.BANK[7], window.BANK[9]].map(function (q) { return window.XK.qidOf(q); });
+    localStorage.setItem('xkc.prep.v1', JSON.stringify(ids));
+    var cfg = JSON.parse(localStorage.getItem('pk.cfg') || '{}');
+    cfg.source = 'prep';
+    localStorage.setItem('pk.cfg', JSON.stringify(cfg));
+  });
+  await page.reload(); await page.waitForFunction('window.BANK && window.BANK.length'); await sleep(300);
+  await page.evaluate(() => document.querySelector('.tab[data-t="home"]').click()); await sleep(250);
+  const chosen = await page.evaluate(() => (document.getElementById('prepChosen') || {}).innerText || '');
+  check('P1 备课夹清单（勾选顺序 3 题）', chosen.indexOf('1.') !== -1 && chosen.indexOf('2.') !== -1 && chosen.indexOf('3.') !== -1, '');
+  await page.evaluate(() => document.querySelector('.tab[data-t="pk"]').click()); await sleep(250);
+  await page.evaluate(() => {
+    const L = document.getElementById('pkSelL'), R = document.getElementById('pkSelR');
+    L.selectedIndex = 1; L.dispatchEvent(new Event('change'));
+    R.selectedIndex = 2; R.dispatchEvent(new Event('change'));
+  }); await sleep(150);
+  await page.fill('#pkCfgCount', '3');
+  await page.click('#btnStart'); await sleep(500);
+  const prepFirst = await page.evaluate(() => window.__PK_TEST.pk().left.seq[0].s);
+  const prepExpect = await page.evaluate(() => window.BANK[5].s);
+  check('P2 备课夹按勾选顺序出题', prepFirst === prepExpect, '');
+  const prepSame = await page.evaluate(() => window.__PK_TEST.pk().left.seq[0].s === window.__PK_TEST.pk().right.seq[0].s);
+  check('P2b 备课夹两侧同序（讲完就打）', prepSame, '');
+  await page.keyboard.press('a'); await sleep(120);
+  const ksel = await page.evaluate(() => { const el = document.querySelector('#LBody .opt.sel'); return el ? el.getAttribute('data-key') : null; });
+  const wantKey = await page.evaluate(() => window.__PK_TEST.pk().left.seq[0].o[0][0]);
+  check('P3 键盘 A 键选左侧首选项', ksel === wantKey, ksel + ' vs ' + wantKey);
+  await page.keyboard.press('1'); await sleep(120);
+  const rsel = await page.evaluate(() => { const el = document.querySelector('#rBody .opt.sel'); return el ? el.getAttribute('data-key') : null; });
+  const rWant = await page.evaluate(() => window.__PK_TEST.pk().right.seq[0].o[0][0]);
+  check('P4 键盘 1 键选右侧首选项', rsel === rWant, rsel + ' vs ' + rWant);
+  const oldStem = await page.evaluate(() => window.__PK_TEST.pk().left.seq[0].s);
+  await page.click('#btnChangeQ'); await sleep(300);
+  const newStems = await page.evaluate(() => [window.__PK_TEST.pk().left.seq[0].s, window.__PK_TEST.pk().right.seq[0].s]);
+  check('P5 换一题双方同步换新', newStems[0] === newStems[1] && newStems[0] !== oldStem, '');
+  await page.evaluate(() => { const c = JSON.parse(localStorage.getItem('pk.cfg') || '{}'); c.source = 'bank'; localStorage.setItem('pk.cfg', JSON.stringify(c)); });
+
   /* ---------- L. 班级版专属（只在本机 8953 服务跑，绝不碰线上真实数据；登录已在 A+ 完成） ---------- */
   if (IS_CLASS) {
     // 课堂屏中途开擂台：登录弹窗不得盖住候选席（另一 AI 刚修的点，回归盯住）

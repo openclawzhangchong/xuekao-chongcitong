@@ -12,6 +12,7 @@
     <div class="ar-tools">
       <button class="ar-btn" id="arCfg">⚙️ 擂台设置</button>
       <button class="ar-btn" id="arSnd">🔊 音效开</button>
+      <button class="ar-btn" id="arChangeQ">🔀 换一题</button>
       <button class="ar-btn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
       <button class="ar-btn" id="arBack">← 回双人 PK</button>
       <button class="ar-btn" id="arHome">🏠 首页</button>
@@ -97,6 +98,9 @@
     <div class="ar-notice ar-notice-slim">
       <div class="ar-notice-top">⚙️ 擂台设置</div>
       <div class="ar-cfg-grid">
+        <div class="ar-cfg-item"><label>题源</label>
+          <button class="ar-btn" id="arSrcBank">全库随机</button><button class="ar-btn" id="arSrcPrep">📋 备课夹顺序</button>
+          <span class="muted" id="arPrepCount" style="font-size:12px"></span></div>
         <div class="ar-cfg-item"><label>每场题量（1-20）</label><input id="arCfgCount" value="5"></div>
         <div class="ar-cfg-item"><label>每场计时（分钟）</label><input id="arCfgMinutes" value="2"></div>
         <div class="ar-cfg-item"><label>一轮场数（3-40）</label><input id="arCfgRounds" value="10"></div>
