@@ -1,12 +1,12 @@
 {
   "page": "http://127.0.0.1:8953/",
   "viewport": "1366x768",
-  "loadMs": 277,
+  "loadMs": 331,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 277ms"
+      "note": "BANK=3982，就绪耗时 331ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -46,7 +46,7 @@
     {
       "name": "C1 出题面板渲染",
       "ok": true,
-      "note": "2 个选项"
+      "note": "4 个选项"
     },
     {
       "name": "C2 全组答完出报告",
@@ -141,12 +141,62 @@
     {
       "name": "K1 PK 战绩持久化",
       "ok": true,
-      "note": "2 场"
+      "note": "3 场"
     },
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=林静静"
+      "note": "results=3 擂主=朱紫寒"
+    },
+    {
+      "name": "P1 备课夹清单（勾选顺序 3 题）",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "P2 备课夹按勾选顺序出题",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "P2b 备课夹两侧同序（讲完就打）",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "P3 键盘 A 键选左侧首选项",
+      "ok": true,
+      "note": "A vs A"
+    },
+    {
+      "name": "P4 键盘 1 键选右侧首选项",
+      "ok": true,
+      "note": "A vs A"
+    },
+    {
+      "name": "P5 换一题双方同步换新",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "H1 荣誉榜 Top10（按胜场）",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "H2 周擂主（被踢馆换人）",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "H3 BGM 歌单加载（2 首轮换）",
+      "ok": true,
+      "note": "歌单 2 首 · 当前第 1 首：a.mp3"
+    },
+    {
+      "name": "H4 BGM 开启即播第一首",
+      "ok": true,
+      "note": "{\"on\":true,\"src\":\"http://127.0.0.1:8953/m/a.mp3\"}"
     },
     {
       "name": "L3 擂台页不被学号弹窗盖住",
@@ -171,13 +221,15 @@
     {
       "name": "L7a 战绩已落盘服务端",
       "ok": true,
-      "note": "服务端 2 场 / 本地 2 场"
+      "note": "服务端 3 场 / 本地 0 场"
     },
     {
       "name": "L7b 清空本地后从服务端恢复",
       "ok": true,
-      "note": "恢复 2 场"
+      "note": "恢复 3 场"
     }
   ],
-  "errors": []
+  "errors": [
+    "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
 }

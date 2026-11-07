@@ -494,6 +494,17 @@ body.big .stat .v{font-size:26px}
 .prep-chosen .chip{display:inline-block;background:var(--pri-ll);color:var(--pri-d);border-radius:999px;padding:2px 10px;margin:2px 4px 2px 0;font-size:12px}
 .mini-btn.warn{color:var(--err)}
 
+/* 首页荣誉榜 */
+.honor-body{font-size:13px;line-height:1.8}
+.honor-body table{width:100%;border-collapse:collapse}
+.honor-body td,.honor-body th{padding:4px 6px;text-align:left;border-bottom:1px solid var(--line)}
+.honor-body th{color:var(--mut);font-weight:600;font-size:12px}
+.honor-body .rank1{color:#d97706;font-weight:800}
+.honor-body .rank2{color:#6b7280;font-weight:700}
+.honor-body .rank3{color:#b45309;font-weight:700}
+.honor-body .h-sec{margin-top:8px;color:var(--pri-d);font-weight:700}
+.honor-body .empty{color:var(--mut)}
+
 /* =====================================================================
  * 双人课堂 PK 答题 · 样式（投屏大屏优先）
  * ===================================================================== */
@@ -955,6 +966,10 @@ body.arena-mode .app{max-width:none}
         </div>
       </div>
 
+      <div class="card" id="honorCard">
+        <div class="sec-t"><span class="dot"></span>🏆 荣誉榜（PK 获胜 Top10 · 周擂主）</div>
+        <div id="honorBody" class="honor-body"></div>
+      </div>
       <div class="card" id="prepCard">
         <div class="sec-t"><span class="dot"></span>📋 备课夹（课前挑题 → PK/擂台按勾选顺序出）</div>
         <div class="prep-bar">
@@ -1136,6 +1151,7 @@ body.arena-mode .app{max-width:none}
     <button class="tbtn" id="btnRoster">📋 管理花名册</button>
     <button class="tbtn" id="btnCfg">⚙️ 设置</button>
     <button class="tbtn" id="btnSnd">🔊 音效开</button>
+    <button class="tbtn" id="bgmToggle">🎵 音乐关</button>
     <button class="tbtn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
     <button class="tbtn" id="btnHome">🏠 首页</button>
   </div>
@@ -1300,6 +1316,18 @@ body.arena-mode .app{max-width:none}
         <div style="margin-top:8px"><button class="tbtn" id="cfgPasteApply">📥 应用粘贴题库</button></div>
       </div>
       <div class="set-item set-full"><label>当前题库</label><div class="muted" id="bankInfo2" style="font-size:14px"></div></div>
+      <div class="set-item set-full"><label>🎵 背景音乐（对战进行中播放，TTS 播报自动压低）</label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="tbtn" id="bgmDirBtn">📂 选择音乐文件夹</button>
+          <input type="file" id="bgmDir" webkitdirectory multiple accept=".mp3,.wav,.m4a,.ogg,.flac" style="display:none">
+          <span class="muted" id="bgmStat">未选文件夹</span>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <span class="muted">音量</span>
+          <input type="range" id="bgmVol" min="0" max="100" value="35" style="width:160px">
+          <span class="muted">教师自备 mp3/wav 放进班级版服务目录的 music/ 文件夹即自动加载（永久生效）；或临时选本地文件夹（本次会话有效）</span>
+        </div>
+      </div>
     </div>
     <div class="dlg-actions"><button class="tbtn primary" id="cfgSave">💾 保存默认值</button>
       <button class="tbtn" id="cfgClose">✕ 关闭</button></div>
@@ -1730,6 +1758,48 @@ body.arena-mode .app{max-width:none}
     return { list: list, missing: missing };
   }
 
+  /* ---------- 首页荣誉榜（PK 获胜 Top10 + 周擂主） ----------
+   * matches = pk.matches；arenaLog = pk.arena.v1（results 时间线）
+   * 周擂主：按自然周（周一为始）重放擂台时间线，取每周结束时的站上擂主者；
+   * 擂主跨周守擂自动延续。返回 {pkTop:[{sid,name,wins,games}], weekly:[{week,name,sid,streak}]} */
+  function aggregateHonor(matches, arenaLog) {
+    var bySid = {};
+    (matches || []).forEach(function (m) {
+      if (!m || !m.left || !m.right) return;
+      ['left', 'right'].forEach(function (side) {
+        var p = m[side];
+        if (!p) return;
+        var id = p.sid || p.name;
+        if (!id) return;
+        var e = bySid[id] = bySid[id] || { sid: p.sid || '', name: p.name || p.sid || '未知', wins: 0, games: 0 };
+        e.games++;
+        if (m.winner === (side === 'left' ? 'L' : 'R')) e.wins++;
+      });
+    });
+    var pkTop = Object.keys(bySid).map(function (k) { return bySid[k]; })
+      .sort(function (a, b) { return b.wins - a.wins || b.games - a.games; }).slice(0, 10);
+    function weekOf(ts) {
+      var d = new Date(ts), day = (d.getDay() + 6) % 7;   // 周一为一周之始
+      d.setDate(d.getDate() - day);
+      return d.getFullYear() + '-' + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + '-' + (d.getDate() < 10 ? '0' : '') + d.getDate();
+    }
+    var weekly = [], standing = null, curWeek = null, streak = 0;
+    function closeWeek(w) { if (w && standing) weekly.push({ week: w, name: standing.name, sid: standing.sid, streak: streak }); }
+    ((arenaLog || {}).results || []).filter(function (r) { return r && r.ts; })
+      .sort(function (a, b) { return a.ts - b.ts; })
+      .forEach(function (r) {
+        var w = weekOf(r.ts);
+        if (curWeek === null) curWeek = w;
+        if (w !== curWeek) { closeWeek(curWeek); curWeek = w; streak = 0; }
+        if (r.winner === 'chal') standing = { sid: r.chalSid, name: r.chalName };
+        else standing = { sid: r.champSid, name: r.champName };
+        streak = (r.winner === 'chal') ? 1 : (streak + 1);
+      });
+    closeWeek(curWeek);
+    weekly.reverse();
+    return { pkTop: pkTop, weekly: weekly };
+  }
+
   /* ---------- 档案导入导出校验 ---------- */
 
   /* ---------- qid 迁移（学生记录零断链） ----------
@@ -1819,7 +1889,8 @@ body.arena-mode .app{max-width:none}
     buildSimPaper: buildSimPaper,
     validateProfile: validateProfile,
     migrateProfileKeys: migrateProfileKeys,
-    resolvePrep: resolvePrep
+    resolvePrep: resolvePrep,
+    aggregateHonor: aggregateHonor
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = XK;
@@ -2702,8 +2773,35 @@ window.XK_QID_MIGRATE={"M3-1859kao":"M3-sv3avx","M3-4k0n9p":"M3-1xl8hep","M3-1yo
       b.classList.toggle('on', on);
     } catch (e) { }
   }
+  function renderHonor() {
+    var body = $('honorBody');
+    if (!body) return;
+    var matches = [], arenaLog = {};
+    try { matches = JSON.parse(localStorage.getItem('pk.matches') || '[]') || []; } catch (e) { }
+    try { arenaLog = JSON.parse(localStorage.getItem('pk.arena.v1') || '{}') || {}; } catch (e) { }
+    // 数据以合并后的 localStorage 为准（CSYNC 已在页面加载时从服务端恢复）
+    var h = XK.aggregateHonor(matches, arenaLog);
+    var html = '<div class="h-sec">⚔️ PK 获胜 Top10</div>';
+    if (h.pkTop.length) {
+      html += '<table><tr><th>#</th><th>姓名</th><th>胜场</th><th>参赛</th></tr>';
+      h.pkTop.forEach(function (e, i) {
+        html += '<tr><td class="rank' + (i + 1) + '">' + (i + 1) + '</td><td>' + esc(e.name) + '</td><td>' + e.wins + '</td><td>' + e.games + '</td></tr>';
+      });
+      html += '</table>';
+    } else html += '<div class="empty">还没打过 PK——打一场就有榜了</div>';
+    html += '<div class="h-sec">🥊 周擂主（每周一算一周）</div>';
+    if (h.weekly.length) {
+      html += '<table><tr><th>周（周一起算）</th><th>擂主</th><th>连胜</th></tr>';
+      h.weekly.forEach(function (w) {
+        html += '<tr><td>' + w.week + '</td><td>' + esc(w.name) + '</td><td>' + w.streak + '</td></tr>';
+      });
+      html += '</table>';
+    } else html += '<div class="empty">还没打过擂台赛——第一场打完就有周擂主</div>';
+    body.innerHTML = html;
+  }
   function renderHome() {
     try { renderPrepMgr(); } catch (e) { }
+    try { renderHonor(); } catch (e) { }
     var est = XK.estimateScore(BANK, META, P);
     $('estScore').textContent = est.score;
     $('estCap').textContent = est.tested > 0
@@ -3802,7 +3900,100 @@ window.__PK_MOUNT = function () {
     clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, 2200);
   }
 
-  /* ================= PK 状态机 ================= */
+  /* ================= 背景音乐（教师自备文件夹轮播） =================
+   * 两种来源：①班级版服务 music/ 文件夹（/api/music 歌单，永久生效）
+   *          ②「⚙️ 设置」里临时选本地文件夹（webkitdirectory，本次会话有效）
+   * 对战进行中循环轮换；TTS 播报自动压低到 20%；默认关闭、设置记忆。 */
+  var BGM = {
+    cfg: Store.load('pk.bgm', { on: false, vol: 0.35 }) || { on: false, vol: 0.35 },
+    audio: null, urls: [], names: [], idx: 0,
+    init: function () {
+      var self = this;
+      this.audio = document.getElementById('bgmAudio');
+      if (!this.audio) {
+        this.audio = document.createElement('audio');
+        this.audio.id = 'bgmAudio';
+        document.body.appendChild(this.audio);
+      }
+      this.audio.volume = this.vol();
+      this.audio.addEventListener('ended', function () { self.next(); });
+      setInterval(function () { self.duck(); }, 500);
+      if (location.protocol !== 'file:') {
+        try {
+          fetch('/api/music').then(function (r) { return r.json(); }).then(function (j) {
+            if (j && j.ok && j.files && j.files.length && !self.urls.length) {
+              self.setList(j.files.map(function (n) { return '/music/' + encodeURIComponent(n); }), j.files);
+            }
+          }).catch(function () { });
+        } catch (e) { }
+      }
+      this.render();
+    },
+    vol: function () { var v = parseFloat(this.cfg.vol); return isNaN(v) ? 0.35 : Math.max(0, Math.min(1, v)); },
+    duck: function () {
+      if (!this.audio) return;
+      var speaking = false;
+      try { speaking = window.speechSynthesis && speechSynthesis.speaking; } catch (e) { }
+      this.audio.volume = this.vol() * (speaking ? 0.2 : 1);
+    },
+    setList: function (urls, names) {
+      this.urls = urls || []; this.names = names || []; this.idx = 0;
+      if (this.cfg.on) this.play();
+      this.render();
+    },
+    play: function () {
+      if (!this.audio || !this.urls.length) return;
+      this.audio.src = this.urls[this.idx];
+      var p = this.audio.play();
+      if (p && p.catch) p.catch(function () { });   // 无音频设备/自动播放限制：静默
+    },
+    stop: function () { if (this.audio) this.audio.pause(); },
+    next: function () {
+      if (!this.urls.length) return;
+      this.idx = (this.idx + 1) % this.urls.length;
+      if (this.cfg.on) this.play();
+      this.render();
+    },
+    toggle: function () {
+      this.cfg.on = !this.cfg.on;
+      Store.save('pk.bgm', this.cfg);
+      if (this.cfg.on) {
+        if (!this.urls.length) {
+          this.cfg.on = false; Store.save('pk.bgm', this.cfg);
+          toast('还没有歌单：放 mp3 进班级版服务 music/ 文件夹，或在「⚙️ 设置」里选本地文件夹');
+        } else this.play();
+      } else this.stop();
+      this.render();
+    },
+    pickFolder: function () { var inp = $('bgmDir'); if (inp) inp.click(); },
+    onDirPick: function (files) {
+      var okExt = ['.mp3', '.wav', '.m4a', '.ogg', '.flac'];
+      var urls = [], names = [];
+      Array.prototype.forEach.call(files || [], function (f) {
+        var n = (f.name || '').toLowerCase();
+        for (var i = 0; i < okExt.length; i++) {
+          if (n.slice(-okExt[i].length) === okExt[i]) {
+            urls.push(URL.createObjectURL(f)); names.push(f.name); break;
+          }
+        }
+      });
+      if (!urls.length) { toast('文件夹里没有 mp3/wav 等音频文件'); return; }
+      this.setList(urls, names);
+      toast('歌单 ' + urls.length + ' 首（本次会话有效；要永久生效就把文件放进班级版服务 music/ 文件夹）');
+    },
+    setVol: function (v) { this.cfg.vol = Math.max(0, Math.min(1, v)); Store.save('pk.bgm', this.cfg); if (this.audio) this.audio.volume = this.vol(); },
+    render: function () {
+      var t = $('bgmToggle');
+      if (t) t.textContent = this.cfg.on ? '🎵 音乐开' : '🎵 音乐关';
+      var s = $('bgmStat');
+      if (s) s.textContent = this.urls.length
+        ? ('歌单 ' + this.urls.length + ' 首 · 当前第 ' + (this.idx + 1) + ' 首' + (this.names[this.idx] ? '：' + this.names[this.idx] : ''))
+        : '未选文件夹';
+      var v = $('bgmVol'); if (v && document.activeElement !== v) v.value = Math.round(this.vol() * 100);
+    }
+  };
+
+  /* ================= PK 状态机 =================  /* ================= PK 状态机 ================= */
   // state: idle → running → finished
   var PK = {
     state: 'idle',
@@ -4373,6 +4564,10 @@ window.__PK_MOUNT = function () {
       resetRound();
     };
     $('btnChangeQ').onclick = changeCurrentQ;
+    $('bgmToggle').onclick = function () { BGM.toggle(); };
+    $('bgmDirBtn').onclick = function () { BGM.pickFolder(); };
+    $('bgmDir').onchange = function () { BGM.onDirPick(this.files); };
+    $('bgmVol').oninput = function () { BGM.setVol(parseInt(this.value, 10) / 100); };
     $('pkSrcBank').onclick = function () { CFG.source = 'bank'; saveCfg(); renderPrepSource(); };
     $('pkSrcPrep').onclick = function () {
       CFG.source = 'prep'; saveCfg(); renderPrepSource();
@@ -4481,7 +4676,8 @@ window.__PK_MOUNT = function () {
     pk: function () { return PK; },
     picks: function () { return [pickL, pickR]; },
     // 供 tools/gate-fit.js 用真实渲染路径逐题量高度（不是重新实现一遍 fitSide）
-    render: function (side) { renderSide(side); }
+    render: function (side) { renderSide(side); },
+    bgm: function () { return BGM; }
   };
 
   /* ================= 启动 ================= */
@@ -4519,6 +4715,7 @@ window.__PK_MOUNT = function () {
     } catch (e) { }
   })();
   try { bind(); } catch (e) { if (window.console) console.error('[PK] bind:', e); }
+  try { BGM.init(); } catch (e) { if (window.console) console.error('[PK] bgm init:', e); }
   try { $('btnSnd').textContent = sndOn ? '🔊 音效开' : '🔇 音效关'; } catch (e) { }
 };
 </script>
@@ -4701,6 +4898,11 @@ window.__ARENA_MOUNT = function () {
   }
 
   function toast(msg) {
+    var t = $('arToast'); if (!t) return;
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, 2400);
+  }
+
 
   function renderArSource() {
     var prep = load('xkc.prep.v1', []) || [], isPrep = CFG.source === 'prep';
@@ -4763,10 +4965,6 @@ window.__ARENA_MOUNT = function () {
     if (iL >= 0 && pickSeat('champ', optAt(L, iL), L)) { e.preventDefault(); return; }
     var iR = '123456'.indexOf(k);
     if (iR >= 0 && pickSeat('chal', optAt(R, iR), R)) { e.preventDefault(); return; }
-  }
-    var t = $('arToast'); if (!t) return;
-    t.textContent = msg; t.classList.add('show');
-    clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, 2400);
   }
 
   /* ================= TTS：固定男声 + 低沉慢速，取不到就兜底 ================= */

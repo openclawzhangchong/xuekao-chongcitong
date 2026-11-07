@@ -117,6 +117,37 @@ t('解析契约：/api/bank 的「行内提取 window.BANK=」在含 MIGRATE 行
   assert.strictEqual(JSON.parse(s2.slice(a + 12, b).trim().replace(/;$/, '')).length, 3982);
 });
 
+console.log('== 5. aggregateHonor（荣誉榜聚合） ==');
+t('PK Top10 按胜场排序、参赛场次统计', () => {
+  const matches = [
+    { winner: 'L', left: { sid: 'A', name: '甲', score: 3 }, right: { sid: 'B', name: '乙', score: 1 } },
+    { winner: 'L', left: { sid: 'A', name: '甲', score: 2 }, right: { sid: 'C', name: '丙', score: 0 } },
+    { winner: 'R', left: { sid: 'A', name: '甲', score: 1 }, right: { sid: 'B', name: '乙', score: 4 } }
+  ];
+  const h = XK.aggregateHonor(matches, {});
+  assert.strictEqual(h.pkTop[0].name, '甲');
+  assert.strictEqual(h.pkTop[0].wins, 2);
+  assert.strictEqual(h.pkTop[0].games, 3);
+  assert.strictEqual(h.pkTop[1].name, '乙');
+  assert.strictEqual(h.pkTop.length, 3);
+});
+t('周擂主：跨周守擂延续、被踢馆换人', () => {
+  const d = (x) => new Date(x).getTime();
+  const arena = { results: [
+    { ts: d('2026-11-03T10:00:00Z'), winner: 'champ', champSid: 'A', champName: '甲', chalSid: 'B', chalName: '乙' },
+    { ts: d('2026-11-05T10:00:00Z'), winner: 'champ', champSid: 'A', champName: '甲', chalSid: 'C', chalName: '丙' },
+    { ts: d('2026-11-10T10:00:00Z'), winner: 'chal', champSid: 'A', champName: '甲', chalSid: 'D', chalName: '丁' }
+  ] };
+  const h = XK.aggregateHonor([], arena);
+  assert.strictEqual(h.weekly.length, 2);
+  assert.strictEqual(h.weekly[1].week, '2026-11-02');
+  assert.strictEqual(h.weekly[1].name, '甲');
+  assert.strictEqual(h.weekly[1].streak, 2);
+  assert.strictEqual(h.weekly[0].week, '2026-11-09');
+  assert.strictEqual(h.weekly[0].name, '丁');
+  assert.strictEqual(h.weekly[0].streak, 1);
+});
+
 console.log('== 4. resolvePrep（备课夹解析） ==');
 t('按勾选顺序返回题目，失效 qid 跳过并计数', () => {
   const ids = [XK.qidOf(BANK[0]), 'M1-nope', XK.qidOf(BANK[2]), XK.qidOf(BANK[0])];

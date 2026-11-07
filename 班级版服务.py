@@ -16,6 +16,7 @@ import threading
 import time
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import unquote
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(BASE, 'site')
@@ -408,6 +409,32 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(200, payload.encode('utf-8'), 'application/json; charset=utf-8')
             except (OSError, ValueError) as e:
                 self._send(500, json.dumps({'ok': False, 'err': str(e)[:120]}).encode('utf-8'), 'application/json')
+        elif path == '/api/music':
+            # 课堂背景音乐歌单：教师把 mp3/wav 放进本目录 music/ 文件夹即自动加载
+            mdir = os.path.join(BASE, 'music')
+            files = []
+            try:
+                if os.path.isdir(mdir):
+                    for n in sorted(os.listdir(mdir)):
+                        if n.lower().endswith(('.mp3', '.wav', '.m4a', '.ogg', '.flac')):
+                            files.append(n)
+            except OSError:
+                pass
+            self._send(200, json.dumps({'ok': True, 'files': files}, ensure_ascii=False).encode('utf-8'),
+                       'application/json')
+        elif path.startswith('/music/'):
+            if not self._local_only():
+                self._send(403, json.dumps({'ok': False, 'err': 'forbidden'}).encode('utf-8'), 'application/json')
+                return
+            name = os.path.basename(unquote(path[len('/music/'):]))
+            exts = {'.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.m4a': 'audio/mp4', '.ogg': 'audio/ogg', '.flac': 'audio/flac'}
+            ext = os.path.splitext(name)[1].lower()
+            fp = os.path.join(BASE, 'music', name)
+            try:
+                with open(fp, 'rb') as f:
+                    self._send(200, f.read(), exts.get(ext, 'application/octet-stream'))
+            except OSError:
+                self._send(404, '404'.encode('utf-8'))
         elif path == '/api/classroom':
             # 课堂数据本地库（PK战绩/擂台/备课夹）——教师机数据，仅本机可读写
             if not self._local_only():

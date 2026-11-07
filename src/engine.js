@@ -256,6 +256,48 @@
     return { list: list, missing: missing };
   }
 
+  /* ---------- 首页荣誉榜（PK 获胜 Top10 + 周擂主） ----------
+   * matches = pk.matches；arenaLog = pk.arena.v1（results 时间线）
+   * 周擂主：按自然周（周一为始）重放擂台时间线，取每周结束时的站上擂主者；
+   * 擂主跨周守擂自动延续。返回 {pkTop:[{sid,name,wins,games}], weekly:[{week,name,sid,streak}]} */
+  function aggregateHonor(matches, arenaLog) {
+    var bySid = {};
+    (matches || []).forEach(function (m) {
+      if (!m || !m.left || !m.right) return;
+      ['left', 'right'].forEach(function (side) {
+        var p = m[side];
+        if (!p) return;
+        var id = p.sid || p.name;
+        if (!id) return;
+        var e = bySid[id] = bySid[id] || { sid: p.sid || '', name: p.name || p.sid || '未知', wins: 0, games: 0 };
+        e.games++;
+        if (m.winner === (side === 'left' ? 'L' : 'R')) e.wins++;
+      });
+    });
+    var pkTop = Object.keys(bySid).map(function (k) { return bySid[k]; })
+      .sort(function (a, b) { return b.wins - a.wins || b.games - a.games; }).slice(0, 10);
+    function weekOf(ts) {
+      var d = new Date(ts), day = (d.getDay() + 6) % 7;   // 周一为一周之始
+      d.setDate(d.getDate() - day);
+      return d.getFullYear() + '-' + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + '-' + (d.getDate() < 10 ? '0' : '') + d.getDate();
+    }
+    var weekly = [], standing = null, curWeek = null, streak = 0;
+    function closeWeek(w) { if (w && standing) weekly.push({ week: w, name: standing.name, sid: standing.sid, streak: streak }); }
+    ((arenaLog || {}).results || []).filter(function (r) { return r && r.ts; })
+      .sort(function (a, b) { return a.ts - b.ts; })
+      .forEach(function (r) {
+        var w = weekOf(r.ts);
+        if (curWeek === null) curWeek = w;
+        if (w !== curWeek) { closeWeek(curWeek); curWeek = w; streak = 0; }
+        if (r.winner === 'chal') standing = { sid: r.chalSid, name: r.chalName };
+        else standing = { sid: r.champSid, name: r.champName };
+        streak = (r.winner === 'chal') ? 1 : (streak + 1);
+      });
+    closeWeek(curWeek);
+    weekly.reverse();
+    return { pkTop: pkTop, weekly: weekly };
+  }
+
   /* ---------- 档案导入导出校验 ---------- */
 
   /* ---------- qid 迁移（学生记录零断链） ----------
@@ -345,7 +387,8 @@
     buildSimPaper: buildSimPaper,
     validateProfile: validateProfile,
     migrateProfileKeys: migrateProfileKeys,
-    resolvePrep: resolvePrep
+    resolvePrep: resolvePrep,
+    aggregateHonor: aggregateHonor
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = XK;

@@ -320,7 +320,100 @@ window.__PK_MOUNT = function () {
     clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, 2200);
   }
 
-  /* ================= PK 状态机 ================= */
+  /* ================= 背景音乐（教师自备文件夹轮播） =================
+   * 两种来源：①班级版服务 music/ 文件夹（/api/music 歌单，永久生效）
+   *          ②「⚙️ 设置」里临时选本地文件夹（webkitdirectory，本次会话有效）
+   * 对战进行中循环轮换；TTS 播报自动压低到 20%；默认关闭、设置记忆。 */
+  var BGM = {
+    cfg: Store.load('pk.bgm', { on: false, vol: 0.35 }) || { on: false, vol: 0.35 },
+    audio: null, urls: [], names: [], idx: 0,
+    init: function () {
+      var self = this;
+      this.audio = document.getElementById('bgmAudio');
+      if (!this.audio) {
+        this.audio = document.createElement('audio');
+        this.audio.id = 'bgmAudio';
+        document.body.appendChild(this.audio);
+      }
+      this.audio.volume = this.vol();
+      this.audio.addEventListener('ended', function () { self.next(); });
+      setInterval(function () { self.duck(); }, 500);
+      if (location.protocol !== 'file:') {
+        try {
+          fetch('/api/music').then(function (r) { return r.json(); }).then(function (j) {
+            if (j && j.ok && j.files && j.files.length && !self.urls.length) {
+              self.setList(j.files.map(function (n) { return '/music/' + encodeURIComponent(n); }), j.files);
+            }
+          }).catch(function () { });
+        } catch (e) { }
+      }
+      this.render();
+    },
+    vol: function () { var v = parseFloat(this.cfg.vol); return isNaN(v) ? 0.35 : Math.max(0, Math.min(1, v)); },
+    duck: function () {
+      if (!this.audio) return;
+      var speaking = false;
+      try { speaking = window.speechSynthesis && speechSynthesis.speaking; } catch (e) { }
+      this.audio.volume = this.vol() * (speaking ? 0.2 : 1);
+    },
+    setList: function (urls, names) {
+      this.urls = urls || []; this.names = names || []; this.idx = 0;
+      if (this.cfg.on) this.play();
+      this.render();
+    },
+    play: function () {
+      if (!this.audio || !this.urls.length) return;
+      this.audio.src = this.urls[this.idx];
+      var p = this.audio.play();
+      if (p && p.catch) p.catch(function () { });   // 无音频设备/自动播放限制：静默
+    },
+    stop: function () { if (this.audio) this.audio.pause(); },
+    next: function () {
+      if (!this.urls.length) return;
+      this.idx = (this.idx + 1) % this.urls.length;
+      if (this.cfg.on) this.play();
+      this.render();
+    },
+    toggle: function () {
+      this.cfg.on = !this.cfg.on;
+      Store.save('pk.bgm', this.cfg);
+      if (this.cfg.on) {
+        if (!this.urls.length) {
+          this.cfg.on = false; Store.save('pk.bgm', this.cfg);
+          toast('还没有歌单：放 mp3 进班级版服务 music/ 文件夹，或在「⚙️ 设置」里选本地文件夹');
+        } else this.play();
+      } else this.stop();
+      this.render();
+    },
+    pickFolder: function () { var inp = $('bgmDir'); if (inp) inp.click(); },
+    onDirPick: function (files) {
+      var okExt = ['.mp3', '.wav', '.m4a', '.ogg', '.flac'];
+      var urls = [], names = [];
+      Array.prototype.forEach.call(files || [], function (f) {
+        var n = (f.name || '').toLowerCase();
+        for (var i = 0; i < okExt.length; i++) {
+          if (n.slice(-okExt[i].length) === okExt[i]) {
+            urls.push(URL.createObjectURL(f)); names.push(f.name); break;
+          }
+        }
+      });
+      if (!urls.length) { toast('文件夹里没有 mp3/wav 等音频文件'); return; }
+      this.setList(urls, names);
+      toast('歌单 ' + urls.length + ' 首（本次会话有效；要永久生效就把文件放进班级版服务 music/ 文件夹）');
+    },
+    setVol: function (v) { this.cfg.vol = Math.max(0, Math.min(1, v)); Store.save('pk.bgm', this.cfg); if (this.audio) this.audio.volume = this.vol(); },
+    render: function () {
+      var t = $('bgmToggle');
+      if (t) t.textContent = this.cfg.on ? '🎵 音乐开' : '🎵 音乐关';
+      var s = $('bgmStat');
+      if (s) s.textContent = this.urls.length
+        ? ('歌单 ' + this.urls.length + ' 首 · 当前第 ' + (this.idx + 1) + ' 首' + (this.names[this.idx] ? '：' + this.names[this.idx] : ''))
+        : '未选文件夹';
+      var v = $('bgmVol'); if (v && document.activeElement !== v) v.value = Math.round(this.vol() * 100);
+    }
+  };
+
+  /* ================= PK 状态机 =================  /* ================= PK 状态机 ================= */
   // state: idle → running → finished
   var PK = {
     state: 'idle',
@@ -891,6 +984,10 @@ window.__PK_MOUNT = function () {
       resetRound();
     };
     $('btnChangeQ').onclick = changeCurrentQ;
+    $('bgmToggle').onclick = function () { BGM.toggle(); };
+    $('bgmDirBtn').onclick = function () { BGM.pickFolder(); };
+    $('bgmDir').onchange = function () { BGM.onDirPick(this.files); };
+    $('bgmVol').oninput = function () { BGM.setVol(parseInt(this.value, 10) / 100); };
     $('pkSrcBank').onclick = function () { CFG.source = 'bank'; saveCfg(); renderPrepSource(); };
     $('pkSrcPrep').onclick = function () {
       CFG.source = 'prep'; saveCfg(); renderPrepSource();
@@ -999,7 +1096,8 @@ window.__PK_MOUNT = function () {
     pk: function () { return PK; },
     picks: function () { return [pickL, pickR]; },
     // 供 tools/gate-fit.js 用真实渲染路径逐题量高度（不是重新实现一遍 fitSide）
-    render: function (side) { renderSide(side); }
+    render: function (side) { renderSide(side); },
+    bgm: function () { return BGM; }
   };
 
   /* ================= 启动 ================= */
@@ -1037,5 +1135,6 @@ window.__PK_MOUNT = function () {
     } catch (e) { }
   })();
   try { bind(); } catch (e) { if (window.console) console.error('[PK] bind:', e); }
+  try { BGM.init(); } catch (e) { if (window.console) console.error('[PK] bgm init:', e); }
   try { $('btnSnd').textContent = sndOn ? '🔊 音效开' : '🔇 音效关'; } catch (e) { }
 };

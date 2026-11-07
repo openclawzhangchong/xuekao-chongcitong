@@ -79,6 +79,11 @@ window.__ARENA_MOUNT = function () {
   }
 
   function toast(msg) {
+    var t = $('arToast'); if (!t) return;
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, 2400);
+  }
+
 
   function renderArSource() {
     var prep = load('xkc.prep.v1', []) || [], isPrep = CFG.source === 'prep';
@@ -141,10 +146,6 @@ window.__ARENA_MOUNT = function () {
     if (iL >= 0 && pickSeat('champ', optAt(L, iL), L)) { e.preventDefault(); return; }
     var iR = '123456'.indexOf(k);
     if (iR >= 0 && pickSeat('chal', optAt(R, iR), R)) { e.preventDefault(); return; }
-  }
-    var t = $('arToast'); if (!t) return;
-    t.textContent = msg; t.classList.add('show');
-    clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, 2400);
   }
 
   /* ================= TTS：固定男声 + 低沉慢速，取不到就兜底 ================= */

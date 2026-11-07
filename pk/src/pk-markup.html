@@ -10,6 +10,7 @@
     <button class="tbtn" id="btnRoster">📋 管理花名册</button>
     <button class="tbtn" id="btnCfg">⚙️ 设置</button>
     <button class="tbtn" id="btnSnd">🔊 音效开</button>
+    <button class="tbtn" id="bgmToggle">🎵 音乐关</button>
     <button class="tbtn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
     <button class="tbtn" id="btnHome">🏠 首页</button>
   </div>
@@ -174,6 +175,18 @@
         <div style="margin-top:8px"><button class="tbtn" id="cfgPasteApply">📥 应用粘贴题库</button></div>
       </div>
       <div class="set-item set-full"><label>当前题库</label><div class="muted" id="bankInfo2" style="font-size:14px"></div></div>
+      <div class="set-item set-full"><label>🎵 背景音乐（对战进行中播放，TTS 播报自动压低）</label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="tbtn" id="bgmDirBtn">📂 选择音乐文件夹</button>
+          <input type="file" id="bgmDir" webkitdirectory multiple accept=".mp3,.wav,.m4a,.ogg,.flac" style="display:none">
+          <span class="muted" id="bgmStat">未选文件夹</span>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <span class="muted">音量</span>
+          <input type="range" id="bgmVol" min="0" max="100" value="35" style="width:160px">
+          <span class="muted">教师自备 mp3/wav 放进班级版服务目录的 music/ 文件夹即自动加载（永久生效）；或临时选本地文件夹（本次会话有效）</span>
+        </div>
+      </div>
     </div>
     <div class="dlg-actions"><button class="tbtn primary" id="cfgSave">💾 保存默认值</button>
       <button class="tbtn" id="cfgClose">✕ 关闭</button></div>

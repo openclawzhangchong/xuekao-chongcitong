@@ -363,6 +363,31 @@ async function pickLetters(page, rootSel, letters) {
   check('P5 换一题双方同步换新', newStems[0] === newStems[1] && newStems[0] !== oldStem, '');
   await page.evaluate(() => { const c = JSON.parse(localStorage.getItem('pk.cfg') || '{}'); c.source = 'bank'; localStorage.setItem('pk.cfg', JSON.stringify(c)); });
 
+  /* ---------- H. 荣誉榜 + 背景音乐 ---------- */
+  await page.evaluate(() => {
+    localStorage.setItem('pk.matches', JSON.stringify([
+      { ts: 1, winner: 'L', left: { sid: 'HA', name: '荣誉甲', score: 3 }, right: { sid: 'HB', name: '荣誉乙', score: 1 }, qcount: 3 },
+      { ts: 2, winner: 'L', left: { sid: 'HA', name: '荣誉甲', score: 4 }, right: { sid: 'HC', name: '荣誉丙', score: 2 }, qcount: 4 }
+    ]));
+    localStorage.setItem('pk.arena.v1', JSON.stringify({ round: 2, streak: 1, champ: { sid: 'HC', name: '荣誉丙' }, results: [
+      { ts: Date.now(), winner: 'chal', champSid: 'HA', champName: '荣誉甲', chalSid: 'HC', chalName: '荣誉丙', champScore: 1, chalScore: 3 }
+    ] }));
+  });
+  await page.reload(); await page.waitForFunction('window.BANK && window.BANK.length'); await sleep(300);
+  await page.evaluate(() => document.querySelector('.tab[data-t="home"]').click()); await sleep(250);
+  const honorTxt = await page.evaluate(() => (document.getElementById('honorBody') || {}).innerText || '');
+  check('H1 荣誉榜 Top10（按胜场）', honorTxt.indexOf('荣誉甲') !== -1 && honorTxt.indexOf('胜场') !== -1, '');
+  check('H2 周擂主（被踢馆换人）', honorTxt.indexOf('荣誉丙') !== -1, '');
+  await page.evaluate(() => document.querySelector('.tab[data-t="pk"]').click()); await sleep(250);
+  await page.evaluate(() => { window.__PK_TEST.bgm().setList(['/m/a.mp3', '/m/b.wav'], ['a.mp3', 'b.wav']); });
+  const bgmStat1 = await page.evaluate(() => (document.getElementById('bgmStat') || {}).textContent || '');
+  check('H3 BGM 歌单加载（2 首轮换）', bgmStat1.indexOf('2 首') !== -1, bgmStat1);
+  await page.evaluate(() => { const b = window.__PK_TEST.bgm(); if (!b.cfg.on) b.toggle(); });
+  const bgmState = await page.evaluate(() => { const b = window.__PK_TEST.bgm(); return { on: b.cfg.on, src: ((b.audio && b.audio.src) || '') }; });
+  check('H4 BGM 开启即播第一首', bgmState.on === true && bgmState.src.indexOf('a.mp3') !== -1, JSON.stringify(bgmState).slice(0, 80));
+  await page.evaluate(() => { const b = window.__PK_TEST.bgm(); if (b.cfg.on) b.toggle(); });
+  await page.evaluate(() => { localStorage.removeItem('pk.matches'); localStorage.removeItem('pk.arena.v1'); });
+
   /* ---------- L. 班级版专属（只在本机 8953 服务跑，绝不碰线上真实数据；登录已在 A+ 完成） ---------- */
   if (IS_CLASS) {
     // 课堂屏中途开擂台：登录弹窗不得盖住候选席（另一 AI 刚修的点，回归盯住）

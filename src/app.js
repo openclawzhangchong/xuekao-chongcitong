@@ -415,8 +415,35 @@
       b.classList.toggle('on', on);
     } catch (e) { }
   }
+  function renderHonor() {
+    var body = $('honorBody');
+    if (!body) return;
+    var matches = [], arenaLog = {};
+    try { matches = JSON.parse(localStorage.getItem('pk.matches') || '[]') || []; } catch (e) { }
+    try { arenaLog = JSON.parse(localStorage.getItem('pk.arena.v1') || '{}') || {}; } catch (e) { }
+    // 数据以合并后的 localStorage 为准（CSYNC 已在页面加载时从服务端恢复）
+    var h = XK.aggregateHonor(matches, arenaLog);
+    var html = '<div class="h-sec">⚔️ PK 获胜 Top10</div>';
+    if (h.pkTop.length) {
+      html += '<table><tr><th>#</th><th>姓名</th><th>胜场</th><th>参赛</th></tr>';
+      h.pkTop.forEach(function (e, i) {
+        html += '<tr><td class="rank' + (i + 1) + '">' + (i + 1) + '</td><td>' + esc(e.name) + '</td><td>' + e.wins + '</td><td>' + e.games + '</td></tr>';
+      });
+      html += '</table>';
+    } else html += '<div class="empty">还没打过 PK——打一场就有榜了</div>';
+    html += '<div class="h-sec">🥊 周擂主（每周一算一周）</div>';
+    if (h.weekly.length) {
+      html += '<table><tr><th>周（周一起算）</th><th>擂主</th><th>连胜</th></tr>';
+      h.weekly.forEach(function (w) {
+        html += '<tr><td>' + w.week + '</td><td>' + esc(w.name) + '</td><td>' + w.streak + '</td></tr>';
+      });
+      html += '</table>';
+    } else html += '<div class="empty">还没打过擂台赛——第一场打完就有周擂主</div>';
+    body.innerHTML = html;
+  }
   function renderHome() {
     try { renderPrepMgr(); } catch (e) { }
+    try { renderHonor(); } catch (e) { }
     var est = XK.estimateScore(BANK, META, P);
     $('estScore').textContent = est.score;
     $('estCap').textContent = est.tested > 0

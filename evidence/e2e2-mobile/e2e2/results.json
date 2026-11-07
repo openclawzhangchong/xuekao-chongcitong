@@ -1,12 +1,12 @@
 {
   "page": "file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html",
   "viewport": "390x844",
-  "loadMs": 417,
+  "loadMs": 297,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 417ms"
+      "note": "BANK=3982，就绪耗时 297ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -36,7 +36,7 @@
     {
       "name": "C1 出题面板渲染",
       "ok": true,
-      "note": "2 个选项"
+      "note": "4 个选项"
     },
     {
       "name": "C2 全组答完出报告",
@@ -136,8 +136,60 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=凌峰"
+      "note": "results=3 擂主=朱炫杰"
+    },
+    {
+      "name": "P1 备课夹清单（勾选顺序 3 题）",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "P2 备课夹按勾选顺序出题",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "P2b 备课夹两侧同序（讲完就打）",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "P3 键盘 A 键选左侧首选项",
+      "ok": true,
+      "note": "A vs A"
+    },
+    {
+      "name": "P4 键盘 1 键选右侧首选项",
+      "ok": true,
+      "note": "A vs A"
+    },
+    {
+      "name": "P5 换一题双方同步换新",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "H1 荣誉榜 Top10（按胜场）",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "H2 周擂主（被踢馆换人）",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "H3 BGM 歌单加载（2 首轮换）",
+      "ok": true,
+      "note": "歌单 2 首 · 当前第 1 首：a.mp3"
+    },
+    {
+      "name": "H4 BGM 开启即播第一首",
+      "ok": true,
+      "note": "{\"on\":true,\"src\":\"file:///C:/m/a.mp3\"}"
     }
   ],
-  "errors": []
+  "errors": [
+    "console: Failed to load resource: net::ERR_FILE_NOT_FOUND"
+  ]
 }

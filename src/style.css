@@ -291,3 +291,14 @@ body.big .stat .v{font-size:26px}
 .prep-chosen{font-size:13px;color:var(--txt);line-height:1.9}
 .prep-chosen .chip{display:inline-block;background:var(--pri-ll);color:var(--pri-d);border-radius:999px;padding:2px 10px;margin:2px 4px 2px 0;font-size:12px}
 .mini-btn.warn{color:var(--err)}
+
+/* 首页荣誉榜 */
+.honor-body{font-size:13px;line-height:1.8}
+.honor-body table{width:100%;border-collapse:collapse}
+.honor-body td,.honor-body th{padding:4px 6px;text-align:left;border-bottom:1px solid var(--line)}
+.honor-body th{color:var(--mut);font-weight:600;font-size:12px}
+.honor-body .rank1{color:#d97706;font-weight:800}
+.honor-body .rank2{color:#6b7280;font-weight:700}
+.honor-body .rank3{color:#b45309;font-weight:700}
+.honor-body .h-sec{margin-top:8px;color:var(--pri-d);font-weight:700}
+.honor-body .empty{color:var(--mut)}

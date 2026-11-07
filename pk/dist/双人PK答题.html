@@ -443,6 +443,7 @@ body.pk-mode .app{max-width:none}
     <button class="tbtn" id="btnRoster">📋 管理花名册</button>
     <button class="tbtn" id="btnCfg">⚙️ 设置</button>
     <button class="tbtn" id="btnSnd">🔊 音效开</button>
+    <button class="tbtn" id="bgmToggle">🎵 音乐关</button>
     <button class="tbtn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
     <button class="tbtn" id="btnHome">🏠 首页</button>
   </div>
@@ -607,6 +608,18 @@ body.pk-mode .app{max-width:none}
         <div style="margin-top:8px"><button class="tbtn" id="cfgPasteApply">📥 应用粘贴题库</button></div>
       </div>
       <div class="set-item set-full"><label>当前题库</label><div class="muted" id="bankInfo2" style="font-size:14px"></div></div>
+      <div class="set-item set-full"><label>🎵 背景音乐（对战进行中播放，TTS 播报自动压低）</label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="tbtn" id="bgmDirBtn">📂 选择音乐文件夹</button>
+          <input type="file" id="bgmDir" webkitdirectory multiple accept=".mp3,.wav,.m4a,.ogg,.flac" style="display:none">
+          <span class="muted" id="bgmStat">未选文件夹</span>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <span class="muted">音量</span>
+          <input type="range" id="bgmVol" min="0" max="100" value="35" style="width:160px">
+          <span class="muted">教师自备 mp3/wav 放进班级版服务目录的 music/ 文件夹即自动加载（永久生效）；或临时选本地文件夹（本次会话有效）</span>
+        </div>
+      </div>
     </div>
     <div class="dlg-actions"><button class="tbtn primary" id="cfgSave">💾 保存默认值</button>
       <button class="tbtn" id="cfgClose">✕ 关闭</button></div>
@@ -874,6 +887,48 @@ body.pk-mode .app{max-width:none}
     return { list: list, missing: missing };
   }
 
+  /* ---------- 首页荣誉榜（PK 获胜 Top10 + 周擂主） ----------
+   * matches = pk.matches；arenaLog = pk.arena.v1（results 时间线）
+   * 周擂主：按自然周（周一为始）重放擂台时间线，取每周结束时的站上擂主者；
+   * 擂主跨周守擂自动延续。返回 {pkTop:[{sid,name,wins,games}], weekly:[{week,name,sid,streak}]} */
+  function aggregateHonor(matches, arenaLog) {
+    var bySid = {};
+    (matches || []).forEach(function (m) {
+      if (!m || !m.left || !m.right) return;
+      ['left', 'right'].forEach(function (side) {
+        var p = m[side];
+        if (!p) return;
+        var id = p.sid || p.name;
+        if (!id) return;
+        var e = bySid[id] = bySid[id] || { sid: p.sid || '', name: p.name || p.sid || '未知', wins: 0, games: 0 };
+        e.games++;
+        if (m.winner === (side === 'left' ? 'L' : 'R')) e.wins++;
+      });
+    });
+    var pkTop = Object.keys(bySid).map(function (k) { return bySid[k]; })
+      .sort(function (a, b) { return b.wins - a.wins || b.games - a.games; }).slice(0, 10);
+    function weekOf(ts) {
+      var d = new Date(ts), day = (d.getDay() + 6) % 7;   // 周一为一周之始
+      d.setDate(d.getDate() - day);
+      return d.getFullYear() + '-' + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + '-' + (d.getDate() < 10 ? '0' : '') + d.getDate();
+    }
+    var weekly = [], standing = null, curWeek = null, streak = 0;
+    function closeWeek(w) { if (w && standing) weekly.push({ week: w, name: standing.name, sid: standing.sid, streak: streak }); }
+    ((arenaLog || {}).results || []).filter(function (r) { return r && r.ts; })
+      .sort(function (a, b) { return a.ts - b.ts; })
+      .forEach(function (r) {
+        var w = weekOf(r.ts);
+        if (curWeek === null) curWeek = w;
+        if (w !== curWeek) { closeWeek(curWeek); curWeek = w; streak = 0; }
+        if (r.winner === 'chal') standing = { sid: r.chalSid, name: r.chalName };
+        else standing = { sid: r.champSid, name: r.champName };
+        streak = (r.winner === 'chal') ? 1 : (streak + 1);
+      });
+    closeWeek(curWeek);
+    weekly.reverse();
+    return { pkTop: pkTop, weekly: weekly };
+  }
+
   /* ---------- 档案导入导出校验 ---------- */
 
   /* ---------- qid 迁移（学生记录零断链） ----------
@@ -963,7 +1018,8 @@ body.pk-mode .app{max-width:none}
     buildSimPaper: buildSimPaper,
     validateProfile: validateProfile,
     migrateProfileKeys: migrateProfileKeys,
-    resolvePrep: resolvePrep
+    resolvePrep: resolvePrep,
+    aggregateHonor: aggregateHonor
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = XK;
@@ -1751,7 +1807,100 @@ window.__PK_MOUNT = function () {
     clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, 2200);
   }
 
-  /* ================= PK 状态机 ================= */
+  /* ================= 背景音乐（教师自备文件夹轮播） =================
+   * 两种来源：①班级版服务 music/ 文件夹（/api/music 歌单，永久生效）
+   *          ②「⚙️ 设置」里临时选本地文件夹（webkitdirectory，本次会话有效）
+   * 对战进行中循环轮换；TTS 播报自动压低到 20%；默认关闭、设置记忆。 */
+  var BGM = {
+    cfg: Store.load('pk.bgm', { on: false, vol: 0.35 }) || { on: false, vol: 0.35 },
+    audio: null, urls: [], names: [], idx: 0,
+    init: function () {
+      var self = this;
+      this.audio = document.getElementById('bgmAudio');
+      if (!this.audio) {
+        this.audio = document.createElement('audio');
+        this.audio.id = 'bgmAudio';
+        document.body.appendChild(this.audio);
+      }
+      this.audio.volume = this.vol();
+      this.audio.addEventListener('ended', function () { self.next(); });
+      setInterval(function () { self.duck(); }, 500);
+      if (location.protocol !== 'file:') {
+        try {
+          fetch('/api/music').then(function (r) { return r.json(); }).then(function (j) {
+            if (j && j.ok && j.files && j.files.length && !self.urls.length) {
+              self.setList(j.files.map(function (n) { return '/music/' + encodeURIComponent(n); }), j.files);
+            }
+          }).catch(function () { });
+        } catch (e) { }
+      }
+      this.render();
+    },
+    vol: function () { var v = parseFloat(this.cfg.vol); return isNaN(v) ? 0.35 : Math.max(0, Math.min(1, v)); },
+    duck: function () {
+      if (!this.audio) return;
+      var speaking = false;
+      try { speaking = window.speechSynthesis && speechSynthesis.speaking; } catch (e) { }
+      this.audio.volume = this.vol() * (speaking ? 0.2 : 1);
+    },
+    setList: function (urls, names) {
+      this.urls = urls || []; this.names = names || []; this.idx = 0;
+      if (this.cfg.on) this.play();
+      this.render();
+    },
+    play: function () {
+      if (!this.audio || !this.urls.length) return;
+      this.audio.src = this.urls[this.idx];
+      var p = this.audio.play();
+      if (p && p.catch) p.catch(function () { });   // 无音频设备/自动播放限制：静默
+    },
+    stop: function () { if (this.audio) this.audio.pause(); },
+    next: function () {
+      if (!this.urls.length) return;
+      this.idx = (this.idx + 1) % this.urls.length;
+      if (this.cfg.on) this.play();
+      this.render();
+    },
+    toggle: function () {
+      this.cfg.on = !this.cfg.on;
+      Store.save('pk.bgm', this.cfg);
+      if (this.cfg.on) {
+        if (!this.urls.length) {
+          this.cfg.on = false; Store.save('pk.bgm', this.cfg);
+          toast('还没有歌单：放 mp3 进班级版服务 music/ 文件夹，或在「⚙️ 设置」里选本地文件夹');
+        } else this.play();
+      } else this.stop();
+      this.render();
+    },
+    pickFolder: function () { var inp = $('bgmDir'); if (inp) inp.click(); },
+    onDirPick: function (files) {
+      var okExt = ['.mp3', '.wav', '.m4a', '.ogg', '.flac'];
+      var urls = [], names = [];
+      Array.prototype.forEach.call(files || [], function (f) {
+        var n = (f.name || '').toLowerCase();
+        for (var i = 0; i < okExt.length; i++) {
+          if (n.slice(-okExt[i].length) === okExt[i]) {
+            urls.push(URL.createObjectURL(f)); names.push(f.name); break;
+          }
+        }
+      });
+      if (!urls.length) { toast('文件夹里没有 mp3/wav 等音频文件'); return; }
+      this.setList(urls, names);
+      toast('歌单 ' + urls.length + ' 首（本次会话有效；要永久生效就把文件放进班级版服务 music/ 文件夹）');
+    },
+    setVol: function (v) { this.cfg.vol = Math.max(0, Math.min(1, v)); Store.save('pk.bgm', this.cfg); if (this.audio) this.audio.volume = this.vol(); },
+    render: function () {
+      var t = $('bgmToggle');
+      if (t) t.textContent = this.cfg.on ? '🎵 音乐开' : '🎵 音乐关';
+      var s = $('bgmStat');
+      if (s) s.textContent = this.urls.length
+        ? ('歌单 ' + this.urls.length + ' 首 · 当前第 ' + (this.idx + 1) + ' 首' + (this.names[this.idx] ? '：' + this.names[this.idx] : ''))
+        : '未选文件夹';
+      var v = $('bgmVol'); if (v && document.activeElement !== v) v.value = Math.round(this.vol() * 100);
+    }
+  };
+
+  /* ================= PK 状态机 =================  /* ================= PK 状态机 ================= */
   // state: idle → running → finished
   var PK = {
     state: 'idle',
@@ -2322,6 +2471,10 @@ window.__PK_MOUNT = function () {
       resetRound();
     };
     $('btnChangeQ').onclick = changeCurrentQ;
+    $('bgmToggle').onclick = function () { BGM.toggle(); };
+    $('bgmDirBtn').onclick = function () { BGM.pickFolder(); };
+    $('bgmDir').onchange = function () { BGM.onDirPick(this.files); };
+    $('bgmVol').oninput = function () { BGM.setVol(parseInt(this.value, 10) / 100); };
     $('pkSrcBank').onclick = function () { CFG.source = 'bank'; saveCfg(); renderPrepSource(); };
     $('pkSrcPrep').onclick = function () {
       CFG.source = 'prep'; saveCfg(); renderPrepSource();
@@ -2430,7 +2583,8 @@ window.__PK_MOUNT = function () {
     pk: function () { return PK; },
     picks: function () { return [pickL, pickR]; },
     // 供 tools/gate-fit.js 用真实渲染路径逐题量高度（不是重新实现一遍 fitSide）
-    render: function (side) { renderSide(side); }
+    render: function (side) { renderSide(side); },
+    bgm: function () { return BGM; }
   };
 
   /* ================= 启动 ================= */
@@ -2468,6 +2622,7 @@ window.__PK_MOUNT = function () {
     } catch (e) { }
   })();
   try { bind(); } catch (e) { if (window.console) console.error('[PK] bind:', e); }
+  try { BGM.init(); } catch (e) { if (window.console) console.error('[PK] bgm init:', e); }
   try { $('btnSnd').textContent = sndOn ? '🔊 音效开' : '🔇 音效关'; } catch (e) { }
 };
 </script>

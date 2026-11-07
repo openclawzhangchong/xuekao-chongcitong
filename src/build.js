@@ -123,6 +123,10 @@ ${arenaStyle}
         </div>
       </div>
 
+      <div class="card" id="honorCard">
+        <div class="sec-t"><span class="dot"></span>🏆 荣誉榜（PK 获胜 Top10 · 周擂主）</div>
+        <div id="honorBody" class="honor-body"></div>
+      </div>
       <div class="card" id="prepCard">
         <div class="sec-t"><span class="dot"></span>📋 备课夹（课前挑题 → PK/擂台按勾选顺序出）</div>
         <div class="prep-bar">
