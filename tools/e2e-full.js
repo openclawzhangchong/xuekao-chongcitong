@@ -465,7 +465,7 @@ async function pickLetters(page, rootSel, letters) {
   });
   await p2.evaluate(() => document.querySelector('#tabs .tab[data-t="honor"]').click()); await sleep(250);
   const honorTxt2 = await p2.evaluate(() => (document.getElementById('honorPageBody') || {}).innerText || '');
-  check('CL3 排行榜页六区块', ['班级擂王', '今日战况', '周擂主', '月擂主', '本周', '总榜'].every(t => honorTxt2.indexOf(t) !== -1), honorTxt2.slice(0, 50));
+  check('CL3 排行榜页六区块', ['擂王', '今日', '周擂主', '月擂主', '本周', '总榜'].every(t => honorTxt2.indexOf(t) !== -1), honorTxt2.slice(0, 60));
   await p2.evaluate(() => document.querySelector('#tabs .tab[data-t="prep"]').click()); await sleep(250);
   const prepChosen = await p2.evaluate(() => { const el = document.querySelector('#prepPage .j-prepChosen'); return el ? el.innerText : ''; });
   check('CL4 备课夹独立页（清单同步渲染）', prepChosen.indexOf('出题顺序') !== -1, prepChosen.slice(0, 40));

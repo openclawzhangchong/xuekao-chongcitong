@@ -227,7 +227,7 @@
         XKS.fanfare();
         tipEl.textContent = (res.reshuffled ? '🔄 全班轮完一轮，重新开始！　' : '') + '请 ' + res.name + ' 同学上来答题！';
         renderQuestion(); // 刷新作答学生徽章
-        setTimeout(function () { speak('请' + res.name + '同学上来答题'); }, 350);
+        setTimeout(function () { speak('恭喜' + res.name + '同学，被抽中！请上台答题！'); }, 350);
       }
     }, 78);
   }
@@ -585,31 +585,65 @@
     try { arenaLog = JSON.parse(localStorage.getItem('pk.arena.v1') || '{}') || {}; } catch (e) { }
     var h = XK.aggregateHonor(matches, arenaLog);
     var king = h.pkTop[0];
-    function table(rows, head) {
-      if (!rows.length) return '<div class="empty">还没有数据——打一场就有了</div>';
-      return '<table><tr>' + head.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '</tr>' + rows + '</table>';
+    var html = '';
+
+    /* 顶部横幅 */
+    html += '<div class="honor-hero"><h2>🏆 排行榜 · 荣誉墙</h2><div class="h-sub">⚔️ 擂台竞技，强者登场！每一场 PK，都是向更高段位发起挑战！</div></div>';
+
+    /* 班级擂王 · 至尊卡 */
+    html += '<div class="hb-king"><div class="k-title">👑 至尊 · 班级擂王</div>';
+    html += '<div class="k-name">' + esc(king ? king.name : '虚位以待') + '</div>';
+    html += '<div class="k-stat">累计获胜 ' + (king ? king.wins : 0) + ' 场 · 参赛 ' + (king ? king.games : 0) + ' 场</div>';
+    if (king && king.wins > 0) html += '<div class="k-badge">全胜战神！守住王座，谁来挑战！</div>';
+    html += '</div>';
+
+    /* 周擂主 + 月擂主并排 */
+    var wk = h.weekly[0], mo = h.monthly[0];
+    html += '<div class="hb-pair">';
+    html += '<div class="hb-week"><div class="hb-t">🔥 周擂主 · 烈焰王座</div><div class="hb-sub">周期自周一计算</div>';
+    html += '<div class="hb-name">' + esc(wk ? wk.name : '虚位以待') + '</div>';
+    html += '<div class="hb-streak">' + (wk ? wk.streak : 0) + '</div>';
+    html += '<div class="hb-tag">⏱️ 限时王座 · 本周有效</div></div>';
+    html += '<div class="hb-month"><div class="hb-t">🌙 月擂主 · 史诗星月王座</div><div class="hb-sub">自然月结算 · 稀有段位</div>';
+    html += '<div class="hb-name">' + esc(mo ? mo.name : '虚位以待') + '</div>';
+    html += '<div class="hb-streak">' + (mo ? mo.streak : 0) + '</div>';
+    html += '<div class="hb-tag">✨ 史诗称号，含金量更高！</div></div></div>';
+
+    /* 今日战况 */
+    html += '<div class="honor-sec"><div class="h-sec">⚡ 今日擂台战况</div>';
+    if (h.today.games > 0) {
+      html += '<div>今天一共开启 <b>' + h.today.games + '</b> 场 PK，胜者名单：<br><b>' + esc(h.today.winners.join('、')) + '</b></div>';
+    } else {
+      html += '<div class="empty">今天还没开打——下面的历史战绩继续有效</div>';
     }
-    var html = '<div class="hb-king">👑 班级擂王<br><b>' + esc(king ? king.name : '虚位以待') + '</b><br>' +
-      '<span class="muted">截至当前累计获胜 ' + (king ? king.wins : 0) + ' 场 · 参赛 ' + (king ? king.games : 0) + ' 场</span></div>';
-    html += '<div class="h-sec">📅 今日战况</div>' +
-      (h.today.games ? '<div>今天打了 <b>' + h.today.games + '</b> 场 PK，胜者：' + esc(h.today.winners.join('、')) + '</div>'
-                     : '<div class="empty">今天还没开打——下面的历史战绩继续有效</div>');
-    html += '<div class="h-sec">🥊 周擂主</div>' + table(
-      h.weekly.map(function (w, i) {
-        return '<tr' + (i === 0 ? ' class="rank1"' : '') + '><td>' + w.week + '</td><td>' + esc(w.name) + '</td><td>' + w.streak + '</td></tr>';
-      }), ['周（周一起算）', '擂主', '连胜']);
-    html += '<div class="h-sec">🥊 月擂主</div>' + table(
-      h.monthly.map(function (w, i) {
-        return '<tr' + (i === 0 ? ' class="rank1"' : '') + '><td>' + w.month + '</td><td>' + esc(w.name) + '</td><td>' + w.streak + '</td></tr>';
-      }), ['月（自然月）', '擂主', '连胜']);
-    html += '<div class="h-sec">⚔️ 本周 PK 获胜榜</div>' + table(
-      h.weekWins.map(function (e, i) {
-        return '<tr><td>' + (i + 1) + '</td><td>' + esc(e.name) + '</td><td>' + e.wins + '</td></tr>';
-      }), ['#', '姓名', '本周胜场']);
-    html += '<div class="h-sec">⚔️ PK 获胜总榜 Top10（截至当前）</div>' + table(
-      h.pkTop.map(function (e, i) {
-        return '<tr><td class="rank' + (i + 1) + '">' + (i + 1) + '</td><td>' + esc(e.name) + '</td><td>' + e.wins + '</td><td>' + e.games + '</td></tr>';
-      }), ['#', '姓名', '胜场', '参赛']);
+    html += '<div class="muted" style="margin-top:8px;font-size:13px">敢于上台就是勇士！下一场胜利说不定就是你的！</div></div>';
+
+    /* 本周 PK 段位榜 */
+    html += '<div class="honor-sec"><div class="h-sec">📈 本周 PK 段位榜</div>';
+    if (h.weekWins.length) {
+      html += '<table><tr><th>段位</th><th>选手</th><th>本周胜场</th></tr>';
+      var medals = ['🥇', '🥈', '🥉'];
+      h.weekWins.forEach(function (e, i) {
+        html += '<tr><td>' + (medals[i] || (i + 1)) + '</td><td>' + esc(e.name) + '</td><td><b>' + e.wins + '</b></td></tr>';
+      });
+      html += '</table>';
+    } else html += '<div class="empty">本周还没有 PK 记录</div>';
+    html += '</div>';
+
+    /* 总榜 Top10 */
+    html += '<div class="honor-sec"><div class="h-sec">🏅 全服总榜 Top10（截至当前）</div>';
+    if (h.pkTop.length) {
+      html += '<table><tr><th>名次</th><th>选手</th><th>胜场</th><th>参赛</th></tr>';
+      h.pkTop.forEach(function (e, i) {
+        html += '<tr><td>' + (i === 0 ? '👑' : i + 1) + '</td><td>' + esc(e.name) + '</td><td><b>' + e.wins + '</b></td><td>' + e.games + '</td></tr>';
+      });
+      html += '</table>';
+    } else html += '<div class="empty">还没打过 PK——打一场就有榜了</div>';
+    html += '<div class="muted" style="margin-top:10px;font-size:13px">哪怕暂时没有胜利，敢于报名登上擂台，本身就是一位勇敢挑战者！坚持下去，胜利终会到来！</div>';
+    html += '</div>';
+
+    html += '<div style="text-align:center;margin:14px 0;color:var(--pri);font-size:16px;font-weight:700">⚔️ 勇者擂台，王座轮流坐！下一个擂主，会是你吗？ ⚔️</div>';
+
     body.innerHTML = html;
   }
   function renderHome() {

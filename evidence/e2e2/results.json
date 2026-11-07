@@ -1,12 +1,12 @@
 {
   "page": "file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html",
   "viewport": "1366x768",
-  "loadMs": 358,
+  "loadMs": 353,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 358ms"
+      "note": "BANK=3982，就绪耗时 353ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -151,7 +151,7 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=陈晓璐"
+      "note": "results=3 擂主=王依晨"
     },
     {
       "name": "P1 备课夹清单（勾选顺序 3 题）",
@@ -251,7 +251,7 @@
     {
       "name": "CL3 排行榜页六区块",
       "ok": true,
-      "note": "👑 班级擂王\n榜甲\n截至当前累计获胜 1 场 · 参赛 1 场\n📅 今日战况\n今天还没开打——下"
+      "note": "🏆 排行榜 · 荣誉墙\n⚔️ 擂台竞技，强者登场！每一场 PK，都是向更高段位发起挑战！\n👑 至尊 · 班级擂王\n榜"
     },
     {
       "name": "CL4 备课夹独立页（清单同步渲染）",
