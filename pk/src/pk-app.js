@@ -325,7 +325,7 @@ window.__PK_MOUNT = function () {
    *          ②「⚙️ 设置」里临时选本地文件夹（webkitdirectory，本次会话有效）
    * 对战进行中循环轮换；TTS 播报自动压低到 20%；默认关闭、设置记忆。 */
   var BGM = {
-    cfg: Store.load('pk.bgm', { on: false, vol: 0.35 }) || { on: false, vol: 0.35 },
+    cfg: Store.load('pk.bgm', { on: false, vol: 0.5 }) || { on: false, vol: 0.5 },   // 默认 50%，教师可调
     audio: null, urls: [], names: [], idx: 0,
     init: function () {
       var self = this;
@@ -985,6 +985,8 @@ window.__PK_MOUNT = function () {
     };
     $('btnChangeQ').onclick = changeCurrentQ;
     $('bgmToggle').onclick = function () { BGM.toggle(); };
+    $('pkNavBack').onclick = function () { window.XKNav && window.XKNav.back(); };
+    $('pkNavFwd').onclick = function () { window.XKNav && window.XKNav.forward(); };
     $('bgmDirBtn').onclick = function () { BGM.pickFolder(); };
     $('bgmDir').onchange = function () { BGM.onDirPick(this.files); };
     $('bgmVol').oninput = function () { BGM.setVol(parseInt(this.value, 10) / 100); };

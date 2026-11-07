@@ -327,7 +327,52 @@
     });
     window.scrollTo(0, 0);
   }
+  /* ---------- 前进/后退导航（hash 路由：#/home #/setup #/wrong #/diag #/pk #/arena #/quiz #/result） ---------- */
+  var NAV = { routing: false, cur: null };
+  function navPush(name) {
+    if (NAV.routing) { NAV.routing = false; return; }   // 路由驱动的切换不再入栈
+    var h = '#/' + name;
+    if (location.hash === h) return;
+    try { history.pushState({ nav: true }, '', h); } catch (e) { }
+    NAV.cur = h;
+  }
+  function sessionAlive() {
+    try {
+      var qz = $('quiz');
+      if (qz && qz.offsetParent !== null && S.list && S.list.length) return true;
+      if (window.__PK_TEST && window.__PK_TEST.pk().state === 'running') return true;
+      if (window.__ARENA_TEST && window.__ARENA_TEST.ar().running) return true;
+    } catch (e) { }
+    return false;
+  }
+  function routeTo(h) {
+    var name = (h || '#/home').replace('#/', '') || 'home';
+    if (name === 'quiz') {
+      if (S.list && S.list.length) { showPanel('quiz'); try { renderQuestion(); } catch (e) { } }
+      else { try { history.replaceState({ nav: true }, '', '#/home'); } catch (e) { } switchTab('home'); }
+      return;
+    }
+    if (TABS.indexOf(name) !== -1 || name === 'arena') switchTab(name);
+    else { try { history.replaceState({ nav: true }, '', '#/home'); } catch (e) { } switchTab('home'); }
+  }
+  function navBack() { try { history.back(); } catch (e) { } }
+  function navFwd() { try { history.forward(); } catch (e) { } }
+  window.XKNav = { back: navBack, forward: navFwd };
+  window.addEventListener('popstate', function () {
+    var h = location.hash || '#/home';
+    if (sessionAlive() && h !== NAV.cur) {
+      if (!confirm('答题或对局还在进行中，确定退出并返回？')) {
+        try { history.pushState({ nav: true }, '', NAV.cur); } catch (e) { }
+        return;                                            // 留在原视图
+      }
+      stopSpeak();
+    }
+    NAV.routing = true;
+    routeTo(h);
+  });
+
   function switchTab(name) {
+    navPush(name);
     stopSpeak();
     refreshBadges();
     if (name === 'home') renderHome();
@@ -567,6 +612,16 @@
       prepToggle(XK.qidOf(q));
       syncPrepBtn();
     });
+    // 前进/后退导航按钮 + 初始路由
+    on('navBack', 'onclick', navBack);
+    on('navFwd', 'onclick', navFwd);
+    on('navBackQ', 'onclick', navBack);
+    on('navFwdQ', 'onclick', navFwd);
+    try {
+      history.replaceState({ nav: true }, '', location.hash || '#/home');
+      NAV.cur = location.hash || '#/home';
+      if (location.hash && location.hash !== '#/home') routeTo(location.hash);
+    } catch (e) { }
     on('rosterSave', 'onclick', function () {
       var list = parseRoster($('rosterText').value);
       if (!list.length) { alert('没有解析出有效名单。每行一个姓名，或「学号,姓名」'); return; }
@@ -658,6 +713,7 @@
       kind === 'sim' ? '模拟考 · 150分' :
       kind === 'wrong' ? '错题重练' :
       kind === 'weak' ? '弱项特训' : '自由练习';
+    navPush('quiz');
     showPanel('quiz');
     renderQuestion();
   }
@@ -946,6 +1002,7 @@
     };
     $('againBtn').onclick = function () { startSession({ kind: S.kind }); };
     $('homeBtn').onclick = function () { switchTab('home'); };
+    navPush('result');
     showPanel('result');
   }
 
@@ -1185,7 +1242,7 @@
     renderHome();
     refreshBadges();
     showPanel('home');
-    $('verTag').textContent = '题库版本 ' + (window.BANK_VER || '') + ' · 共 ' + BANK.length + ' 题 · 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
+    $('verTag').textContent = '共 ' + BANK.length + ' 题 · 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
     applyTheme(currentTheme());
     loadBig();
     loadTtsPref();

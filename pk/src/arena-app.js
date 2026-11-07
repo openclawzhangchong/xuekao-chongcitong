@@ -581,6 +581,8 @@ window.__ARENA_MOUNT = function () {
     $('arChangeQ').onclick = changeArenaQ;
     $('arSrcBank').onclick = function () { CFG.source = 'bank'; saveCfg(); renderArSource(); };
     $('arSrcPrep').onclick = function () { CFG.source = 'prep'; saveCfg(); renderArSource(); if (!(load('xkc.prep.v1', []) || []).length) toast('备课夹还是空的：先去首页「📋 备课夹」勾题'); };
+    $('arNavBack').onclick = function () { window.XKNav && window.XKNav.back(); };
+    $('arNavFwd').onclick = function () { window.XKNav && window.XKNav.forward(); };
     document.addEventListener('keydown', arenaKeys);
     $('arRandPick').onclick = function () {
       var cs = ensurePicks();

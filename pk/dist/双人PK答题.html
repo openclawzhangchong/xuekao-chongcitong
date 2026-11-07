@@ -445,6 +445,8 @@ body.pk-mode .app{max-width:none}
     <button class="tbtn" id="btnSnd">🔊 音效开</button>
     <button class="tbtn" id="bgmToggle">🎵 音乐关</button>
     <button class="tbtn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
+    <button class="tbtn" id="pkNavBack" title="后退">←</button>
+    <button class="tbtn" id="pkNavFwd" title="前进">→</button>
     <button class="tbtn" id="btnHome">🏠 首页</button>
   </div>
   <div class="leadrow"><div class="lead-tag tie" id="pkLeadTag">🏆 待开赛</div></div>
@@ -1812,7 +1814,7 @@ window.__PK_MOUNT = function () {
    *          ②「⚙️ 设置」里临时选本地文件夹（webkitdirectory，本次会话有效）
    * 对战进行中循环轮换；TTS 播报自动压低到 20%；默认关闭、设置记忆。 */
   var BGM = {
-    cfg: Store.load('pk.bgm', { on: false, vol: 0.35 }) || { on: false, vol: 0.35 },
+    cfg: Store.load('pk.bgm', { on: false, vol: 0.5 }) || { on: false, vol: 0.5 },   // 默认 50%，教师可调
     audio: null, urls: [], names: [], idx: 0,
     init: function () {
       var self = this;
@@ -2472,6 +2474,8 @@ window.__PK_MOUNT = function () {
     };
     $('btnChangeQ').onclick = changeCurrentQ;
     $('bgmToggle').onclick = function () { BGM.toggle(); };
+    $('pkNavBack').onclick = function () { window.XKNav && window.XKNav.back(); };
+    $('pkNavFwd').onclick = function () { window.XKNav && window.XKNav.forward(); };
     $('bgmDirBtn').onclick = function () { BGM.pickFolder(); };
     $('bgmDir').onchange = function () { BGM.onDirPick(this.files); };
     $('bgmVol').oninput = function () { BGM.setVol(parseInt(this.value, 10) / 100); };

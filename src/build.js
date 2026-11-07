@@ -9,6 +9,7 @@ const SRC = path.join(__dirname);
 const read = f => fs.readFileSync(path.isAbsolute(f) ? f : path.join(SRC, f), 'utf8');
 
 const themeCss = read('theme.css');
+const LOGO_PNG = 'data:image/png;base64,' + fs.readFileSync(path.join(SRC, 'assets', 'logo.png')).toString('base64');
 const css = read('style.css');
 const engine = read('engine.js');
 const data = read('data.js');
@@ -54,7 +55,7 @@ const tpl = `<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>学考冲刺通 · 信息技术基础（福建中职学考）</title>
-<link rel="icon" href="data:,">
+<link rel="icon" href="${LOGO_PNG}">
 <style>
 ${themeCss}
 ${css}
@@ -74,6 +75,8 @@ ${arenaStyle}
         <div class="h-title">🎯 学考冲刺通</div>
         <div class="h-sub">信息技术基础 · 福建中职学考 150 分制</div>
       </div>
+      <button class="h-btn" id="navBack" title="后退（Alt+←）">←</button>
+      <button class="h-btn" id="navFwd" title="前进（Alt+→）">→</button>
       <button class="h-btn theme-btn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
       <button class="h-btn" id="bigBtnHome">🖥 课堂投屏</button>
     </header>
@@ -264,6 +267,8 @@ ${arenaStyle}
   <!-- ============ 答题页 ============ -->
   <div id="quiz" class="hidden">
     <header>
+      <button class="h-btn" id="navBackQ" title="后退">←</button>
+      <button class="h-btn" id="navFwdQ" title="前进">→</button>
       <button class="h-btn" id="exitBtn">✕</button>
       <div class="h-title" id="quizTitle" style="font-size:16px">练习</div>
       <button class="speak-btn" id="speakBtn">🔊 朗读</button>

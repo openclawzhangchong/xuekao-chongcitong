@@ -195,12 +195,13 @@ async function pickLetters(page, rootSel, letters) {
   async function pkDriveSide(left, rightAns) {
     const rootSel = left ? '#LBody' : '#rBody';
     const subId = left ? 'LSubmit' : 'rSubmit';
-    for (let guard = 0; guard < 60; guard++) {
+    for (let guard = 0; guard < 90; guard++) {
       const st = await page.evaluate(([lf, ra]) => {
         const P = window.__PK_TEST.pk()[lf ? 'left' : 'right'];
         const btn = document.getElementById(lf ? 'LSubmit' : 'rSubmit');
         if (P.done || P.idx >= P.seq.length) return { done: true, score: P.score, n: P.seq.length };
         if (/下一题/.test(btn ? btn.textContent : '')) return { next: true };
+        if (/已提交/.test(btn ? btn.textContent : '')) return { wait: true };   // 解锁 0.5s 未到
         const q = P.seq[P.idx];
         const L = q.qt === '多选' ? q.a.split('') : [q.a.charAt(0)];
         if (!ra) { const w = q.o.filter((o) => o[0] !== q.a.charAt(0))[0]; if (w) L[0] = w[0]; }
@@ -208,6 +209,7 @@ async function pickLetters(page, rootSel, letters) {
       }, [left, rightAns]);
       if (st.done) return st;
       if (st.next) { await page.evaluate((id) => { const b = document.getElementById(id); if (b) b.click(); }, subId); await sleep(220); continue; }
+      if (st.wait) { await sleep(300); continue; }
       await pickLetters(page, rootSel, st.pick);
       await page.evaluate((id) => { const b = document.getElementById(id); if (b) b.click(); }, subId);
       await sleep(650);
@@ -362,6 +364,27 @@ async function pickLetters(page, rootSel, letters) {
   const newStems = await page.evaluate(() => [window.__PK_TEST.pk().left.seq[0].s, window.__PK_TEST.pk().right.seq[0].s]);
   check('P5 换一题双方同步换新', newStems[0] === newStems[1] && newStems[0] !== oldStem, '');
   await page.evaluate(() => { const c = JSON.parse(localStorage.getItem('pk.cfg') || '{}'); c.source = 'bank'; localStorage.setItem('pk.cfg', JSON.stringify(c)); });
+
+  /* ---------- N. 前进/后退路由 + logo/favicon + 无版本号 ---------- */
+  await page.reload(); await page.waitForFunction('window.BANK && window.BANK.length'); await sleep(300);
+  await page.evaluate(() => document.querySelector('.tab[data-t="diag"]').click()); await sleep(150);
+  const h1n = await page.evaluate(() => location.hash);
+  check('N1 切页入历史栈', h1n === '#/diag', h1n);
+  await page.evaluate(() => document.querySelector('.tab[data-t="home"]').click()); await sleep(150);
+  await page.evaluate(() => window.history.back()); await sleep(200);
+  const hBack = await page.evaluate(() => location.hash);
+  check('N2 后退回 diag', hBack === '#/diag', hBack);
+  await page.evaluate(() => window.history.forward()); await sleep(200);
+  const hFwd = await page.evaluate(() => location.hash);
+  check('N3 前进回 home', hFwd === '#/home', hFwd);
+  const navBtn = await page.evaluate(() => { const b = document.getElementById('navBack'); return b ? b.textContent : null; });
+  check('N3b 首页顶栏导航按钮', navBtn === '←', String(navBtn));
+  const fav = await page.evaluate(() => { const l = document.querySelector('link[rel="icon"]'); return l ? l.href.slice(0, 22) : null; });
+  check('N4 favicon 为课字 logo（data-URI PNG）', fav && fav.indexOf('data:image/png') === 0, String(fav));
+  const ver = await page.evaluate(() => (document.getElementById('verTag') || {}).textContent || '');
+  check('N5 无版本号文案', ver.indexOf('版本') === -1 && ver.indexOf('3982') !== -1, ver.slice(0, 44));
+  const bgmDef = await page.evaluate(() => { try { return JSON.parse(localStorage.getItem('pk.bgm') || 'null'); } catch (e) { return null; } });
+  check('N6 BGM 默认音量 50%（未设置时）', bgmDef === null || bgmDef.vol === undefined || bgmDef.vol === 0.5, JSON.stringify(bgmDef));
 
   /* ---------- H. 荣誉榜 + 背景音乐 ---------- */
   await page.evaluate(() => {
