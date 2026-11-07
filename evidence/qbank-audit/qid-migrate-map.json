@@ -1,8 +1,8 @@
 {
- "generated": "2026-11-07T00:45:40.089Z",
+ "generated": "2026-11-07T01:19:38.266Z",
  "archaeology": {
-  "renames": 644,
-  "droppedForEvidence": 1542,
+  "renames": 691,
+  "droppedForEvidence": 1559,
   "kept": 197
  },
  "stemFixes": 47,
@@ -651,6 +651,7 @@
   "M3-c7hjsi": "M3-8bpjl2",
   "M3-1gd5rv1": "M3-1m4riph",
   "M3-94t52n": "M3-pt2wuv",
+  "M2-1iljp3d": "M2-dg0ro0",
   "M1-8hztj3": "M1-13owdq9",
   "M1-1rpgi0m": "M1-5ztq6q",
   "M1-8jqjlc": "M1-1gr3699",
@@ -699,7 +700,6 @@
   "M9-10w27gg": "M9-j3dwv4",
   "M9-1saohge": "M9-1xf0iam",
   "M9-qsn0jp": "M9-5s2zid",
-  "M2-dg0ro0": "M2-1iljp3d",
   "M4-ote8k5": "M4-111i3hk",
   "M1-19s8e5b": "M1-nr0sr9",
   "M1-1ftvw5k": "M1-5ztq6q",

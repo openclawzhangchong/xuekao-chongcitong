@@ -140,8 +140,21 @@ if (!MAP_ONLY) {
   fixes = t.fixes; merges = t.merges;
   console.log('残留分诊: 可直接清洗', fixes.length, '题 | 同题双版本并入', merges.length, '题');
   if (!fixes.length && !merges.length && existingMap) {
-    stemMap = existingMap;
-    console.log('本轮无新残留，沿用既有映射:', Object.keys(stemMap).length, '条');
+    /* 接续既有映射：先自检清洗（键不得在当前库、值必须在当前库），
+     * 再把链解析到终值——失效/回摆条目直接丢弃，考古会重新推导有效项 */
+    const curIdsPre = new Set(BANK.map(qidOf));
+    const adopted = {};
+    Object.keys(existingMap).forEach((k) => {
+      if (curIdsPre.has(k) || !curIdsPre.has(existingMap[k])) return;
+      adopted[k] = existingMap[k];
+    });
+    Object.keys(adopted).forEach((k) => {
+      let v = adopted[k];
+      while (adopted[v]) v = adopted[v];
+      adopted[k] = v;
+    });
+    stemMap = adopted;
+    console.log('沿用既有映射（自检后）:', Object.keys(stemMap).length, '/', Object.keys(existingMap).length, '条');
   } else {
     const taken = new Set(BANK.map(qidOf));
     // ① 直接清洗改名
@@ -257,7 +270,8 @@ const detail = {
 fs.writeFileSync(path.join(ROOT, 'evidence', 'qbank-audit', 'qid-migrate-map.json'), JSON.stringify(detail, null, 1), 'utf8');
 console.log('映射总条数:', detail.total, '(考古 ' + detail.archaeology.kept + ' + 本次残留 ' + detail.stemFixes + ')');
 
-if (!MAP_ONLY && (bankDirty || metaDirty)) {
+const mapDirty = !cur.EXISTING_MAP || Object.keys(cur.EXISTING_MAP).length !== Object.keys(fullMap).length || Object.keys(fullMap).some((k) => cur.EXISTING_MAP[k] !== fullMap[k]);
+if (!MAP_ONLY && (bankDirty || metaDirty || mapDirty)) {
   const out = '// 学考冲刺通题库 ' + BANK.length + ' 题（题面残留根治：' + detail.stemFixes +
     ' 题题干清洗 + ' + detail.mergedDuplicates + ' 题同题去重；qid 迁移映射见 window.XK_QID_MIGRATE，工具 tools/qid-migrate.js 可重跑重建）\n'
     + 'window.BANK_VER=\'20261106\';\n'

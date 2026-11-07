@@ -1,12 +1,12 @@
 {
   "page": "http://127.0.0.1:8953/",
   "viewport": "1366x768",
-  "loadMs": 312,
+  "loadMs": 292,
   "results": [
     {
       "name": "A1 题库载入",
       "ok": true,
-      "note": "BANK=3982，就绪耗时 312ms"
+      "note": "BANK=3982，就绪耗时 292ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -146,7 +146,7 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=张亿乐"
+      "note": "results=3 擂主=谢志豪"
     },
     {
       "name": "L3 擂台页不被学号弹窗盖住",
