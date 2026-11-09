@@ -380,6 +380,12 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = self.path.split('?')[0]
+        # http.server 按 Latin-1 解码请求行 → 中文 URL 路径变乱码
+        # 重编码：Latin-1 bytes → UTF-8 字符串（修复 courseware 中文文件名 404）
+        try:
+            path = path.encode('latin-1').decode('utf-8')
+        except (UnicodeDecodeError, UnicodeEncodeError):
+            pass
         if path in ('/', '/index.html'):
             try:
                 with open(INDEX, 'rb') as f:
@@ -452,6 +458,27 @@ class Handler(BaseHTTPRequestHandler):
                     self._send(200, f.read(), exts.get(ext, 'application/octet-stream'))
             except OSError:
                 self._send(404, '404'.encode('utf-8'))
+        elif path == '/portal.html':
+            fp = os.path.join(BASE, 'portal.html')
+            try:
+                with open(fp, 'rb') as f:
+                    self._send(200, f.read(), 'text/html; charset=utf-8')
+            except OSError:
+                self._send(404, '404'.encode('utf-8'))
+        elif path.startswith('/courseware/'):
+            if not self._local_only():
+                self._send(403, '403'.encode('utf-8'))
+                return
+            safe = os.path.basename(unquote(path[len('/courseware/'):]))
+            exts = {'.html': 'text/html; charset=utf-8', '.css': 'text/css',
+                    '.js': 'application/javascript', '.png': 'image/png', '.jpg': 'image/jpeg'}
+            ext = os.path.splitext(safe)[1].lower()
+            fp = os.path.join(BASE, 'courseware', safe)
+            try:
+                with open(fp, 'rb') as f:
+                    self._send(200, f.read(), exts.get(ext, 'application/octet-stream'))
+            except OSError:
+                self._send(404, '404'.encode('utf-8'))
         elif path == '/api/classroom':
             # 课堂数据本地库（PK战绩/擂台/备课夹）——教师机数据，仅本机可读写
             if not self._local_only():
@@ -486,6 +513,10 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = self.path.split('?')[0]
+        try:
+            path = path.encode('latin-1').decode('utf-8')
+        except (UnicodeDecodeError, UnicodeEncodeError):
+            pass
         if path == '/api/classroom':
             self._post_classroom()
             return

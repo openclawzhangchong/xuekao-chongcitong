@@ -1,12 +1,12 @@
 {
   "page": "file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html",
   "viewport": "1366x768",
-  "loadMs": 353,
+  "loadMs": 301,
   "results": [
     {
       "name": "A1 题库载入",
-      "ok": true,
-      "note": "BANK=3982，就绪耗时 353ms"
+      "ok": false,
+      "note": "BANK=2000，就绪耗时 301ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -151,7 +151,7 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=王依晨"
+      "note": "results=3 擂主=刘椿尧"
     },
     {
       "name": "P1 备课夹清单（勾选顺序 3 题）",
@@ -210,8 +210,8 @@
     },
     {
       "name": "N5 无版本号文案",
-      "ok": true,
-      "note": "共 3982 题 · 考纲 150 分制 · 表扬语库 1000 条"
+      "ok": false,
+      "note": "当前可练 2000 题 / 全库 3982 题 · 版本 v1.1（client-v1."
     },
     {
       "name": "N6 BGM 默认音量 50%（未设置时）",
