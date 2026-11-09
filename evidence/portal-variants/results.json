@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-09T16:19:57.037Z",
+  "at": "2026-11-09T22:30:36.219Z",
   "results": [
     {
       "name": "方案A 门户打开含徽标",
@@ -27,6 +27,11 @@
       "note": "http://127.0.0.1:8953/?client=1#/pk"
     },
     {
+      "name": "方案A PK 视图真实呈现（非 home 覆盖）",
+      "ok": true,
+      "note": "pkOn=true homeOff=true pkMode=true sid弹窗=false"
+    },
+    {
       "name": "方案B 门户打开含徽标",
       "ok": true,
       "note": "title=学考冲刺通 · 课堂版（方案B 投影大师）"
@@ -52,6 +57,11 @@
       "note": "http://127.0.0.1:8953/?client=1#/pk"
     },
     {
+      "name": "方案B PK 视图真实呈现（非 home 覆盖）",
+      "ok": true,
+      "note": "pkOn=true homeOff=true pkMode=true sid弹窗=false"
+    },
+    {
       "name": "方案C 门户打开含徽标",
       "ok": true,
       "note": "title=学考冲刺通 · 课堂版（方案C 讲练双栏）"
@@ -75,6 +85,11 @@
       "name": "方案C PK 页打开",
       "ok": true,
       "note": "http://127.0.0.1:8953/?client=1#/pk"
+    },
+    {
+      "name": "方案C PK 视图真实呈现（非 home 覆盖）",
+      "ok": true,
+      "note": "pkOn=true homeOff=true pkMode=true sid弹窗=false"
     }
   ]
 }

@@ -105,6 +105,20 @@ function startServer(dir) {
     await page.evaluate(() => { const el = document.querySelector('[onclick*="#/pk"]'); if (el) el.click(); });
     await sleep(900);
     check('方案' + V + ' PK 页打开', page.url().includes('#/pk'), page.url());
+    await sleep(600);
+    // 启动 hash 直达修复断言：#pk 直达时 PK 视图必须真实呈现（不能被 showPanel(home) 覆盖）
+    const pkVisible = await page.evaluate(() => {
+      const pk = document.getElementById('pkPage');
+      const home = document.getElementById('home');
+      return {
+        pkOn: !!pk && !pk.classList.contains('hidden') && pk.offsetParent !== null,
+        homeOff: !home || home.classList.contains('hidden') || home.offsetParent === null,
+        pkMode: document.body.classList.contains('pk-mode'),
+        dialog: !!document.querySelector('.mask:not(.hidden), .dialog-mask')
+      };
+    });
+    check('方案' + V + ' PK 视图真实呈现（非 home 覆盖）', pkVisible.pkOn && pkVisible.homeOff && pkVisible.pkMode,
+      'pkOn=' + pkVisible.pkOn + ' homeOff=' + pkVisible.homeOff + ' pkMode=' + pkVisible.pkMode + ' sid弹窗=' + pkVisible.dialog);
     await page.screenshot({ path: path.join(OUT, String(++shotN).padStart(2, '0') + '-pk-route-' + V.toLowerCase() + '.png') });
 
     await ctx.close();

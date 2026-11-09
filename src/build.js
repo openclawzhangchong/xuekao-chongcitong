@@ -450,6 +450,14 @@ ${arenaLines}
 <script>
 ${arenaApp}
 </script>
+<script>
+/* 启动 hash 直达修复：app.js 段先于 pk/arena 段执行——直达 #/pk、#/arena 时
+ * __PK_MOUNT 尚未定义（mount 被跳过），且 app 启动段默认展示 home。
+ * 所有段就绪后统一 rehash 一次（navPush 同 hash 短路，不产生重复历史）。 */
+if ((location.hash || '').indexOf('#/') === 0 && location.hash !== '#/home' && window.XKNav && window.XKNav.rehash) {
+  try { window.XKNav.rehash(location.hash); } catch (e) { }
+}
+</script>
 </body>
 </html>
 `;

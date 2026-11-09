@@ -425,7 +425,7 @@
   }
   function navBack() { try { history.back(); } catch (e) { } }
   function navFwd() { try { history.forward(); } catch (e) { } }
-  window.XKNav = { back: navBack, forward: navFwd };
+  window.XKNav = { back: navBack, forward: navFwd, rehash: routeTo };
   window.addEventListener('popstate', function () {
     var h = location.hash || '#/home';
     if (sessionAlive() && h !== NAV.cur) {
@@ -1420,7 +1420,9 @@
     bindSetup();
     renderHome();
     refreshBadges();
-    showPanel('home');
+    // 启动 hash 直达（如门户跳 #/pk）时：前段 routeTo 已切目标面板，
+    // 这里不能再 showPanel('home') 覆盖回去；非 home 直达交给构建尾段统一 rehash
+    if (!(location.hash && location.hash !== '#/home')) showPanel('home');
     var ver = window.XK_APP_VER || 'v1.1';
     $('verTag').textContent = '当前可练 ' + BANK.length + ' 题 / 全库 ' + (window.BANK_ALL || BANK).length + ' 题 · 版本 ' + ver + '（client-' + ver + '）· 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
     applyTheme(currentTheme());
