@@ -18,7 +18,7 @@
 福建省中职学业水平考试《信息技术基础》的**学生刷题 + 课堂 PK 系统**，作者是厦门工商旅游学校教师。
 
 **核心功能**：
-- 3982 题题库（3999 - 17 道同题双版本去重），每题带解析 + 生活类比 + 易错提醒
+- 3982 题全库（3999 - 17 道同题双版本去重），**默认只开放 2000 题精选白名单，按钮可释放全库**，每题带解析 + 生活类比 + 易错提醒
 - 150 分制预估分（按 9 模块考纲分值加权）
 - 错题本（连对 2 次自动毕业）、考点诊断雷达图、弱项特训、模拟考组卷
 - 课堂互动：随机点名、音效、多音色 TTS 朗读、1000 条带姓名表扬语 + 500 条鼓励语
@@ -466,6 +466,7 @@ cat README.md
 - `site/data.js` 末尾有 `window.XK_BANK_INDEX=` 行；`cloud/worker.js` 与 `班级版服务.py` 的 `/api/bank` 默认按它过滤，只有 `?full=1` 返回全库。**改 data.js 时别把 `window.BANK=` 那一行改成表达式**，服务端是按行 `JSON.parse` 的，`tests/qid-migrate.test.js` 盯着这个契约。
 - 配额依据：`docs/考点目录.json`（9 模块 58 考点）、`docs/题库精简配额-2000题.json/.csv`。86 道跨考点综合卷不进白名单，另作模拟卷题源。
 - 新增闸门 `node tests/bank-gate.test.js`（20 项）；全量回归 268 项 + `tools/scan-defects.js`。重建顺序：`node tools/build-whitelist.js` → `node src/build.js` → `node src/build.js --split site/index.html` → `node pk/src/pk-build.js` → `node tools/build-client.js --skip-build`。
+- **发布**：tag / Release `client-v1.1`（2026-11-09，指向 `9ab6840`）为 Latest，含 4 个客户端资产；旧 `client-v1.0` 保留为历史归档并加取代提示。README 的 `/releases/latest` 会自动指向 v1.1。
 - 客户端 zip / exe 已重建；2026-11-09 晚三处云端均已部署：CF 主站（KV）、D1 备用（zcvoice）、here.now 备用站。线上验证主站 `/api/bank` 默认 2000 / `?full=1` 3982、双站真浏览器 `BANK=2000`、按钮就位；D1 部署成功但国内 `workers.dev` 不可达（已知问题，主站与 here.now 正常）。代码已提交推送，`.workbuddy/` 已加入 `.gitignore`（本地会话数据不入库）。
 
 ---

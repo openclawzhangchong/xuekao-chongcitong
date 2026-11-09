@@ -1,6 +1,6 @@
 # 更新日志
 
-学考冲刺通（福建中职《信息技术基础》学考：3999 题题库 + 刷题主程序 + 课堂 PK/擂台赛）。
+学考冲刺通（福建中职《信息技术基础》学考：3982 题全库 / 默认 2000 题精选白名单 + 刷题主程序 + 课堂 PK/擂台赛）。
 线上：https://xuekao.jiuyeke.cn ｜ 备用 https://coral-beacon-g4jx.here.now/
 
 每条都写「改了什么 / 为什么 / 拿什么证明」。数字全部是本机实测，不是估算。
@@ -19,7 +19,13 @@
 - 为什么：闸门放在 `window.BANK` 这一层，刷题 / 模拟考 / 诊断 / PK / 擂台 / 备课夹无需逐个改抽题逻辑；服务端默认白名单，避免云端 PK 从 `/api/bank` 绕过。
 - 拿什么证明：`node tests/bank-gate.test.js` 20/20；既有单测 203 项 + Python 45 项 + 新增 20 项 = **268 项全绿**；`node tools/scan-defects.js` 计数未上升；真实启动班级版服务 `/api/bank` = 2000、`?full=1` = 3982；无头 Edge 实测按钮 `BEFORE 2000 → RELEASED 3982 → RELOCKED 2000`，按钮与版本文案同步；客户端打包 48 文件白名单校验通过（无密钥 / 无学生数据）。
 - 云端同步（2026-11-09 晚）：CF 主站 `xuekao.jiuyeke.cn`（KV，Version `f3cfa755`）、D1 备用 `xuekao.zcvoice-app.workers.dev`（Version `15cbf88d`）、here.now `coral-beacon-g4jx`（version `01M706BG6PPDMQJYDYFQT7TVMQ`）**三处均已部署**。线上实测：主站首页 200、含闸门与按钮，`/api/bank` 无参数 = 2000 题、`?full=1` = 3982 题；here.now 首页 200、含闸门与 `XK_BANK_INDEX` 下标行；无头 Edge 打开两个线上站均为 `BANK=2000 / BANK_ALL=3982`、按钮「🔒 精选 2000 题」。D1 部署成功但国内访问超时（HTTP 000，属文档已记录的 workers.dev 可达性问题），不影响主站与备用站。
-- `git commit / push`：本次同步一并提交。
+- `git commit / push`：本次同步一并提交（`9ab6840`）。
+- **GitHub 发布（tag / Release）**：按 `docs/二次开发手册.md` 的版本规范发布 **`client-v1.1`**（第二版，指向 `9ab6840`），设为 **Latest**，取代 `client-v1.0`；Release 页
+  https://github.com/openclawzhangchong/xuekao-chongcitong/releases/tag/client-v1.1
+  资产 4 个：带版本号的 `xuekao-classroom-portable-v1.1.zip` / `xuekao-classroom-setup-v1.1.exe`，
+  以及固定名 `xuekao-classroom-portable.zip` / `xuekao-classroom-setup.exe`（各 19.6MB，供 `/releases/latest/download/` 脚本取用）。
+  旧 `client-v1.0` Release 保留为历史归档并加「已被 v1.1 取代」提示，其资产不删。
+- **文档口径同步**：本文件抬头、README 课堂版特点、HANDOFF 项目概况、`docs/二次开发手册.md` 版本记录，全部由「3982 题内置」改为「默认 2000 题精选 / 可释放全库 3982 题」。
 
 ---
 
@@ -47,7 +53,7 @@
   vocational-education/windows
 - **GitHub Release 发布**：tag `client-v1.0` → 两个资产（各 19.8MB）：
   `xuekao-classroom-portable-v1.0.zip`（免安装）+ `xuekao-classroom-setup-v1.0.exe`（安装向导），
-  下载可达（302→200）验证
+  下载可达（302→200）验证。**注：此版已被 `client-v1.1` 取代（2026-11-09 默认题量白名单），仅作历史归档。**
 - README 顶部新增「📦 两种形态，别搞混」导航表（网页版 vs 课堂版：使用者/数据位置/获取方式）
 - 教训：Git Bash 向 gh 传中文文件路径会被终端编码毁名（资产名变 `-.zip`）——
   build-client.js 现自动产出 ASCII 名上传副本；坏资产按 API id 删除
