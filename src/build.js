@@ -89,13 +89,12 @@ ${arenaStyle}
     <header>
       <div style="flex:1">
         <div class="h-title">🎯 学考冲刺通</div>
-        <div class="h-sub">信息技术基础 · 福建中职学考 150 分制</div>
+        <div class="h-sub">信息技术基础 · 福建中职学考 150 分制 · v1.1</div>
       </div>
       <button class="h-btn" id="navBack" title="后退（Alt+←）">←</button>
       <button class="h-btn" id="navFwd" title="前进（Alt+→）">→</button>
       <button class="h-btn theme-btn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
       <button class="h-btn" id="bigBtnHome">🖥 课堂投屏</button>
-      <button class="h-btn" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部题库">🔒 精选 2000 题</button>
     </header>
     <div class="wrap">
       <div id="clsBar" class="clsbar hidden"></div>
@@ -217,6 +216,13 @@ ${arenaStyle}
         </div>
         <input type="file" id="importFile" accept=".json,application/json" class="hidden">
         <div class="hint">换手机/换电脑：先「导出档案」得到 JSON 文件，再到新设备「导入档案」。学习记录、错题本、预估分曲线都会跟着走。</div>
+      </div>
+      <div class="card" style="margin-top:13px">
+        <div class="sec-t"><span class="dot"></span>教师选项 · 题量范围</div>
+        <div class="hint">默认只开放 2000 题精选白名单（按考纲分值 + 58 个考点配平）。需要全量练习时再点下面这个按钮，随时可以再点一次收回；不改变题库真源，学生档案不受影响。</div>
+        <div style="margin-top:10px">
+          <button class="btn ghost sm" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部 3982 题，再点收回">🔒 精选 2000 题</button>
+        </div>
       </div>
       <div class="ver-tag" id="verTag"></div>
     </div>

@@ -166,6 +166,30 @@ t('PK 抽题入口在释放时才向 /api/bank 要 ?full=1', () => {
   assert.ok(/BANK_FULL_SUFFIX/.test(s));
   assert.ok(/XK_BANK_GATE\.guard/.test(s));
 });
+t('释放按钮已从首页顶栏移到「学习档案」下方（防误点回归闸门）', () => {
+  const s = read('dist/学考冲刺通.html');
+  const home = s.indexOf('<div id="home"');
+  const headerEnd = s.indexOf('</header>', home);
+  assert.ok(home >= 0 && headerEnd > home);
+  assert.ok(!/data-bank-gate/.test(s.slice(home, headerEnd)), '首页顶栏不许再出现释放按钮');
+  const learn = s.indexOf('学习档案（只存本机，不上传）');
+  const btn = s.indexOf('data-bank-gate');
+  assert.ok(learn >= 0 && btn > learn, '按钮必须放在学习档案下面');
+});
+t('PK/擂台顶栏不再有按钮，改到设置弹窗内', () => {
+  const m = read('pk/src/pk-markup.html');
+  const cfg = m.indexOf('id="cfgMask"');
+  assert.ok(cfg > 0);
+  assert.ok(!/data-bank-gate/.test(m.slice(0, cfg)), '设置弹窗之前（含顶栏）不许有按钮');
+  assert.ok(m.indexOf('data-bank-gate') > cfg, '按钮应在设置弹窗内');
+});
+t('页面显示 v1.1 版本号（副标题 + 闸门常量 + 页脚）', () => {
+  const one = read('dist/学考冲刺通.html');
+  assert.ok(/XK_APP_VER\s*=\s*'v1\.1'/.test(one));
+  assert.ok(/150 分制 · v1\.1/.test(one));
+  const app = read('src/app.js');
+  assert.ok(/XK_APP_VER/.test(app) && /client-/.test(app));
+});
 
 console.log('\n结果: ' + passed + ' 通过 / ' + failed + ' 失败');
 if (failed) process.exit(1);

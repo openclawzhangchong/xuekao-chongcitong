@@ -15,6 +15,8 @@
   'use strict';
   var root = window;
   var RELEASE_KEY = 'xkc.bank.release';
+  // 应用版本号：与 GitHub tag client-v1.1 对齐；改发版只改这一处
+  root.XK_APP_VER = 'v1.1';
   root.BANK_ALL = root.BANK || [];
   var INDEX = root.XK_BANK_INDEX || [];
 
@@ -53,8 +55,8 @@
   function toggle() {
     var toRelease = !isReleased();
     var msg = toRelease
-      ? '释放全部题库？\n\n当前默认只开放 ' + INDEX.length + ' 题精选白名单，释放后 ' + root.BANK_ALL.length + ' 题会进入刷题、模拟考、诊断、PK、擂台。\n设置只保存在本机，随时可以再按一次收回。'
-      : '收回全部题库？\n\n将恢复默认：只开放 ' + INDEX.length + ' 题精选白名单。';
+      ? '释放全部题库？\n\n当前：精选 ' + INDEX.length + ' 题；释放后：全部 ' + root.BANK_ALL.length + ' 题（刷题、模拟考、诊断、PK、擂台）。\n题库一题不删、学生档案不受影响；设置只存本机，再点一次即可收回。'
+      : '收回全部题库？\n\n将恢复默认：只开放 ' + INDEX.length + ' 题精选白名单；已作答记录不受影响。';
     if (typeof root.confirm === 'function' && !root.confirm(msg)) return;
     if (setReleased(toRelease)) { root.location.reload(); return; }
     // localStorage 不可用（隐私模式等）时，用地址栏 ?full=1 兜底，保留其余参数

@@ -26,6 +26,11 @@
   以及固定名 `xuekao-classroom-portable.zip` / `xuekao-classroom-setup.exe`（各 19.6MB，供 `/releases/latest/download/` 脚本取用）。
   旧 `client-v1.0` Release 保留为历史归档并加「已被 v1.1 取代」提示，其资产不删。
 - **文档口径同步**：本文件抬头、README 课堂版特点、HANDOFF 项目概况、`docs/二次开发手册.md` 版本记录，全部由「3982 题内置」改为「默认 2000 题精选 / 可释放全库 3982 题」。
+- **v1.1 同版修订（21:38，用户反馈顶栏按钮易误点）**：
+  1. 页面显示版本 **v1.1**：`src/bank-gate.js` 新增全局常量 `XK_APP_VER`，首页副标题「…150 分制 · v1.1」、页脚「版本 v1.1（client-v1.1）」、PK 设置弹窗标题均带版本号。
+  2. 「🔒 精选 2000 题」按钮**从首页 header 移到「学习档案」下方的「教师选项 · 题量范围」卡片**，改低调的 `btn ghost sm`；PK/擂台顶栏那个移到 **PK 设置弹窗内**；确认弹窗文案补上「一题不删、随时可收回、学生档案不受影响」。`tests/bank-gate.test.js` 新增 3 条回归断言（顶栏无按钮 / 按钮在学习档案之后 / 页面显示 v1.1），共 23 项。
+  3. 全部产物重建（单文件 + 桌面副本、拆分版、PK 独立版、客户端 zip/exe）；271 项单测全绿、缺陷闸门未上升；无头 Edge 实测 `btnInHeader=false`、`btnAfterLearn=true`、版本文案正确、释放 `2000→3982`、收回 `3982→2000`。
+  4. 三处云端重新部署：CF 主站 `0003cac1`、D1 备用 `2cd21bcd`、here.now `01M708K1ST5NA4HHRD3MP1AADD`；`client-v1.1` Release 的 4 个资产用 `--clobber` 替换，Release 说明补「同版修订」段。
 
 ---
 

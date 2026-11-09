@@ -462,7 +462,7 @@ cat README.md
 ## 十二、默认题量闸门（2026-11-09 追加，接手必读）
 
 - **全端默认只开放 2000 题白名单**，点按钮才释放 3982 题。`src/data.js` 仍是 3982 题唯一真源，一题未删、题干未改，qid 不变；别再用「删题」思路精简题库，AI 只准产出白名单清单，不准写 `data.js`。
-- 链路：`docs/白名单-2000题.json`（2000 个 qid + 下标，可审计）→ `tools/build-whitelist.js` 生成 `src/whitelist-data.js`（只存下标）→ `src/bank-gate.js` 把 `window.BANK` 指向白名单，全库存 `window.BANK_ALL` → 所有业务模块自动生效。开关 `xkc.bank.release`，URL `?full=1` 兜底，按钮属性 `data-bank-gate`（首页 + PK/擂台顶栏 + PK 独立版）。
+- 链路：`docs/白名单-2000题.json`（2000 个 qid + 下标，可审计）→ `tools/build-whitelist.js` 生成 `src/whitelist-data.js`（只存下标）→ `src/bank-gate.js` 把 `window.BANK` 指向白名单，全库存 `window.BANK_ALL` → 所有业务模块自动生效。开关 `xkc.bank.release`，URL `?full=1` 兜底，按钮属性 `data-bank-gate`。**按钮位置（21:38 修订，防误点）**：首页底部「教师选项 · 题量范围」卡片（学习档案下面）、PK 设置弹窗内；顶栏一律不放，`tests/bank-gate.test.js` 有回归断言盯着。版本常量在 `src/bank-gate.js` 的 `XK_APP_VER`（当前 `v1.1`），首页副标题 / 页脚 / PK 设置标题都显示。
 - `site/data.js` 末尾有 `window.XK_BANK_INDEX=` 行；`cloud/worker.js` 与 `班级版服务.py` 的 `/api/bank` 默认按它过滤，只有 `?full=1` 返回全库。**改 data.js 时别把 `window.BANK=` 那一行改成表达式**，服务端是按行 `JSON.parse` 的，`tests/qid-migrate.test.js` 盯着这个契约。
 - 配额依据：`docs/考点目录.json`（9 模块 58 考点）、`docs/题库精简配额-2000题.json/.csv`。86 道跨考点综合卷不进白名单，另作模拟卷题源。
 - 新增闸门 `node tests/bank-gate.test.js`（20 项）；全量回归 268 项 + `tools/scan-defects.js`。重建顺序：`node tools/build-whitelist.js` → `node src/build.js` → `node src/build.js --split site/index.html` → `node pk/src/pk-build.js` → `node tools/build-client.js --skip-build`。

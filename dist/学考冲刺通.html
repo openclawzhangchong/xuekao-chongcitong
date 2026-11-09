@@ -952,13 +952,12 @@ body.arena-mode .app{max-width:none}
     <header>
       <div style="flex:1">
         <div class="h-title">🎯 学考冲刺通</div>
-        <div class="h-sub">信息技术基础 · 福建中职学考 150 分制</div>
+        <div class="h-sub">信息技术基础 · 福建中职学考 150 分制 · v1.1</div>
       </div>
       <button class="h-btn" id="navBack" title="后退（Alt+←）">←</button>
       <button class="h-btn" id="navFwd" title="前进（Alt+→）">→</button>
       <button class="h-btn theme-btn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
       <button class="h-btn" id="bigBtnHome">🖥 课堂投屏</button>
-      <button class="h-btn" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部题库">🔒 精选 2000 题</button>
     </header>
     <div class="wrap">
       <div id="clsBar" class="clsbar hidden"></div>
@@ -1080,6 +1079,13 @@ body.arena-mode .app{max-width:none}
         </div>
         <input type="file" id="importFile" accept=".json,application/json" class="hidden">
         <div class="hint">换手机/换电脑：先「导出档案」得到 JSON 文件，再到新设备「导入档案」。学习记录、错题本、预估分曲线都会跟着走。</div>
+      </div>
+      <div class="card" style="margin-top:13px">
+        <div class="sec-t"><span class="dot"></span>教师选项 · 题量范围</div>
+        <div class="hint">默认只开放 2000 题精选白名单（按考纲分值 + 58 个考点配平）。需要全量练习时再点下面这个按钮，随时可以再点一次收回；不改变题库真源，学生档案不受影响。</div>
+        <div style="margin-top:10px">
+          <button class="btn ghost sm" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部 3982 题，再点收回">🔒 精选 2000 题</button>
+        </div>
       </div>
       <div class="ver-tag" id="verTag"></div>
     </div>
@@ -1252,7 +1258,6 @@ body.arena-mode .app{max-width:none}
     <button class="tbtn" id="btnLb">🏆 总排行榜</button>
     <button class="tbtn" id="btnRoster">📋 管理花名册</button>
     <button class="tbtn" id="btnCfg">⚙️ 设置</button>
-    <button class="tbtn" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部题库">🔒 精选 2000 题</button>
     <button class="tbtn" id="btnSnd">🔊 音效开</button>
     <button class="tbtn" id="bgmToggle">🎵 音乐关</button>
     <button class="tbtn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
@@ -1408,7 +1413,7 @@ body.arena-mode .app{max-width:none}
 <!-- 设置弹窗（题库三通道） -->
 <div class="mask hidden" id="cfgMask">
   <div class="dialog">
-    <div class="dlg-title">⚙️ 设置 · 题库对接</div>
+    <div class="dlg-title">⚙️ 设置 · 题库对接 · v1.1</div>
     <div class="set-grid">
       <div class="set-item"><label>默认题量（1-50）</label><input id="pkDlgCount" value="10"></div>
       <div class="set-item"><label>默认计时（分钟）</label><input id="pkDlgMinutes" value="10"></div>
@@ -1421,6 +1426,12 @@ body.arena-mode .app{max-width:none}
         <div style="margin-top:8px"><button class="tbtn" id="cfgPasteApply">📥 应用粘贴题库</button></div>
       </div>
       <div class="set-item set-full"><label>当前题库</label><div class="muted" id="bankInfo2" style="font-size:14px"></div></div>
+      <div class="set-item set-full"><label>教师选项 · 题量范围</label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="tbtn" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部 3982 题，再点收回">🔒 精选 2000 题</button>
+          <span class="muted" style="font-size:12px">默认精选白名单；点一次释放全库，再点收回（学生档案不受影响）</span>
+        </div>
+      </div>
       <div class="set-item set-full"><label>🎵 背景音乐（对战进行中播放，TTS 播报自动压低）</label>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <button class="tbtn" id="bgmDirBtn">📂 选择音乐文件夹</button>
@@ -2516,6 +2527,8 @@ window.XK_BANK_INDEX=[0,3,4,6,7,8,9,11,12,14,17,21,29,30,31,38,41,44,46,48,49,51
   'use strict';
   var root = window;
   var RELEASE_KEY = 'xkc.bank.release';
+  // 应用版本号：与 GitHub tag client-v1.1 对齐；改发版只改这一处
+  root.XK_APP_VER = 'v1.1';
   root.BANK_ALL = root.BANK || [];
   var INDEX = root.XK_BANK_INDEX || [];
 
@@ -2554,8 +2567,8 @@ window.XK_BANK_INDEX=[0,3,4,6,7,8,9,11,12,14,17,21,29,30,31,38,41,44,46,48,49,51
   function toggle() {
     var toRelease = !isReleased();
     var msg = toRelease
-      ? '释放全部题库？\n\n当前默认只开放 ' + INDEX.length + ' 题精选白名单，释放后 ' + root.BANK_ALL.length + ' 题会进入刷题、模拟考、诊断、PK、擂台。\n设置只保存在本机，随时可以再按一次收回。'
-      : '收回全部题库？\n\n将恢复默认：只开放 ' + INDEX.length + ' 题精选白名单。';
+      ? '释放全部题库？\n\n当前：精选 ' + INDEX.length + ' 题；释放后：全部 ' + root.BANK_ALL.length + ' 题（刷题、模拟考、诊断、PK、擂台）。\n题库一题不删、学生档案不受影响；设置只存本机，再点一次即可收回。'
+      : '收回全部题库？\n\n将恢复默认：只开放 ' + INDEX.length + ' 题精选白名单；已作答记录不受影响。';
     if (typeof root.confirm === 'function' && !root.confirm(msg)) return;
     if (setReleased(toRelease)) { root.location.reload(); return; }
     // localStorage 不可用（隐私模式等）时，用地址栏 ?full=1 兜底，保留其余参数
@@ -4025,7 +4038,8 @@ window.XK_BANK_INDEX=[0,3,4,6,7,8,9,11,12,14,17,21,29,30,31,38,41,44,46,48,49,51
     renderHome();
     refreshBadges();
     showPanel('home');
-    $('verTag').textContent = '当前可练 ' + BANK.length + ' 题 / 全库 ' + (window.BANK_ALL || BANK).length + ' 题 · 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
+    var ver = window.XK_APP_VER || 'v1.1';
+    $('verTag').textContent = '当前可练 ' + BANK.length + ' 题 / 全库 ' + (window.BANK_ALL || BANK).length + ' 题 · 版本 ' + ver + '（client-' + ver + '）· 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
     applyTheme(currentTheme());
     renderBankGateBtn();
     loadBig();

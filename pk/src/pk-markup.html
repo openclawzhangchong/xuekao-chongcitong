@@ -9,7 +9,6 @@
     <button class="tbtn" id="btnLb">🏆 总排行榜</button>
     <button class="tbtn" id="btnRoster">📋 管理花名册</button>
     <button class="tbtn" id="btnCfg">⚙️ 设置</button>
-    <button class="tbtn" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部题库">🔒 精选 2000 题</button>
     <button class="tbtn" id="btnSnd">🔊 音效开</button>
     <button class="tbtn" id="bgmToggle">🎵 音乐关</button>
     <button class="tbtn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
@@ -165,7 +164,7 @@
 <!-- 设置弹窗（题库三通道） -->
 <div class="mask hidden" id="cfgMask">
   <div class="dialog">
-    <div class="dlg-title">⚙️ 设置 · 题库对接</div>
+    <div class="dlg-title">⚙️ 设置 · 题库对接 · v1.1</div>
     <div class="set-grid">
       <div class="set-item"><label>默认题量（1-50）</label><input id="pkDlgCount" value="10"></div>
       <div class="set-item"><label>默认计时（分钟）</label><input id="pkDlgMinutes" value="10"></div>
@@ -178,6 +177,12 @@
         <div style="margin-top:8px"><button class="tbtn" id="cfgPasteApply">📥 应用粘贴题库</button></div>
       </div>
       <div class="set-item set-full"><label>当前题库</label><div class="muted" id="bankInfo2" style="font-size:14px"></div></div>
+      <div class="set-item set-full"><label>教师选项 · 题量范围</label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="tbtn" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部 3982 题，再点收回">🔒 精选 2000 题</button>
+          <span class="muted" style="font-size:12px">默认精选白名单；点一次释放全库，再点收回（学生档案不受影响）</span>
+        </div>
+      </div>
       <div class="set-item set-full"><label>🎵 背景音乐（对战进行中播放，TTS 播报自动压低）</label>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <button class="tbtn" id="bgmDirBtn">📂 选择音乐文件夹</button>

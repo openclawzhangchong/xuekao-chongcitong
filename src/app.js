@@ -1421,7 +1421,8 @@
     renderHome();
     refreshBadges();
     showPanel('home');
-    $('verTag').textContent = '当前可练 ' + BANK.length + ' 题 / 全库 ' + (window.BANK_ALL || BANK).length + ' 题 · 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
+    var ver = window.XK_APP_VER || 'v1.1';
+    $('verTag').textContent = '当前可练 ' + BANK.length + ' 题 / 全库 ' + (window.BANK_ALL || BANK).length + ' 题 · 版本 ' + ver + '（client-' + ver + '）· 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
     applyTheme(currentTheme());
     renderBankGateBtn();
     loadBig();
