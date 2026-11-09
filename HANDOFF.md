@@ -461,11 +461,11 @@ cat README.md
 
 ## 十二、默认题量闸门（2026-11-09 追加，接手必读）
 
-- **全端默认只开放 2000 题白名单**，点按钮才释放 3982 题。`src/data.js` 仍是 3982 题唯一真源，一题未删、题干未改，qid 不变；别再用「删题」思路精简题库，AI 只准产出白名单清单，不准写 `data.js`。
-- 链路：`docs/白名单-2000题.json`（2000 个 qid + 下标，可审计）→ `tools/build-whitelist.js` 生成 `src/whitelist-data.js`（只存下标）→ `src/bank-gate.js` 把 `window.BANK` 指向白名单，全库存 `window.BANK_ALL` → 所有业务模块自动生效。开关 `xkc.bank.release`，URL `?full=1` 兜底，按钮属性 `data-bank-gate`。**按钮位置（21:38 修订，防误点）**：首页底部「教师选项 · 题量范围」卡片（学习档案下面）、PK 设置弹窗内；顶栏一律不放，`tests/bank-gate.test.js` 有回归断言盯着。版本常量在 `src/bank-gate.js` 的 `XK_APP_VER`（当前 `v1.1`），首页副标题 / 页脚 / PK 设置标题都显示。
-- `site/data.js` 末尾有 `window.XK_BANK_INDEX=` 行；`cloud/worker.js` 与 `班级版服务.py` 的 `/api/bank` 默认按它过滤，只有 `?full=1` 返回全库。**改 data.js 时别把 `window.BANK=` 那一行改成表达式**，服务端是按行 `JSON.parse` 的，`tests/qid-migrate.test.js` 盯着这个契约。
-- 配额依据：`docs/考点目录.json`（9 模块 58 考点）、`docs/题库精简配额-2000题.json/.csv`。86 道跨考点综合卷不进白名单，另作模拟卷题源。
-- 新增闸门 `node tests/bank-gate.test.js`（20 项）；全量回归 268 项 + `tools/scan-defects.js`。重建顺序：`node tools/build-whitelist.js` → `node src/build.js` → `node src/build.js --split site/index.html` → `node pk/src/pk-build.js` → `node tools/build-client.js --skip-build`。
+- **四档题量（2026-11-10 起）**：默认 **1000 基础档**，教师可切 **2000 高级档 / 3000 终极档 / 3982 全库档**；三档白名单严格嵌套 `1000 ⊂ 2000 ⊂ 3000`，升档不丢做过的题。`src/data.js` 仍是 3982 题唯一真源，一题未删、题干未改，qid 不变；别再用「删题」思路精简题库，AI 只准产出白名单清单，不准写 `data.js`。
+- 链路：`docs/白名单-{1000,2000,3000}题.json`（qid + 下标，可审计）→ `tools/build-whitelist.js` 生成 `src/whitelist-data.js`（`XK_TIER_INDEX` 三档下标 + `XK_DEFAULT_TIER='1000'`，保留 `XK_BANK_INDEX` 兼容）→ `src/bank-gate.js` 把 `window.BANK` 指向当前档视图，全库存 `window.BANK_ALL` → 所有业务模块自动生效。开关 `xkc.bank.tier=1000|2000|3000|full`（默认 1000），兼容旧 `xkc.bank.release=1`，URL `?tier=` / `?full=1` 兜底；按钮属性 `data-bank-tier`，容器 `data-bank-gate`。**按钮位置（21:38 修订，防误点）**：首页底部「教师选项 · 题量范围」卡片（学习档案下面）、PK 设置弹窗内；顶栏一律不放，`tests/bank-gate.test.js` 有回归断言盯着。版本常量在 `src/bank-gate.js` 的 `XK_APP_VER`（当前 `v1.1`），首页副标题 / 页脚 / PK 设置标题都显示。
+- `site/data.js` 末尾有 `window.XK_TIER_INDEX=`（三档）与 `window.XK_DEFAULT_TIER='1000'` 行；`cloud/worker.js` 与 `班级版服务.py` 的 `/api/bank` 默认返回 1000 题，`?tier=2000|3000` 切档、`?full=1`（或 `tier=full`）返回全库；旧 `XK_BANK_INDEX` 行保留兼容。**改 data.js 时别把 `window.BANK=` 那一行改成表达式**，服务端是按行 `JSON.parse` 的，`tests/qid-migrate.test.js` 盯着这个契约。
+- 配额依据：`docs/考点目录.json`（9 模块 58 考点）、`docs/题库精简配额-2000题.json/.csv` 与 `-1000题/-3000题.json`。86 道跨考点综合卷不进任何白名单档，只在全库档出现，另作模拟卷题源。
+- 新增闸门 `node tests/bank-gate.test.js`（22 项，含三档嵌套与四档切换）；全量回归 270 项 + `tools/scan-defects.js`。重建顺序：`node tools/build-whitelist.js` → `node src/build.js` → `node src/build.js --split site/index.html` → `node pk/src/pk-build.js` → `node tools/build-client.js --skip-build`。
 - **发布**：tag / Release `client-v1.1`（2026-11-09，指向 `9ab6840`）为 Latest，含 4 个客户端资产；旧 `client-v1.0` 保留为历史归档并加取代提示。README 的 `/releases/latest` 会自动指向 v1.1。
 - 客户端 zip / exe 已重建；2026-11-09 晚三处云端均已部署：CF 主站（KV）、D1 备用（zcvoice）、here.now 备用站。线上验证主站 `/api/bank` 默认 2000 / `?full=1` 3982、双站真浏览器 `BANK=2000`、按钮就位；D1 部署成功但国内 `workers.dev` 不可达（已知问题，主站与 here.now 正常）。代码已提交推送，`.workbuddy/` 已加入 `.gitignore`（本地会话数据不入库）。
 
