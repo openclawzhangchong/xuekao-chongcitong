@@ -16,10 +16,13 @@ const engineJs = fs.readFileSync(path.join(ROOT, 'src', 'engine.js'), 'utf8');
 const sfxJs = fs.readFileSync(path.join(ROOT, 'src', 'sfx.js'), 'utf8');
 const praiseJs = fs.readFileSync(path.join(ROOT, 'src', 'praise.js'), 'utf8');
 const dataJs = fs.readFileSync(path.join(ROOT, 'src', 'data.js'), 'utf8');
+const whitelistData = fs.readFileSync(path.join(ROOT, 'src', 'whitelist-data.js'), 'utf8');
+const bankGateJs = fs.readFileSync(path.join(ROOT, 'src', 'bank-gate.js'), 'utf8');
+const bankJsWithIndex = dataJs + '\n' + whitelistData;
 const pkAppJs = fs.readFileSync(path.join(PK, 'pk-app.js'), 'utf8');
 
 // 破坏性序列校验
-[dataJs, engineJs, sfxJs, praiseJs, pkAppJs].forEach((code, i) => {
+[bankJsWithIndex, bankGateJs, engineJs, sfxJs, praiseJs, pkAppJs].forEach((code, i) => {
   if (/<\/script/i.test(code)) throw new Error('脚本 #' + i + ' 含 </script>，会破坏 HTML');
 });
 
@@ -29,7 +32,8 @@ let out = tpl
   .replace('${engineJs}', engineJs)
   .replace('${sfxJs}', sfxJs)
   .replace('${praiseJs}', praiseJs)
-  .replace('${bankJs}', dataJs)
+  .replace('${bankJs}', bankJsWithIndex)
+  .replace('${gateJs}', bankGateJs)
   .replace('${pkAppJs}', pkAppJs);
 
 // 产物守卫：占位符漏替换 = 页面完全没有界面（曾踩过：${pkMarkup} 原样留在 body 里）
@@ -48,7 +52,13 @@ global.window = {};
 eval(engineJs);
 eval(sfxJs);
 eval(praiseJs);
-eval(dataJs);
+eval(bankJsWithIndex);
+eval(bankGateJs); // 无 document 环境下闸门仍应把 window.BANK 压成 2000 题白名单
+if (!window.XK_BANK_INDEX || window.XK_BANK_INDEX.length !== 2000) {
+  throw new Error('PK 独立版缺少 2000 题白名单下标');
+}
+if (window.BANK.length !== 2000) throw new Error('PK 独立版默认题库不是 2000 题白名单: ' + window.BANK.length);
+if (window.BANK_ALL.length !== 3982) throw new Error('PK 独立版全库题数异常: ' + window.BANK_ALL.length);
 if (typeof window.XK !== 'object' || typeof window.XK.cleanStem !== 'function') {
   throw new Error('独立版 PK 缺少引擎 XK.cleanStem，题干残留会原样显示');
 }
@@ -57,4 +67,4 @@ if (typeof window.XKP !== 'object' || typeof window.XKP.pickPraise !== 'function
 }
 eval(pkAppJs.replace(/\(function \(\) \{/, '(function () { return;')); // app 层依赖 DOM，跳过执行
 console.log('PK BUILD OK →', outPath);
-console.log('大小:', (fs.statSync(outPath).size / 1024).toFixed(0), 'KB | 题库:', window.BANK.length, '题 | 表扬语:', window.XKP.praiseCount(), '条');
+console.log('大小:', (fs.statSync(outPath).size / 1024).toFixed(0), 'KB | 默认白名单:', window.BANK.length, '题 | 全库:', window.BANK_ALL.length, '题 | 表扬语:', window.XKP.praiseCount(), '条');

@@ -238,14 +238,22 @@ export default {
         let line = text.slice(from, text.indexOf(String.fromCharCode(10), startIdx)).trim();
         if (line.endsWith(';')) line = line.slice(0, -1);
         const bank = JSON.parse(line);
+        // 默认题量闸门：/api/bank 默认只吐 2000 题白名单；只有 ?full=1 才返回全库。
+        // 下标清单随 site/data.js 一起发布，服务端不需要 qid 算法。
+        const im = text.match(/window\.XK_BANK_INDEX=(\[[^\n]*?\]);/);
+        let idx = null;
+        try { if (im) idx = JSON.parse(im[1]); } catch (e) { idx = null; }
+        const full = url.searchParams.get('full') === '1';
+        const outBank = (!full && Array.isArray(idx) && idx.length && idx.length <= bank.length)
+          ? idx.map(i => bank[i]) : bank;
         const vm = text.match(/window\.BANK_VER='([^']+)'/);
         const mm = text.match(/window\.BANK_META=(\[[^\n]*?\]);/);
         return new Response(JSON.stringify({
           ok: true,
           ver: vm ? vm[1] : '',
-          count: bank.length,
+          count: outBank.length,
           meta: mm ? JSON.parse(mm[1]) : [],
-          bank: bank
+          bank: outBank
         }), {
           headers: {
             'content-type': 'application/json; charset=utf-8',

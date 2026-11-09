@@ -14,6 +14,10 @@ const QR_CLOUD = 'data:image/png;base64,' + fs.readFileSync(path.join(SRC, 'asse
 const css = read('style.css');
 const engine = read('engine.js');
 const data = read('data.js');
+// 默认题量白名单：tools/build-whitelist.js 生成的下标清单 + 运行时闸门（一题不删）
+const whitelistData = read('whitelist-data.js');
+const bankGate = read('bank-gate.js');
+const dataWithIndex = data + '\n' + whitelistData;
 const app = read('app.js');
 const praise = read('praise.js');
 const sfx = read('sfx.js');
@@ -28,14 +32,25 @@ const arenaApp = fs.readFileSync(path.join(SRC, '..', 'pk', 'src', 'arena-app.js
 // ---- 构建期校验 ----
 global.window = {};
 eval(engine);
-eval(data);
+eval(dataWithIndex);
 const ids = new Set(window.BANK.map(q => window.XK.qidOf(q)));
 if (ids.size !== window.BANK.length) throw new Error('题库 ID 冲突: ' + ids.size + ' != ' + window.BANK.length);
 if (window.BANK_META.length !== 9) throw new Error('模块数异常');
 const total150 = window.BANK_META.reduce((x, m) => x + m.score, 0);
 if (total150 !== 150) throw new Error('考纲总分异常: ' + total150);
 
-[engine, data, app, praise, sfx, pkApp, arenaLines, arenaApp].forEach((code, i) => {
+// 白名单闸门：下标必须与可审计的白名单 JSON 完全一致，且 2000 项、无重复、全部落在全库内
+const whitelistJson = JSON.parse(fs.readFileSync(path.join(SRC, '..', 'docs', '白名单-2000题.json'), 'utf8'));
+const IDX = window.XK_BANK_INDEX || [];
+if (IDX.length !== 2000) throw new Error('白名单题数异常: ' + IDX.length + ' != 2000');
+if (new Set(IDX).size !== 2000) throw new Error('白名单下标重复');
+if (IDX.some(i => !Number.isInteger(i) || i < 0 || i >= window.BANK.length)) throw new Error('白名单下标越界');
+if (JSON.stringify(IDX) !== JSON.stringify(whitelistJson.items.map(x => x.index))) {
+  throw new Error('src/whitelist-data.js 与 docs/白名单-2000题.json 不一致，请重跑 node tools/build-whitelist.js');
+}
+if (whitelistJson.by_module && Object.keys(whitelistJson.by_module).length !== 9) throw new Error('白名单模块覆盖异常');
+
+[engine, dataWithIndex, bankGate, app, praise, sfx, pkApp, arenaLines, arenaApp].forEach((code, i) => {
   if (/<\/script/i.test(code)) throw new Error('内嵌脚本含 </script>，会破坏 HTML（脚本#' + i + '）');
 });
 
@@ -49,7 +64,7 @@ const bankVerJson = splitMode ? JSON.stringify('20261106') : '';
 const metaJson = splitMode ? JSON.stringify(window.BANK_META) : '';
 const DATA_TAG = splitMode
   ? SPLIT_HEAD
-  : ['<script>', data, '</script>'].join(String.fromCharCode(10));
+  : ['<script>', dataWithIndex, '</script>'].join(String.fromCharCode(10));
 const tpl = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -80,6 +95,7 @@ ${arenaStyle}
       <button class="h-btn" id="navFwd" title="前进（Alt+→）">→</button>
       <button class="h-btn theme-btn" data-theme-toggle><span class="tb-ic">🌙</span><span class="tb-lb">深色</span></button>
       <button class="h-btn" id="bigBtnHome">🖥 课堂投屏</button>
+      <button class="h-btn" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部题库">🔒 精选 2000 题</button>
     </header>
     <div class="wrap">
       <div id="clsBar" class="clsbar hidden"></div>
@@ -414,6 +430,9 @@ ${sfx}
 </script>
 ${DATA_TAG}
 <script>
+${bankGate}
+</script>
+<script>
 ${app}
 </script>
 <script>
@@ -437,11 +456,11 @@ if (LEFTOVER.test(tpl)) {
     tpl.split(String.fromCharCode(10)).filter(l => LEFTOVER.test(l)).join('\n  '));
 }
 if (splitMode) {
-  fs.writeFileSync(path.join(path.dirname(out), 'data.js'), data, 'utf8');
+  fs.writeFileSync(path.join(path.dirname(out), 'data.js'), dataWithIndex, 'utf8');
   fs.writeFileSync(out, tpl, 'utf8');
 } else {
   fs.writeFileSync(out, tpl, 'utf8');
 }
 const kb = (fs.statSync(out).size / 1024).toFixed(0);
 console.log('BUILD OK →', out);
-console.log('大小:', kb, 'KB | 题库', window.BANK.length, '题 | ID唯一 ✓ | 考纲总分', total150, '✓');
+console.log('大小:', kb, 'KB | 全库', window.BANK.length, '题 | 默认白名单', IDX.length, '题 | ID唯一 ✓ | 考纲总分', total150, '✓');

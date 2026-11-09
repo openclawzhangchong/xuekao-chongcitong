@@ -459,4 +459,15 @@ cat README.md
 
 ---
 
+## 十二、默认题量闸门（2026-11-09 追加，接手必读）
+
+- **全端默认只开放 2000 题白名单**，点按钮才释放 3982 题。`src/data.js` 仍是 3982 题唯一真源，一题未删、题干未改，qid 不变；别再用「删题」思路精简题库，AI 只准产出白名单清单，不准写 `data.js`。
+- 链路：`docs/白名单-2000题.json`（2000 个 qid + 下标，可审计）→ `tools/build-whitelist.js` 生成 `src/whitelist-data.js`（只存下标）→ `src/bank-gate.js` 把 `window.BANK` 指向白名单，全库存 `window.BANK_ALL` → 所有业务模块自动生效。开关 `xkc.bank.release`，URL `?full=1` 兜底，按钮属性 `data-bank-gate`（首页 + PK/擂台顶栏 + PK 独立版）。
+- `site/data.js` 末尾有 `window.XK_BANK_INDEX=` 行；`cloud/worker.js` 与 `班级版服务.py` 的 `/api/bank` 默认按它过滤，只有 `?full=1` 返回全库。**改 data.js 时别把 `window.BANK=` 那一行改成表达式**，服务端是按行 `JSON.parse` 的，`tests/qid-migrate.test.js` 盯着这个契约。
+- 配额依据：`docs/考点目录.json`（9 模块 58 考点）、`docs/题库精简配额-2000题.json/.csv`。86 道跨考点综合卷不进白名单，另作模拟卷题源。
+- 新增闸门 `node tests/bank-gate.test.js`（20 项）；全量回归 268 项 + `tools/scan-defects.js`。重建顺序：`node tools/build-whitelist.js` → `node src/build.js` → `node src/build.js --split site/index.html` → `node pk/src/pk-build.js` → `node tools/build-client.js --skip-build`。
+- 客户端 zip / exe 已重建；2026-11-09 晚三处云端均已部署：CF 主站（KV）、D1 备用（zcvoice）、here.now 备用站。线上验证主站 `/api/bank` 默认 2000 / `?full=1` 3982、双站真浏览器 `BANK=2000`、按钮就位；D1 部署成功但国内 `workers.dev` 不可达（已知问题，主站与 here.now 正常）。代码已提交推送，`.workbuddy/` 已加入 `.gitignore`（本地会话数据不入库）。
+
+---
+
 *本文档由 ZCode 于 2026-11-06 生成，基于项目当前真实状态（git commit 1c0d631）。*

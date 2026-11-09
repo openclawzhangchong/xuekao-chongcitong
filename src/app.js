@@ -25,6 +25,12 @@
   }
   function toggleTheme() { applyTheme(currentTheme() === 'dark' ? 'light' : 'dark'); }
 
+  /* ---------- 默认题量闸门：按钮行为统一在 bank-gate.js，这里启动时刷新一次文案 ---------- */
+  function renderBankGateBtn() {
+    var G = window.XK_BANK_GATE;
+    if (G && G.renderButton) G.renderButton();
+  }
+
   var PKEY = 'xkc.profile.v1';
   var P = load();
   function load() {
@@ -1415,8 +1421,9 @@
     renderHome();
     refreshBadges();
     showPanel('home');
-    $('verTag').textContent = '共 ' + BANK.length + ' 题 · 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
+    $('verTag').textContent = '当前可练 ' + BANK.length + ' 题 / 全库 ' + (window.BANK_ALL || BANK).length + ' 题 · 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
     applyTheme(currentTheme());
+    renderBankGateBtn();
     loadBig();
     loadTtsPref();
     try { DRAW.noRepeat = localStorage.getItem('xkc.draw.norepeat') !== '0'; } catch (e) { }

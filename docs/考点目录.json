@@ -1,0 +1,3668 @@
+{
+  "schema_version": "1.0",
+  "meta": {
+    "title": "福建省中职学业水平考试《信息技术基础》考点目录",
+    "source_document": "福建省中等职业学校学业水平考试《信息技术基础》科目考试说明.docx",
+    "source_path": "C:/Users/Administrator/Desktop/信息技术基础/本书依据的考试说明/福建省中等职业学校学业水平考试《信息技术基础》科目考试说明.docx",
+    "generated_at": "2026-11-09",
+    "derived_from_bank": "src/data.js (3982 题)",
+    "usage": "考纲权威考点树 + 题库 kd 标签归并映射；用于按考点筛题、诊断、精简题库。point_id 为稳定主键。",
+    "note": "考纲原文注明「各部分分值占比可根据实际情况有所调整」。"
+  },
+  "exam": {
+    "form": "闭卷、笔试",
+    "duration_minutes": 150,
+    "total_score": 150,
+    "calculator": false,
+    "question_types": [
+      "单项选择题",
+      "多项选择题",
+      "判断题",
+      "填空题",
+      "综合题"
+    ],
+    "basic_module_score": 112,
+    "extended_module_score": 38,
+    "knowledge_levels": [
+      "了解",
+      "熟悉",
+      "理解",
+      "掌握"
+    ],
+    "competency_dimensions": [
+      "信息意识",
+      "计算思维",
+      "数字化学习与创新",
+      "信息社会责任"
+    ]
+  },
+  "stats": {
+    "module_count": 9,
+    "point_count": 58,
+    "bank_questions": 3982,
+    "bank_kd_coverage": "100%",
+    "unique_bank_labels": 133,
+    "mapped_questions": 3896,
+    "unmapped_questions": 86
+  },
+  "modules": [
+    {
+      "code": "M1",
+      "name": "信息技术应用基础",
+      "group": "基础模块",
+      "score": 15,
+      "summary": "包含信息技术与信息社会、计算机系统、操作系统、信息资源等内容。",
+      "bank_questions": 542,
+      "point_count": 9,
+      "points": [
+        {
+          "id": "M1-01",
+          "no": 1,
+          "module": "M1",
+          "title": "信息技术的概念及典型应用",
+          "level": "理解",
+          "requirement": "理解信息技术的概念，以及在社会生产生活的典型应用。",
+          "keywords": [
+            "信息技术",
+            "概念",
+            "社会应用",
+            "生产生活"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 1 · 信息技术的概念及典型应用",
+                "module": "M1",
+                "count": 38,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "1-1 信息技术的概念与社会应用",
+                "module": "M1",
+                "count": 29,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 67
+          }
+        },
+        {
+          "id": "M1-02",
+          "no": 2,
+          "module": "M1",
+          "title": "信息技术的发展历程和发展趋势",
+          "level": "了解",
+          "requirement": "了解信息技术的发展历程和发展趋势。",
+          "keywords": [
+            "发展历程",
+            "发展趋势",
+            "信息技术革命"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 2 · 信息技术的发展历程和发展趋势",
+                "module": "M1",
+                "count": 37,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "1-2 信息技术的发展历程与趋势",
+                "module": "M1",
+                "count": 17,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 54
+          }
+        },
+        {
+          "id": "M1-03",
+          "no": 3,
+          "module": "M1",
+          "title": "信息社会的特征与信息文化、道德、法律常识",
+          "level": "了解",
+          "requirement": "了解信息社会的特征和相应的文化、道德和法律常识，了解信息技术对人类社会生产、生活方式的影响。",
+          "keywords": [
+            "信息社会",
+            "文化",
+            "道德",
+            "法律常识",
+            "影响"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 3 · 信息社会的特征和文化、道德、法律常识",
+                "module": "M1",
+                "count": 38,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "1-3 信息社会的特征与影响",
+                "module": "M1",
+                "count": 17,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 55
+          }
+        },
+        {
+          "id": "M1-04",
+          "no": 4,
+          "module": "M1",
+          "title": "计算机系统组成与进制转换",
+          "level": "了解/熟悉",
+          "requirement": "了解计算机系统组成，熟悉二进制、十六进制的基本概念和特点及相互转换的方法。",
+          "keywords": [
+            "硬件",
+            "软件",
+            "二进制",
+            "十六进制",
+            "进制转换"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "1-4 计算机系统组成与进制转换",
+                "module": "M1",
+                "count": 44,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 4 · 计算机系统组成与进制转换",
+                "module": "M1",
+                "count": 32,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 76
+          }
+        },
+        {
+          "id": "M1-05",
+          "no": 5,
+          "module": "M1",
+          "title": "ASCII码及常用编码",
+          "level": "理解/了解",
+          "requirement": "理解ASCII码的基本概念，了解常用编码。",
+          "keywords": [
+            "ASCII",
+            "编码",
+            "字符编码",
+            "汉字编码"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 5 · ASCII码及常用编码",
+                "module": "M1",
+                "count": 31,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 31
+          }
+        },
+        {
+          "id": "M1-06",
+          "no": 6,
+          "module": "M1",
+          "title": "数据的存储单位及换算",
+          "level": "掌握",
+          "requirement": "掌握数据的存储单位，位、字节、字、KB、MB、GB、TB等存储容量及相互之间的关系。",
+          "keywords": [
+            "位",
+            "字节",
+            "字",
+            "KB",
+            "MB",
+            "GB",
+            "TB",
+            "换算"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 6 · 数据的存储单位",
+                "module": "M1",
+                "count": 40,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "1-6 数据存储单位与换算",
+                "module": "M1",
+                "count": 5,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 45
+          }
+        },
+        {
+          "id": "M1-07",
+          "no": 7,
+          "module": "M1",
+          "title": "操作系统的基本概念与快捷键",
+          "level": "了解",
+          "requirement": "了解操作系统的基本概念、特点和功能，了解快捷键和快捷菜单的含义。",
+          "keywords": [
+            "操作系统",
+            "功能",
+            "快捷键",
+            "快捷菜单"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 7 · 操作系统的基本概念与常用快捷键",
+                "module": "M1",
+                "count": 44,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "1-7 操作系统基本概念与快捷键",
+                "module": "M1",
+                "count": 11,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 55
+          }
+        },
+        {
+          "id": "M1-08",
+          "no": 8,
+          "module": "M1",
+          "title": "文件、文件夹与常用文件类型",
+          "level": "理解/了解",
+          "requirement": "理解文件和文件夹的概念和作用，了解常用文件的类型。",
+          "keywords": [
+            "文件",
+            "文件夹",
+            "扩展名",
+            "文件类型"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 8 · 文件和文件夹的概念与常用文件类型",
+                "module": "M1",
+                "count": 32,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 32
+          }
+        },
+        {
+          "id": "M1-09",
+          "no": 9,
+          "module": "M1",
+          "title": "资源管理器与文件管理操作",
+          "level": "掌握",
+          "requirement": "掌握使用“资源管理器”对文件与文件夹的管理操作（选取、新建、移动、复制、删除、重命名、搜索和属性设置等），实现对信息资源的管理。",
+          "keywords": [
+            "资源管理器",
+            "选取",
+            "新建",
+            "移动",
+            "复制",
+            "删除",
+            "重命名",
+            "搜索",
+            "属性"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 9 · 资源管理器与文件管理操作",
+                "module": "M1",
+                "count": 41,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 41
+          }
+        }
+      ]
+    },
+    {
+      "code": "M2",
+      "name": "图文编辑",
+      "group": "基础模块",
+      "score": 15,
+      "summary": "包含文档的基本编辑、图片的插入和编辑、表格的插入和编辑、样式的创建和使用等内容。",
+      "bank_questions": 337,
+      "point_count": 6,
+      "points": [
+        {
+          "id": "M2-01",
+          "no": 1,
+          "module": "M2",
+          "title": "文本编辑与段落格式",
+          "level": "掌握",
+          "requirement": "掌握文本编辑、文本查找和替换、段落的格式设置等操作。",
+          "keywords": [
+            "文本编辑",
+            "查找替换",
+            "段落格式",
+            "字体"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "2-1 文本编辑与段落格式",
+                "module": "M2",
+                "count": 143,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 1 · 文本编辑与段落格式",
+                "module": "M2",
+                "count": 35,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 178
+          }
+        },
+        {
+          "id": "M2-02",
+          "no": 2,
+          "module": "M2",
+          "title": "图片、图形、艺术字与文本框",
+          "level": "掌握",
+          "requirement": "掌握图片、图形、艺术字等对象的插入、编辑和美化，文本框的使用。",
+          "keywords": [
+            "图片",
+            "图形",
+            "艺术字",
+            "文本框",
+            "美化"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "2-2 图片与图形对象操作",
+                "module": "M2",
+                "count": 25,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 2 · 图片、图形与文本框",
+                "module": "M2",
+                "count": 15,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 40
+          }
+        },
+        {
+          "id": "M2-03",
+          "no": 3,
+          "module": "M2",
+          "title": "文档表格的插入与编辑",
+          "level": "掌握",
+          "requirement": "掌握在文档中插入和编辑表格、对表格进行美化的方法。",
+          "keywords": [
+            "插入表格",
+            "编辑表格",
+            "表格美化"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "2-3 文档表格操作",
+                "module": "M2",
+                "count": 43,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 3 · 文档表格的插入与编辑",
+                "module": "M2",
+                "count": 19,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 62
+          }
+        },
+        {
+          "id": "M2-04",
+          "no": 4,
+          "module": "M2",
+          "title": "页面设置与页眉页脚",
+          "level": "熟悉/掌握",
+          "requirement": "熟悉页面设置的方法，掌握页眉、页脚、页码的插入和编辑。",
+          "keywords": [
+            "页面设置",
+            "页眉",
+            "页脚",
+            "页码"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 4 · 页面设置与页眉页脚",
+                "module": "M2",
+                "count": 15,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "2-4 页面设置与页眉页脚",
+                "module": "M2",
+                "count": 11,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 26
+          }
+        },
+        {
+          "id": "M2-05",
+          "no": 5,
+          "module": "M2",
+          "title": "样式与目录",
+          "level": "掌握",
+          "requirement": "掌握样式的创建和使用，掌握目录的制作和编辑操作。",
+          "keywords": [
+            "样式",
+            "创建样式",
+            "目录",
+            "自动目录"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 5 · 样式与目录",
+                "module": "M2",
+                "count": 19,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 19
+          }
+        },
+        {
+          "id": "M2-06",
+          "no": 6,
+          "module": "M2",
+          "title": "打印预览与打印",
+          "level": "掌握",
+          "requirement": "掌握打印预览和打印操作的相关设置。",
+          "keywords": [
+            "打印预览",
+            "打印设置",
+            "打印范围"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 6 · 打印预览与打印",
+                "module": "M2",
+                "count": 12,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 12
+          }
+        }
+      ]
+    },
+    {
+      "code": "M3",
+      "name": "电子表格处理",
+      "group": "基础模块",
+      "score": 15,
+      "summary": "包含工作表和工作簿操作、公式和函数的使用、图表分析展示数据、数据管理等内容。",
+      "bank_questions": 362,
+      "point_count": 6,
+      "points": [
+        {
+          "id": "M3-01",
+          "no": 1,
+          "module": "M3",
+          "title": "工作簿、工作表与单元格",
+          "level": "掌握",
+          "requirement": "掌握工作簿、工作表、单元格的含义，掌握设置单元格格式的方法。",
+          "keywords": [
+            "工作簿",
+            "工作表",
+            "单元格",
+            "单元格格式"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "3-1 工作簿/工作表/单元格操作",
+                "module": "M3",
+                "count": 91,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 1 · 工作簿、工作表与单元格",
+                "module": "M3",
+                "count": 21,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 112
+          }
+        },
+        {
+          "id": "M3-02",
+          "no": 2,
+          "module": "M3",
+          "title": "单元格引用与运算符",
+          "level": "掌握",
+          "requirement": "掌握相对引用、绝对引用、混合引用的引用方法，掌握运算符的使用方法（如算术运算符、关系运算符、引用运算符）。",
+          "keywords": [
+            "相对引用",
+            "绝对引用",
+            "混合引用",
+            "算术运算符",
+            "关系运算符",
+            "引用运算符"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 2 · 单元格引用与运算符",
+                "module": "M3",
+                "count": 27,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "3-2 单元格引用与运算符",
+                "module": "M3",
+                "count": 14,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 41
+          }
+        },
+        {
+          "id": "M3-03",
+          "no": 3,
+          "module": "M3",
+          "title": "公式与常用函数",
+          "level": "掌握",
+          "requirement": "掌握公式和常用函数（如AVERAGE、MAX、MIN、SUM、COUNT、IF等函数）的使用。",
+          "keywords": [
+            "公式",
+            "AVERAGE",
+            "MAX",
+            "MIN",
+            "SUM",
+            "COUNT",
+            "IF"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "3-3 公式与常用函数",
+                "module": "M3",
+                "count": 66,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 3 · 公式与常用函数",
+                "module": "M3",
+                "count": 41,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 107
+          }
+        },
+        {
+          "id": "M3-04",
+          "no": 4,
+          "module": "M3",
+          "title": "图表制作",
+          "level": "了解/掌握",
+          "requirement": "了解常见的图表类型及电子表格处理工具提供的图表类型，掌握利用表格制作常用图表的方法。",
+          "keywords": [
+            "图表类型",
+            "柱形图",
+            "折线图",
+            "饼图",
+            "制作图表"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "3-4 图表制作",
+                "module": "M3",
+                "count": 32,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 4 · 图表制作",
+                "module": "M3",
+                "count": 17,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 49
+          }
+        },
+        {
+          "id": "M3-05",
+          "no": 5,
+          "module": "M3",
+          "title": "筛选、排序与分类汇总",
+          "level": "掌握",
+          "requirement": "掌握筛选、排序和分类汇总等操作。",
+          "keywords": [
+            "自动筛选",
+            "排序",
+            "分类汇总"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 5 · 筛选、排序与分类汇总",
+                "module": "M3",
+                "count": 21,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "3-5 数据筛选排序与分类汇总",
+                "module": "M3",
+                "count": 14,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 35
+          }
+        },
+        {
+          "id": "M3-06",
+          "no": 6,
+          "module": "M3",
+          "title": "数据透视表",
+          "level": "理解/掌握",
+          "requirement": "理解数据透视表的概念，掌握数据透视表的基本操作。",
+          "keywords": [
+            "数据透视表",
+            "概念",
+            "基本操作"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 6 · 数据透视表",
+                "module": "M3",
+                "count": 18,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 18
+          }
+        }
+      ]
+    },
+    {
+      "code": "M4",
+      "name": "演示文稿制作",
+      "group": "基础模块",
+      "score": 7,
+      "summary": "包含演示文稿制作、母版制作和使用、动画设计、演示文稿放映等内容。",
+      "bank_questions": 217,
+      "point_count": 6,
+      "points": [
+        {
+          "id": "M4-01",
+          "no": 1,
+          "module": "M4",
+          "title": "演示文稿的功能特点与应用场景",
+          "level": "了解",
+          "requirement": "了解演示文稿的功能特点与应用场景。",
+          "keywords": [
+            "演示文稿",
+            "功能特点",
+            "应用场景"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "4-1 演示文稿基本概念",
+                "module": "M4",
+                "count": 73,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 1 · 演示文稿基本概念",
+                "module": "M4",
+                "count": 34,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 107
+          }
+        },
+        {
+          "id": "M4-02",
+          "no": 2,
+          "module": "M4",
+          "title": "幻灯片基本操作",
+          "level": "掌握",
+          "requirement": "掌握幻灯片的创建、复制、删除、移动等基本操作。",
+          "keywords": [
+            "创建",
+            "复制",
+            "删除",
+            "移动",
+            "幻灯片"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 2 · 幻灯片基本操作",
+                "module": "M4",
+                "count": 11,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 11
+          }
+        },
+        {
+          "id": "M4-03",
+          "no": 3,
+          "module": "M4",
+          "title": "幻灯片对象插入",
+          "level": "掌握",
+          "requirement": "掌握在幻灯片中插入各类对象的方法，如文本框、图形、图片、表格、音频、视频等对象。",
+          "keywords": [
+            "文本框",
+            "图形",
+            "图片",
+            "表格",
+            "音频",
+            "视频"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 3 · 幻灯片对象插入",
+                "module": "M4",
+                "count": 17,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "4-3 幻灯片对象插入",
+                "module": "M4",
+                "count": 3,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 20
+          }
+        },
+        {
+          "id": "M4-04",
+          "no": 4,
+          "module": "M4",
+          "title": "幻灯片母版",
+          "level": "理解/掌握",
+          "requirement": "理解幻灯片母版的概念，掌握幻灯片母版及应用方法。",
+          "keywords": [
+            "母版",
+            "版式",
+            "应用方法"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 4 · 幻灯片母版",
+                "module": "M4",
+                "count": 26,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "4-4 幻灯片母版",
+                "module": "M4",
+                "count": 3,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 29
+          }
+        },
+        {
+          "id": "M4-05",
+          "no": 5,
+          "module": "M4",
+          "title": "动画、超链接与切换",
+          "level": "掌握",
+          "requirement": "掌握幻灯片切换动画、对象动画的设置方法及超链接、动作按钮的应用方法。",
+          "keywords": [
+            "切换动画",
+            "对象动画",
+            "超链接",
+            "动作按钮"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 5 · 动画、超链接与切换",
+                "module": "M4",
+                "count": 28,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "4-5 动画与超链接",
+                "module": "M4",
+                "count": 8,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 36
+          }
+        },
+        {
+          "id": "M4-06",
+          "no": 6,
+          "module": "M4",
+          "title": "放映方式",
+          "level": "了解",
+          "requirement": "了解幻灯片的放映类型，会设置幻灯片放映方式，会使用排练计时、自定义放映、隐藏幻灯片等方法进行放映。",
+          "keywords": [
+            "放映类型",
+            "排练计时",
+            "自定义放映",
+            "隐藏幻灯片"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 6 · 放映方式",
+                "module": "M4",
+                "count": 14,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 14
+          }
+        }
+      ]
+    },
+    {
+      "code": "M5",
+      "name": "网络应用",
+      "group": "基础模块",
+      "score": 30,
+      "summary": "包含网络的基本概念、网络设备、网络协议、主要模型、关键技术等内容。",
+      "bank_questions": 769,
+      "point_count": 12,
+      "points": [
+        {
+          "id": "M5-01",
+          "no": 1,
+          "module": "M5",
+          "title": "网络的基础概念、功能及应用",
+          "level": "了解",
+          "requirement": "了解网络的基础概念、功能及应用。了解网络的产生、分类与发展。",
+          "keywords": [
+            "网络概念",
+            "功能",
+            "分类",
+            "产生",
+            "发展",
+            "LAN",
+            "WAN"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "5-1 网络基础概念",
+                "module": "M5",
+                "count": 35,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 1 · 网络的基础概念、功能及应用",
+                "module": "M5",
+                "count": 20,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 1 · 网络基础概念、功能与分类",
+                "module": "M5",
+                "count": 10,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 65
+          }
+        },
+        {
+          "id": "M5-02",
+          "no": 2,
+          "module": "M5",
+          "title": "数据通信系统的基本概念",
+          "level": "了解",
+          "requirement": "了解数据通信系统的基本概念（数据、信息、信号、信道、带宽、模拟通信、数字通信等）。",
+          "keywords": [
+            "数据",
+            "信息",
+            "信号",
+            "信道",
+            "带宽",
+            "模拟通信",
+            "数字通信"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "5-2 数据通信基本概念",
+                "module": "M5",
+                "count": 53,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 2 · 数据通信系统的基本概念",
+                "module": "M5",
+                "count": 23,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 2 · 数据通信基本概念",
+                "module": "M5",
+                "count": 5,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 81
+          }
+        },
+        {
+          "id": "M5-03",
+          "no": 3,
+          "module": "M5",
+          "title": "协议的概念及常用网络协议",
+          "level": "理解",
+          "requirement": "理解协议的概念以及常用网络协议，如TCP/IP、HTTP、FTP等。",
+          "keywords": [
+            "协议",
+            "TCP/IP",
+            "HTTP",
+            "FTP"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "5-3 常用网络协议",
+                "module": "M5",
+                "count": 58,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 3 · 协议的概念及常用网络协议",
+                "module": "M5",
+                "count": 16,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 3 · 网络协议与常用协议",
+                "module": "M5",
+                "count": 5,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 79
+          }
+        },
+        {
+          "id": "M5-04",
+          "no": 4,
+          "module": "M5",
+          "title": "TCP/IP模型与IP地址",
+          "level": "理解/掌握",
+          "requirement": "理解TCP/IP模型4层功能，掌握IP地址的含义、分类和分配方法。",
+          "keywords": [
+            "TCP/IP模型",
+            "四层",
+            "IP地址",
+            "地址分类",
+            "分配"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 4 · TCP/IP模型与IP地址",
+                "module": "M5",
+                "count": 38,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 38
+          }
+        },
+        {
+          "id": "M5-05",
+          "no": 5,
+          "module": "M5",
+          "title": "子网、子网掩码与VLAN",
+          "level": "理解/掌握",
+          "requirement": "理解子网和子网掩码的概念，掌握VLAN子网划分的原理及方法。",
+          "keywords": [
+            "子网",
+            "子网掩码",
+            "VLAN",
+            "子网划分"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 5 · 子网、子网掩码与VLAN",
+                "module": "M5",
+                "count": 23,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "5-5 子网与子网掩码",
+                "module": "M5",
+                "count": 13,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 5 · 子网掩码与VLAN划分",
+                "module": "M5",
+                "count": 11,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 47
+          }
+        },
+        {
+          "id": "M5-06",
+          "no": 6,
+          "module": "M5",
+          "title": "常见网络设备的类型和功能",
+          "level": "理解",
+          "requirement": "理解常见网络设备（服务器、调制解调器、交换机、路由器）的类型和功能。",
+          "keywords": [
+            "服务器",
+            "调制解调器",
+            "交换机",
+            "路由器"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 6 · 常见网络设备的类型和功能",
+                "module": "M5",
+                "count": 23,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "5-6 网络设备类型与功能",
+                "module": "M5",
+                "count": 22,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 6 · 常见网络设备类型与功能",
+                "module": "M5",
+                "count": 11,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 56
+          }
+        },
+        {
+          "id": "M5-07",
+          "no": 7,
+          "module": "M5",
+          "title": "域名与域名系统DNS",
+          "level": "理解/掌握",
+          "requirement": "理解域名的概念,掌握域名系统及常见域名，如.com、.cn、.net、.org、.gov、.edu等。",
+          "keywords": [
+            "域名",
+            "DNS",
+            ".com",
+            ".cn",
+            ".net",
+            ".org",
+            ".gov",
+            ".edu"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 7 · 域名与域名系统",
+                "module": "M5",
+                "count": 26,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "5-7 域名系统",
+                "module": "M5",
+                "count": 13,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 7 · 域名与域名系统DNS",
+                "module": "M5",
+                "count": 11,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 50
+          }
+        },
+        {
+          "id": "M5-08",
+          "no": 8,
+          "module": "M5",
+          "title": "交换机的功能及基本应用",
+          "level": "理解",
+          "requirement": "理解交换机的功能以及基本应用。",
+          "keywords": [
+            "交换机",
+            "功能",
+            "应用"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "5-8 交换机应用",
+                "module": "M5",
+                "count": 25,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 8 · 交换机的功能及基本应用",
+                "module": "M5",
+                "count": 20,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 8 · 交换机的功能与应用",
+                "module": "M5",
+                "count": 8,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 53
+          }
+        },
+        {
+          "id": "M5-09",
+          "no": 9,
+          "module": "M5",
+          "title": "路由器的功能及基本应用",
+          "level": "理解",
+          "requirement": "理解路由器的功能以及基本应用。",
+          "keywords": [
+            "路由器",
+            "功能",
+            "应用"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 9 · 路由器的功能及基本应用",
+                "module": "M5",
+                "count": 20,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "5-9 路由器应用",
+                "module": "M5",
+                "count": 14,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 9 · 路由器的功能与应用",
+                "module": "M5",
+                "count": 5,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 39
+          }
+        },
+        {
+          "id": "M5-10",
+          "no": 10,
+          "module": "M5",
+          "title": "局域网常用的拓扑结构",
+          "level": "掌握",
+          "requirement": "掌握局域网常用的拓扑结构。",
+          "keywords": [
+            "星型",
+            "总线型",
+            "环型",
+            "网状",
+            "拓扑结构"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 10 · 局域网常用的拓扑结构",
+                "module": "M5",
+                "count": 23,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "5-10 局域网拓扑结构",
+                "module": "M5",
+                "count": 7,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 10 · 局域网常用拓扑结构",
+                "module": "M5",
+                "count": 5,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 35
+          }
+        },
+        {
+          "id": "M5-11",
+          "no": 11,
+          "module": "M5",
+          "title": "常用网络命令的使用",
+          "level": "掌握",
+          "requirement": "掌握常用网络命令（ping、ipconfig等）的使用。",
+          "keywords": [
+            "ping",
+            "ipconfig",
+            "网络命令"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 11 · 常用网络命令的使用",
+                "module": "M5",
+                "count": 26,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "5-11 常用网络命令",
+                "module": "M5",
+                "count": 13,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 11 · 常用网络命令",
+                "module": "M5",
+                "count": 5,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 44
+          }
+        },
+        {
+          "id": "M5-12",
+          "no": 12,
+          "module": "M5",
+          "title": "借助网络工具多人协作完成任务",
+          "level": "熟悉",
+          "requirement": "熟悉借助网络工具多人协作完成任务，如腾讯文档、金山文档、有道云协作等。",
+          "keywords": [
+            "在线协作",
+            "腾讯文档",
+            "金山文档",
+            "有道云协作"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 12 · 借助网络工具多人协作完成任务",
+                "module": "M5",
+                "count": 143,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "5-12 网络协作工具",
+                "module": "M5",
+                "count": 34,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 12 · 网络协作工具",
+                "module": "M5",
+                "count": 5,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 182
+          }
+        }
+      ]
+    },
+    {
+      "code": "M6",
+      "name": "Python程序设计基础",
+      "group": "基础模块",
+      "score": 30,
+      "summary": "包含Python程序设计基础知识、编程工具、常用算法等内容。",
+      "bank_questions": 640,
+      "point_count": 8,
+      "points": [
+        {
+          "id": "M6-01",
+          "no": 1,
+          "module": "M6",
+          "title": "程序设计的基本概念",
+          "level": "理解",
+          "requirement": "理解程序设计的基本概念。",
+          "keywords": [
+            "程序",
+            "程序设计",
+            "算法",
+            "概念"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "6-1 程序设计基本概念",
+                "module": "M6",
+                "count": 36,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 1 · 程序设计的基本概念",
+                "module": "M6",
+                "count": 24,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 1 · 程序设计基本概念",
+                "module": "M6",
+                "count": 5,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 65
+          }
+        },
+        {
+          "id": "M6-02",
+          "no": 2,
+          "module": "M6",
+          "title": "程序框图",
+          "level": "理解",
+          "requirement": "理解程序框图。",
+          "keywords": [
+            "流程图",
+            "程序框图",
+            "顺序",
+            "分支",
+            "循环"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 2 · 程序框图",
+                "module": "M6",
+                "count": 27,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "6-2 程序框图",
+                "module": "M6",
+                "count": 5,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 32
+          }
+        },
+        {
+          "id": "M6-03",
+          "no": 3,
+          "module": "M6",
+          "title": "程序设计语言的分类与发展历程",
+          "level": "了解",
+          "requirement": "了解程序设计语言的分类与发展历程。",
+          "keywords": [
+            "机器语言",
+            "汇编语言",
+            "高级语言",
+            "发展历程"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "6-3 程序设计语言分类与发展",
+                "module": "M6",
+                "count": 31,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 3 · 程序设计语言的分类与发展历程",
+                "module": "M6",
+                "count": 24,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 3 · 程序设计语言的分类与发展",
+                "module": "M6",
+                "count": 6,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 61
+          }
+        },
+        {
+          "id": "M6-04",
+          "no": 4,
+          "module": "M6",
+          "title": "Python程序设计语言的特点",
+          "level": "了解",
+          "requirement": "了解Python程序设计语言的特点。",
+          "keywords": [
+            "Python",
+            "特点",
+            "解释型",
+            "跨平台"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "6-4 Python语言特点",
+                "module": "M6",
+                "count": 42,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 4 · Python程序设计语言的特点",
+                "module": "M6",
+                "count": 24,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 4 · Python语言特点",
+                "module": "M6",
+                "count": 9,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 75
+          }
+        },
+        {
+          "id": "M6-05",
+          "no": 5,
+          "module": "M6",
+          "title": "Python编程工具（IDLE）的安装与使用",
+          "level": "掌握",
+          "requirement": "掌握Python编程工具（IDLE）的安装、环境配置和基本使用方法。",
+          "keywords": [
+            "IDLE",
+            "安装",
+            "环境配置",
+            "基本使用"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 5 · Python编程工具（IDLE）的安装与使用",
+                "module": "M6",
+                "count": 24,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 5 · Python编程工具IDLE",
+                "module": "M6",
+                "count": 9,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 33
+          }
+        },
+        {
+          "id": "M6-06",
+          "no": 6,
+          "module": "M6",
+          "title": "基本语法、数据类型与流程控制",
+          "level": "掌握",
+          "requirement": "掌握Python程序设计语言的基本语法、数据类型、流程控制等。",
+          "keywords": [
+            "语法",
+            "数据类型",
+            "变量",
+            "分支",
+            "循环",
+            "流程控制"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 6 · 基本语法、数据类型与流程控制",
+                "module": "M6",
+                "count": 69,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "6-6 Python基本语法与数据类型",
+                "module": "M6",
+                "count": 60,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "6-7 Python流程控制",
+                "module": "M6",
+                "count": 35,
+                "scheme": "M-N",
+                "note": "近似归并：考纲把流程控制并入第6条"
+              },
+              {
+                "label": "考点 6 · Python基本语法、数据类型与流程控制",
+                "module": "M6",
+                "count": 14,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 178
+          }
+        },
+        {
+          "id": "M6-07",
+          "no": 7,
+          "module": "M6",
+          "title": "math模块与turtle模块",
+          "level": "了解",
+          "requirement": "了解math模块、turtle模块的简单用法。",
+          "keywords": [
+            "math",
+            "turtle",
+            "模块",
+            "import"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "6-8 Python常用模块",
+                "module": "M6",
+                "count": 35,
+                "scheme": "M-N",
+                "note": "近似归并：Python常用模块对应 math/turtle 模块"
+              },
+              {
+                "label": "考点 7 · math模块与turtle模块",
+                "module": "M6",
+                "count": 23,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 7 · math与turtle模块",
+                "module": "M6",
+                "count": 12,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 70
+          }
+        },
+        {
+          "id": "M6-08",
+          "no": 8,
+          "module": "M6",
+          "title": "常用算法的实现",
+          "level": "掌握",
+          "requirement": "掌握常用算法的实现。如：累加、累乘、求平均、求最大/最小值、素数判断、排序等。",
+          "keywords": [
+            "累加",
+            "累乘",
+            "平均值",
+            "最大值",
+            "最小值",
+            "素数",
+            "排序"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 8 · 常用算法的实现",
+                "module": "M6",
+                "count": 117,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 8 · 常用算法实现",
+                "module": "M6",
+                "count": 9,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 126
+          }
+        }
+      ]
+    },
+    {
+      "code": "M7",
+      "name": "信息安全技术",
+      "group": "扩展模块",
+      "score": 15,
+      "summary": "包含信息安全意识、信息安全技术、信息安全设备等内容。",
+      "bank_questions": 385,
+      "point_count": 4,
+      "points": [
+        {
+          "id": "M7-01",
+          "no": 1,
+          "module": "M7",
+          "title": "信息安全意识与网络欺诈识别",
+          "level": "理解",
+          "requirement": "理解信息安全意识，能识别常见的网络欺诈行为。",
+          "keywords": [
+            "信息安全意识",
+            "网络欺诈",
+            "钓鱼",
+            "诈骗识别"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "7-1 信息安全意识",
+                "module": "M7",
+                "count": 64,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 1 · 信息安全意识与常见网络欺诈",
+                "module": "M7",
+                "count": 26,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 1 · 信息安全意识与网络欺诈识别",
+                "module": "M7",
+                "count": 11,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 101
+          }
+        },
+        {
+          "id": "M7-02",
+          "no": 2,
+          "module": "M7",
+          "title": "信息安全基本概念与等级保护",
+          "level": "了解",
+          "requirement": "了解信息安全的基本概念，包括信息安全基本要素、网络安全等级保护等内容。",
+          "keywords": [
+            "保密性",
+            "完整性",
+            "可用性",
+            "等级保护"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "7-2 信息安全基本概念",
+                "module": "M7",
+                "count": 30,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 2 · 信息安全基本概念",
+                "module": "M7",
+                "count": 23,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 2 · 信息安全基本概念与等级保护",
+                "module": "M7",
+                "count": 10,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 63
+          }
+        },
+        {
+          "id": "M7-03",
+          "no": 3,
+          "module": "M7",
+          "title": "信息安全技术与常见威胁防御",
+          "level": "理解",
+          "requirement": "理解信息安全相关技术、信息安全面临的常见威胁和常用的安全防御技术（如防火墙技术、认证技术、加密技术、入侵检测技术等）。",
+          "keywords": [
+            "防火墙",
+            "认证",
+            "加密",
+            "入侵检测",
+            "病毒",
+            "木马",
+            "威胁"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "7-3 信息安全技术与防御",
+                "module": "M7",
+                "count": 96,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 3 · 安全威胁与防御技术",
+                "module": "M7",
+                "count": 33,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 3 · 信息安全技术与常见威胁防御",
+                "module": "M7",
+                "count": 26,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 155
+          }
+        },
+        {
+          "id": "M7-04",
+          "no": 4,
+          "module": "M7",
+          "title": "常用网络安全设备的功能和部署",
+          "level": "熟悉",
+          "requirement": "熟悉常用网络安全设备的功能和部署方式。",
+          "keywords": [
+            "安全设备",
+            "功能",
+            "部署方式"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 4 · 常用网络安全设备",
+                "module": "M7",
+                "count": 24,
+                "scheme": "考点N",
+                "note": null
+              },
+              {
+                "label": "考点 4 · 网络安全设备与部署",
+                "module": "M7",
+                "count": 9,
+                "scheme": "考点N",
+                "note": null
+              }
+            ],
+            "total": 33
+          }
+        }
+      ]
+    },
+    {
+      "code": "M8",
+      "name": "人工智能初步",
+      "group": "扩展模块",
+      "score": 8,
+      "summary": "包含人工智能基础知识、人工智能关键技术、人工智能技术应用等内容。",
+      "bank_questions": 348,
+      "point_count": 4,
+      "points": [
+        {
+          "id": "M8-01",
+          "no": 1,
+          "module": "M8",
+          "title": "人工智能的定义",
+          "level": "了解",
+          "requirement": "了解人工智能的定义。",
+          "keywords": [
+            "人工智能",
+            "AI",
+            "定义",
+            "图灵测试"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "8-1 人工智能定义",
+                "module": "M8",
+                "count": 137,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 5 · 人工智能的定义",
+                "module": "M7",
+                "count": 33,
+                "scheme": "考点N",
+                "note": "跨模块错挂：内容属人工智能定义（M8-01），却挂在 M7"
+              }
+            ],
+            "total": 170
+          }
+        },
+        {
+          "id": "M8-02",
+          "no": 2,
+          "module": "M8",
+          "title": "人工智能发展历程与行业应用",
+          "level": "了解",
+          "requirement": "了解人工智能的发展历程，及其在各行业中的典型应用，如智能制造、智能医疗、智慧农业、智能物流等。",
+          "keywords": [
+            "发展历程",
+            "智能制造",
+            "智能医疗",
+            "智慧农业",
+            "智能物流"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 6 · 人工智能发展历程与典型应用",
+                "module": "M8",
+                "count": 26,
+                "scheme": "考点N",
+                "note": "扩展模块全局连续编号"
+              },
+              {
+                "label": "考点 6 · 人工智能发展历程与行业应用",
+                "module": "M8",
+                "count": 19,
+                "scheme": "考点N",
+                "note": "扩展模块全局连续编号"
+              },
+              {
+                "label": "8-2 人工智能发展历程与应用",
+                "module": "M8",
+                "count": 16,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 61
+          }
+        },
+        {
+          "id": "M8-03",
+          "no": 3,
+          "module": "M8",
+          "title": "人工智能关键技术",
+          "level": "熟悉",
+          "requirement": "熟悉人工智能涉及的关键技术及应用，如机器学习、计算机视觉、自然语言处理、知识图谱等。",
+          "keywords": [
+            "机器学习",
+            "计算机视觉",
+            "自然语言处理",
+            "知识图谱"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "8-3 人工智能关键技术",
+                "module": "M8",
+                "count": 41,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 7 · 人工智能关键技术",
+                "module": "M8",
+                "count": 35,
+                "scheme": "考点N",
+                "note": "扩展模块全局连续编号"
+              }
+            ],
+            "total": 76
+          }
+        },
+        {
+          "id": "M8-04",
+          "no": 4,
+          "module": "M8",
+          "title": "人工智能开发工具和框架",
+          "level": "了解",
+          "requirement": "了解人工智能技术常用的开发工具和框架，如TensorFlow、PyTorch、Keras等。",
+          "keywords": [
+            "TensorFlow",
+            "PyTorch",
+            "Keras",
+            "开发框架"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "8-4 人工智能开发工具与框架",
+                "module": "M8",
+                "count": 40,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 8 · 人工智能开发工具和框架",
+                "module": "M8",
+                "count": 26,
+                "scheme": "考点N",
+                "note": "扩展模块全局连续编号"
+              },
+              {
+                "label": "考点 8 · AI开发工具与框架",
+                "module": "M8",
+                "count": 8,
+                "scheme": "考点N",
+                "note": "扩展模块全局连续编号"
+              }
+            ],
+            "total": 74
+          }
+        }
+      ]
+    },
+    {
+      "code": "M9",
+      "name": "大数据技术基础",
+      "group": "扩展模块",
+      "score": 15,
+      "summary": "包含大数据基础知识、大数据典型应用、大数据核心技术等内容。",
+      "bank_questions": 382,
+      "point_count": 3,
+      "points": [
+        {
+          "id": "M9-01",
+          "no": 1,
+          "module": "M9",
+          "title": "大数据基本概念、结构类型和核心特征",
+          "level": "了解",
+          "requirement": "了解大数据的基本概念、结构类型和核心特征。",
+          "keywords": [
+            "大数据",
+            "结构化",
+            "半结构化",
+            "非结构化",
+            "4V"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "9-1 大数据基本概念",
+                "module": "M9",
+                "count": 63,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 9 · 大数据基本概念、结构类型和核心特征",
+                "module": "M9",
+                "count": 24,
+                "scheme": "考点N",
+                "note": "扩展模块全局连续编号"
+              },
+              {
+                "label": "考点 9 · 大数据概念、结构与核心特征",
+                "module": "M9",
+                "count": 11,
+                "scheme": "考点N",
+                "note": "扩展模块全局连续编号"
+              }
+            ],
+            "total": 98
+          }
+        },
+        {
+          "id": "M9-02",
+          "no": 2,
+          "module": "M9",
+          "title": "大数据时代背景、应用场景和发展趋势",
+          "level": "了解",
+          "requirement": "了解大数据的时代背景、应用场景、分析理念和发展趋势。",
+          "keywords": [
+            "时代背景",
+            "应用场景",
+            "分析理念",
+            "发展趋势"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 10 · 大数据时代背景、应用场景和发展趋势",
+                "module": "M9",
+                "count": 27,
+                "scheme": "考点N",
+                "note": "扩展模块全局连续编号"
+              },
+              {
+                "label": "考点 10 · 大数据时代背景、场景与理念",
+                "module": "M9",
+                "count": 18,
+                "scheme": "考点N",
+                "note": "扩展模块全局连续编号"
+              },
+              {
+                "label": "9-2 大数据的时代背景与应用",
+                "module": "M9",
+                "count": 5,
+                "scheme": "M-N",
+                "note": null
+              }
+            ],
+            "total": 50
+          }
+        },
+        {
+          "id": "M9-03",
+          "no": 3,
+          "module": "M9",
+          "title": "大数据处理核心技术",
+          "level": "熟悉",
+          "requirement": "熟悉大数据处理的核心技术，包括数据采集与预处理、数据存储与管理、数据处理与分析、数据可视化等。",
+          "keywords": [
+            "数据采集",
+            "预处理",
+            "存储管理",
+            "处理分析",
+            "可视化",
+            "Hadoop",
+            "Spark"
+          ],
+          "bank": {
+            "labels": [
+              {
+                "label": "考点 11 · 大数据处理核心技术",
+                "module": "M9",
+                "count": 169,
+                "scheme": "考点N",
+                "note": "扩展模块全局连续编号"
+              },
+              {
+                "label": "9-3 大数据处理核心技术",
+                "module": "M9",
+                "count": 34,
+                "scheme": "M-N",
+                "note": null
+              },
+              {
+                "label": "考点 11 · 大数据核心技术",
+                "module": "M9",
+                "count": 31,
+                "scheme": "考点N",
+                "note": "扩展模块全局连续编号"
+              }
+            ],
+            "total": 234
+          }
+        }
+      ]
+    }
+  ],
+  "kd_label_map": {
+    "M1|考点 1 · 信息技术的概念及典型应用": {
+      "point_id": "M1-01",
+      "scheme": "考点N",
+      "count": 38,
+      "note": null
+    },
+    "M1|考点 2 · 信息技术的发展历程和发展趋势": {
+      "point_id": "M1-02",
+      "scheme": "考点N",
+      "count": 37,
+      "note": null
+    },
+    "M1|考点 3 · 信息社会的特征和文化、道德、法律常识": {
+      "point_id": "M1-03",
+      "scheme": "考点N",
+      "count": 38,
+      "note": null
+    },
+    "M1|考点 4 · 计算机系统组成与进制转换": {
+      "point_id": "M1-04",
+      "scheme": "考点N",
+      "count": 32,
+      "note": null
+    },
+    "M1|考点 5 · ASCII码及常用编码": {
+      "point_id": "M1-05",
+      "scheme": "考点N",
+      "count": 31,
+      "note": null
+    },
+    "M1|考点 6 · 数据的存储单位": {
+      "point_id": "M1-06",
+      "scheme": "考点N",
+      "count": 40,
+      "note": null
+    },
+    "M1|考点 7 · 操作系统的基本概念与常用快捷键": {
+      "point_id": "M1-07",
+      "scheme": "考点N",
+      "count": 44,
+      "note": null
+    },
+    "M1|考点 8 · 文件和文件夹的概念与常用文件类型": {
+      "point_id": "M1-08",
+      "scheme": "考点N",
+      "count": 32,
+      "note": null
+    },
+    "M1|考点 9 · 资源管理器与文件管理操作": {
+      "point_id": "M1-09",
+      "scheme": "考点N",
+      "count": 41,
+      "note": null
+    },
+    "M1|章节测试卷（跨考点综合）": {
+      "point_id": null,
+      "scheme": "综合/其他",
+      "count": 86,
+      "note": "跨考点综合题，不对应单一考点"
+    },
+    "M1|1-1 信息技术的概念与社会应用": {
+      "point_id": "M1-01",
+      "scheme": "M-N",
+      "count": 29,
+      "note": null
+    },
+    "M1|1-3 信息社会的特征与影响": {
+      "point_id": "M1-03",
+      "scheme": "M-N",
+      "count": 17,
+      "note": null
+    },
+    "M1|1-2 信息技术的发展历程与趋势": {
+      "point_id": "M1-02",
+      "scheme": "M-N",
+      "count": 17,
+      "note": null
+    },
+    "M1|1-4 计算机系统组成与进制转换": {
+      "point_id": "M1-04",
+      "scheme": "M-N",
+      "count": 44,
+      "note": null
+    },
+    "M1|1-6 数据存储单位与换算": {
+      "point_id": "M1-06",
+      "scheme": "M-N",
+      "count": 5,
+      "note": null
+    },
+    "M1|1-7 操作系统基本概念与快捷键": {
+      "point_id": "M1-07",
+      "scheme": "M-N",
+      "count": 11,
+      "note": null
+    },
+    "M7|考点 1 · 信息安全意识与网络欺诈识别": {
+      "point_id": "M7-01",
+      "scheme": "考点N",
+      "count": 11,
+      "note": null
+    },
+    "M7|考点 2 · 信息安全基本概念与等级保护": {
+      "point_id": "M7-02",
+      "scheme": "考点N",
+      "count": 10,
+      "note": null
+    },
+    "M7|考点 3 · 安全威胁与防御技术": {
+      "point_id": "M7-03",
+      "scheme": "考点N",
+      "count": 33,
+      "note": null
+    },
+    "M7|考点 4 · 网络安全设备与部署": {
+      "point_id": "M7-04",
+      "scheme": "考点N",
+      "count": 9,
+      "note": null
+    },
+    "M7|考点 5 · 人工智能的定义": {
+      "point_id": "M8-01",
+      "scheme": "考点N",
+      "count": 33,
+      "note": "跨模块错挂：内容属人工智能定义（M8-01），却挂在 M7"
+    },
+    "M7|考点 1 · 信息安全意识与常见网络欺诈": {
+      "point_id": "M7-01",
+      "scheme": "考点N",
+      "count": 26,
+      "note": null
+    },
+    "M7|考点 2 · 信息安全基本概念": {
+      "point_id": "M7-02",
+      "scheme": "考点N",
+      "count": 23,
+      "note": null
+    },
+    "M7|考点 3 · 信息安全技术与常见威胁防御": {
+      "point_id": "M7-03",
+      "scheme": "考点N",
+      "count": 26,
+      "note": null
+    },
+    "M7|考点 4 · 常用网络安全设备": {
+      "point_id": "M7-04",
+      "scheme": "考点N",
+      "count": 24,
+      "note": null
+    },
+    "M7|7-2 信息安全基本概念": {
+      "point_id": "M7-02",
+      "scheme": "M-N",
+      "count": 30,
+      "note": null
+    },
+    "M7|7-3 信息安全技术与防御": {
+      "point_id": "M7-03",
+      "scheme": "M-N",
+      "count": 96,
+      "note": null
+    },
+    "M7|7-1 信息安全意识": {
+      "point_id": "M7-01",
+      "scheme": "M-N",
+      "count": 64,
+      "note": null
+    },
+    "M8|考点 6 · 人工智能发展历程与行业应用": {
+      "point_id": "M8-02",
+      "scheme": "考点N",
+      "count": 19,
+      "note": "扩展模块全局连续编号"
+    },
+    "M8|考点 7 · 人工智能关键技术": {
+      "point_id": "M8-03",
+      "scheme": "考点N",
+      "count": 35,
+      "note": "扩展模块全局连续编号"
+    },
+    "M8|考点 8 · AI开发工具与框架": {
+      "point_id": "M8-04",
+      "scheme": "考点N",
+      "count": 8,
+      "note": "扩展模块全局连续编号"
+    },
+    "M8|考点 6 · 人工智能发展历程与典型应用": {
+      "point_id": "M8-02",
+      "scheme": "考点N",
+      "count": 26,
+      "note": "扩展模块全局连续编号"
+    },
+    "M8|考点 8 · 人工智能开发工具和框架": {
+      "point_id": "M8-04",
+      "scheme": "考点N",
+      "count": 26,
+      "note": "扩展模块全局连续编号"
+    },
+    "M8|8-1 人工智能定义": {
+      "point_id": "M8-01",
+      "scheme": "M-N",
+      "count": 137,
+      "note": null
+    },
+    "M8|8-3 人工智能关键技术": {
+      "point_id": "M8-03",
+      "scheme": "M-N",
+      "count": 41,
+      "note": null
+    },
+    "M8|8-2 人工智能发展历程与应用": {
+      "point_id": "M8-02",
+      "scheme": "M-N",
+      "count": 16,
+      "note": null
+    },
+    "M8|8-4 人工智能开发工具与框架": {
+      "point_id": "M8-04",
+      "scheme": "M-N",
+      "count": 40,
+      "note": null
+    },
+    "M9|考点 9 · 大数据概念、结构与核心特征": {
+      "point_id": "M9-01",
+      "scheme": "考点N",
+      "count": 11,
+      "note": "扩展模块全局连续编号"
+    },
+    "M9|考点 10 · 大数据时代背景、场景与理念": {
+      "point_id": "M9-02",
+      "scheme": "考点N",
+      "count": 18,
+      "note": "扩展模块全局连续编号"
+    },
+    "M9|考点 11 · 大数据核心技术": {
+      "point_id": "M9-03",
+      "scheme": "考点N",
+      "count": 31,
+      "note": "扩展模块全局连续编号"
+    },
+    "M9|考点 9 · 大数据基本概念、结构类型和核心特征": {
+      "point_id": "M9-01",
+      "scheme": "考点N",
+      "count": 24,
+      "note": "扩展模块全局连续编号"
+    },
+    "M9|考点 10 · 大数据时代背景、应用场景和发展趋势": {
+      "point_id": "M9-02",
+      "scheme": "考点N",
+      "count": 27,
+      "note": "扩展模块全局连续编号"
+    },
+    "M9|考点 11 · 大数据处理核心技术": {
+      "point_id": "M9-03",
+      "scheme": "考点N",
+      "count": 169,
+      "note": "扩展模块全局连续编号"
+    },
+    "M9|9-1 大数据基本概念": {
+      "point_id": "M9-01",
+      "scheme": "M-N",
+      "count": 63,
+      "note": null
+    },
+    "M9|9-3 大数据处理核心技术": {
+      "point_id": "M9-03",
+      "scheme": "M-N",
+      "count": 34,
+      "note": null
+    },
+    "M9|9-2 大数据的时代背景与应用": {
+      "point_id": "M9-02",
+      "scheme": "M-N",
+      "count": 5,
+      "note": null
+    },
+    "M3|考点 1 · 工作簿、工作表与单元格": {
+      "point_id": "M3-01",
+      "scheme": "考点N",
+      "count": 21,
+      "note": null
+    },
+    "M3|考点 2 · 单元格引用与运算符": {
+      "point_id": "M3-02",
+      "scheme": "考点N",
+      "count": 27,
+      "note": null
+    },
+    "M3|考点 3 · 公式与常用函数": {
+      "point_id": "M3-03",
+      "scheme": "考点N",
+      "count": 41,
+      "note": null
+    },
+    "M3|考点 4 · 图表制作": {
+      "point_id": "M3-04",
+      "scheme": "考点N",
+      "count": 17,
+      "note": null
+    },
+    "M3|考点 5 · 筛选、排序与分类汇总": {
+      "point_id": "M3-05",
+      "scheme": "考点N",
+      "count": 21,
+      "note": null
+    },
+    "M3|考点 6 · 数据透视表": {
+      "point_id": "M3-06",
+      "scheme": "考点N",
+      "count": 18,
+      "note": null
+    },
+    "M3|3-1 工作簿/工作表/单元格操作": {
+      "point_id": "M3-01",
+      "scheme": "M-N",
+      "count": 91,
+      "note": null
+    },
+    "M3|3-4 图表制作": {
+      "point_id": "M3-04",
+      "scheme": "M-N",
+      "count": 32,
+      "note": null
+    },
+    "M3|3-5 数据筛选排序与分类汇总": {
+      "point_id": "M3-05",
+      "scheme": "M-N",
+      "count": 14,
+      "note": null
+    },
+    "M3|3-3 公式与常用函数": {
+      "point_id": "M3-03",
+      "scheme": "M-N",
+      "count": 66,
+      "note": null
+    },
+    "M3|3-2 单元格引用与运算符": {
+      "point_id": "M3-02",
+      "scheme": "M-N",
+      "count": 14,
+      "note": null
+    },
+    "M2|考点 1 · 文本编辑与段落格式": {
+      "point_id": "M2-01",
+      "scheme": "考点N",
+      "count": 35,
+      "note": null
+    },
+    "M2|考点 2 · 图片、图形与文本框": {
+      "point_id": "M2-02",
+      "scheme": "考点N",
+      "count": 15,
+      "note": null
+    },
+    "M2|考点 3 · 文档表格的插入与编辑": {
+      "point_id": "M2-03",
+      "scheme": "考点N",
+      "count": 19,
+      "note": null
+    },
+    "M2|考点 4 · 页面设置与页眉页脚": {
+      "point_id": "M2-04",
+      "scheme": "考点N",
+      "count": 15,
+      "note": null
+    },
+    "M2|考点 5 · 样式与目录": {
+      "point_id": "M2-05",
+      "scheme": "考点N",
+      "count": 19,
+      "note": null
+    },
+    "M2|考点 6 · 打印预览与打印": {
+      "point_id": "M2-06",
+      "scheme": "考点N",
+      "count": 12,
+      "note": null
+    },
+    "M2|2-2 图片与图形对象操作": {
+      "point_id": "M2-02",
+      "scheme": "M-N",
+      "count": 25,
+      "note": null
+    },
+    "M2|2-1 文本编辑与段落格式": {
+      "point_id": "M2-01",
+      "scheme": "M-N",
+      "count": 143,
+      "note": null
+    },
+    "M2|2-4 页面设置与页眉页脚": {
+      "point_id": "M2-04",
+      "scheme": "M-N",
+      "count": 11,
+      "note": null
+    },
+    "M2|2-3 文档表格操作": {
+      "point_id": "M2-03",
+      "scheme": "M-N",
+      "count": 43,
+      "note": null
+    },
+    "M5|考点 1 · 网络基础概念、功能与分类": {
+      "point_id": "M5-01",
+      "scheme": "考点N",
+      "count": 10,
+      "note": null
+    },
+    "M5|考点 2 · 数据通信基本概念": {
+      "point_id": "M5-02",
+      "scheme": "考点N",
+      "count": 5,
+      "note": null
+    },
+    "M5|考点 3 · 网络协议与常用协议": {
+      "point_id": "M5-03",
+      "scheme": "考点N",
+      "count": 5,
+      "note": null
+    },
+    "M5|考点 4 · TCP/IP模型与IP地址": {
+      "point_id": "M5-04",
+      "scheme": "考点N",
+      "count": 38,
+      "note": null
+    },
+    "M5|考点 5 · 子网掩码与VLAN划分": {
+      "point_id": "M5-05",
+      "scheme": "考点N",
+      "count": 11,
+      "note": null
+    },
+    "M5|考点 6 · 常见网络设备类型与功能": {
+      "point_id": "M5-06",
+      "scheme": "考点N",
+      "count": 11,
+      "note": null
+    },
+    "M5|考点 7 · 域名与域名系统DNS": {
+      "point_id": "M5-07",
+      "scheme": "考点N",
+      "count": 11,
+      "note": null
+    },
+    "M5|考点 8 · 交换机的功能与应用": {
+      "point_id": "M5-08",
+      "scheme": "考点N",
+      "count": 8,
+      "note": null
+    },
+    "M5|考点 9 · 路由器的功能与应用": {
+      "point_id": "M5-09",
+      "scheme": "考点N",
+      "count": 5,
+      "note": null
+    },
+    "M5|考点 10 · 局域网常用拓扑结构": {
+      "point_id": "M5-10",
+      "scheme": "考点N",
+      "count": 5,
+      "note": null
+    },
+    "M5|考点 11 · 常用网络命令": {
+      "point_id": "M5-11",
+      "scheme": "考点N",
+      "count": 5,
+      "note": null
+    },
+    "M5|考点 12 · 网络协作工具": {
+      "point_id": "M5-12",
+      "scheme": "考点N",
+      "count": 5,
+      "note": null
+    },
+    "M5|考点 1 · 网络的基础概念、功能及应用": {
+      "point_id": "M5-01",
+      "scheme": "考点N",
+      "count": 20,
+      "note": null
+    },
+    "M5|考点 2 · 数据通信系统的基本概念": {
+      "point_id": "M5-02",
+      "scheme": "考点N",
+      "count": 23,
+      "note": null
+    },
+    "M5|考点 3 · 协议的概念及常用网络协议": {
+      "point_id": "M5-03",
+      "scheme": "考点N",
+      "count": 16,
+      "note": null
+    },
+    "M5|考点 5 · 子网、子网掩码与VLAN": {
+      "point_id": "M5-05",
+      "scheme": "考点N",
+      "count": 23,
+      "note": null
+    },
+    "M5|考点 6 · 常见网络设备的类型和功能": {
+      "point_id": "M5-06",
+      "scheme": "考点N",
+      "count": 23,
+      "note": null
+    },
+    "M5|考点 7 · 域名与域名系统": {
+      "point_id": "M5-07",
+      "scheme": "考点N",
+      "count": 26,
+      "note": null
+    },
+    "M5|考点 8 · 交换机的功能及基本应用": {
+      "point_id": "M5-08",
+      "scheme": "考点N",
+      "count": 20,
+      "note": null
+    },
+    "M5|考点 9 · 路由器的功能及基本应用": {
+      "point_id": "M5-09",
+      "scheme": "考点N",
+      "count": 20,
+      "note": null
+    },
+    "M5|考点 10 · 局域网常用的拓扑结构": {
+      "point_id": "M5-10",
+      "scheme": "考点N",
+      "count": 23,
+      "note": null
+    },
+    "M5|考点 11 · 常用网络命令的使用": {
+      "point_id": "M5-11",
+      "scheme": "考点N",
+      "count": 26,
+      "note": null
+    },
+    "M5|考点 12 · 借助网络工具多人协作完成任务": {
+      "point_id": "M5-12",
+      "scheme": "考点N",
+      "count": 143,
+      "note": null
+    },
+    "M5|5-2 数据通信基本概念": {
+      "point_id": "M5-02",
+      "scheme": "M-N",
+      "count": 53,
+      "note": null
+    },
+    "M5|5-1 网络基础概念": {
+      "point_id": "M5-01",
+      "scheme": "M-N",
+      "count": 35,
+      "note": null
+    },
+    "M5|5-9 路由器应用": {
+      "point_id": "M5-09",
+      "scheme": "M-N",
+      "count": 14,
+      "note": null
+    },
+    "M5|5-3 常用网络协议": {
+      "point_id": "M5-03",
+      "scheme": "M-N",
+      "count": 58,
+      "note": null
+    },
+    "M5|5-5 子网与子网掩码": {
+      "point_id": "M5-05",
+      "scheme": "M-N",
+      "count": 13,
+      "note": null
+    },
+    "M5|5-6 网络设备类型与功能": {
+      "point_id": "M5-06",
+      "scheme": "M-N",
+      "count": 22,
+      "note": null
+    },
+    "M5|5-8 交换机应用": {
+      "point_id": "M5-08",
+      "scheme": "M-N",
+      "count": 25,
+      "note": null
+    },
+    "M5|5-11 常用网络命令": {
+      "point_id": "M5-11",
+      "scheme": "M-N",
+      "count": 13,
+      "note": null
+    },
+    "M5|5-7 域名系统": {
+      "point_id": "M5-07",
+      "scheme": "M-N",
+      "count": 13,
+      "note": null
+    },
+    "M5|5-12 网络协作工具": {
+      "point_id": "M5-12",
+      "scheme": "M-N",
+      "count": 34,
+      "note": null
+    },
+    "M5|5-10 局域网拓扑结构": {
+      "point_id": "M5-10",
+      "scheme": "M-N",
+      "count": 7,
+      "note": null
+    },
+    "M6|考点 1 · 程序设计基本概念": {
+      "point_id": "M6-01",
+      "scheme": "考点N",
+      "count": 5,
+      "note": null
+    },
+    "M6|考点 2 · 程序框图": {
+      "point_id": "M6-02",
+      "scheme": "考点N",
+      "count": 27,
+      "note": null
+    },
+    "M6|考点 3 · 程序设计语言的分类与发展": {
+      "point_id": "M6-03",
+      "scheme": "考点N",
+      "count": 6,
+      "note": null
+    },
+    "M6|考点 4 · Python语言特点": {
+      "point_id": "M6-04",
+      "scheme": "考点N",
+      "count": 9,
+      "note": null
+    },
+    "M6|考点 5 · Python编程工具IDLE": {
+      "point_id": "M6-05",
+      "scheme": "考点N",
+      "count": 9,
+      "note": null
+    },
+    "M6|考点 6 · 基本语法、数据类型与流程控制": {
+      "point_id": "M6-06",
+      "scheme": "考点N",
+      "count": 69,
+      "note": null
+    },
+    "M6|考点 7 · math与turtle模块": {
+      "point_id": "M6-07",
+      "scheme": "考点N",
+      "count": 12,
+      "note": null
+    },
+    "M6|考点 8 · 常用算法实现": {
+      "point_id": "M6-08",
+      "scheme": "考点N",
+      "count": 9,
+      "note": null
+    },
+    "M6|考点 1 · 程序设计的基本概念": {
+      "point_id": "M6-01",
+      "scheme": "考点N",
+      "count": 24,
+      "note": null
+    },
+    "M6|考点 3 · 程序设计语言的分类与发展历程": {
+      "point_id": "M6-03",
+      "scheme": "考点N",
+      "count": 24,
+      "note": null
+    },
+    "M6|考点 4 · Python程序设计语言的特点": {
+      "point_id": "M6-04",
+      "scheme": "考点N",
+      "count": 24,
+      "note": null
+    },
+    "M6|考点 5 · Python编程工具（IDLE）的安装与使用": {
+      "point_id": "M6-05",
+      "scheme": "考点N",
+      "count": 24,
+      "note": null
+    },
+    "M6|考点 6 · Python基本语法、数据类型与流程控制": {
+      "point_id": "M6-06",
+      "scheme": "考点N",
+      "count": 14,
+      "note": null
+    },
+    "M6|考点 7 · math模块与turtle模块": {
+      "point_id": "M6-07",
+      "scheme": "考点N",
+      "count": 23,
+      "note": null
+    },
+    "M6|考点 8 · 常用算法的实现": {
+      "point_id": "M6-08",
+      "scheme": "考点N",
+      "count": 117,
+      "note": null
+    },
+    "M6|6-3 程序设计语言分类与发展": {
+      "point_id": "M6-03",
+      "scheme": "M-N",
+      "count": 31,
+      "note": null
+    },
+    "M6|6-1 程序设计基本概念": {
+      "point_id": "M6-01",
+      "scheme": "M-N",
+      "count": 36,
+      "note": null
+    },
+    "M6|6-6 Python基本语法与数据类型": {
+      "point_id": "M6-06",
+      "scheme": "M-N",
+      "count": 60,
+      "note": null
+    },
+    "M6|6-4 Python语言特点": {
+      "point_id": "M6-04",
+      "scheme": "M-N",
+      "count": 42,
+      "note": null
+    },
+    "M6|6-7 Python流程控制": {
+      "point_id": "M6-06",
+      "scheme": "M-N",
+      "count": 35,
+      "note": "近似归并：考纲把流程控制并入第6条"
+    },
+    "M6|6-8 Python常用模块": {
+      "point_id": "M6-07",
+      "scheme": "M-N",
+      "count": 35,
+      "note": "近似归并：Python常用模块对应 math/turtle 模块"
+    },
+    "M6|6-2 程序框图": {
+      "point_id": "M6-02",
+      "scheme": "M-N",
+      "count": 5,
+      "note": null
+    },
+    "M4|考点 1 · 演示文稿基本概念": {
+      "point_id": "M4-01",
+      "scheme": "考点N",
+      "count": 34,
+      "note": null
+    },
+    "M4|考点 2 · 幻灯片基本操作": {
+      "point_id": "M4-02",
+      "scheme": "考点N",
+      "count": 11,
+      "note": null
+    },
+    "M4|考点 3 · 幻灯片对象插入": {
+      "point_id": "M4-03",
+      "scheme": "考点N",
+      "count": 17,
+      "note": null
+    },
+    "M4|考点 4 · 幻灯片母版": {
+      "point_id": "M4-04",
+      "scheme": "考点N",
+      "count": 26,
+      "note": null
+    },
+    "M4|考点 5 · 动画、超链接与切换": {
+      "point_id": "M4-05",
+      "scheme": "考点N",
+      "count": 28,
+      "note": null
+    },
+    "M4|考点 6 · 放映方式": {
+      "point_id": "M4-06",
+      "scheme": "考点N",
+      "count": 14,
+      "note": null
+    },
+    "M4|4-1 演示文稿基本概念": {
+      "point_id": "M4-01",
+      "scheme": "M-N",
+      "count": 73,
+      "note": null
+    },
+    "M4|4-5 动画与超链接": {
+      "point_id": "M4-05",
+      "scheme": "M-N",
+      "count": 8,
+      "note": null
+    },
+    "M4|4-3 幻灯片对象插入": {
+      "point_id": "M4-03",
+      "scheme": "M-N",
+      "count": 3,
+      "note": null
+    },
+    "M4|4-4 幻灯片母版": {
+      "point_id": "M4-04",
+      "scheme": "M-N",
+      "count": 3,
+      "note": null
+    }
+  },
+  "catalog_text": [
+    "M1-01 | 理解 | 信息技术的概念及典型应用 | 题库现有 67 题 | 标签 2 种",
+    "M1-02 | 了解 | 信息技术的发展历程和发展趋势 | 题库现有 54 题 | 标签 2 种",
+    "M1-03 | 了解 | 信息社会的特征与信息文化、道德、法律常识 | 题库现有 55 题 | 标签 2 种",
+    "M1-04 | 了解/熟悉 | 计算机系统组成与进制转换 | 题库现有 76 题 | 标签 2 种",
+    "M1-05 | 理解/了解 | ASCII码及常用编码 | 题库现有 31 题 | 标签 1 种",
+    "M1-06 | 掌握 | 数据的存储单位及换算 | 题库现有 45 题 | 标签 2 种",
+    "M1-07 | 了解 | 操作系统的基本概念与快捷键 | 题库现有 55 题 | 标签 2 种",
+    "M1-08 | 理解/了解 | 文件、文件夹与常用文件类型 | 题库现有 32 题 | 标签 1 种",
+    "M1-09 | 掌握 | 资源管理器与文件管理操作 | 题库现有 41 题 | 标签 1 种",
+    "M2-01 | 掌握 | 文本编辑与段落格式 | 题库现有 178 题 | 标签 2 种",
+    "M2-02 | 掌握 | 图片、图形、艺术字与文本框 | 题库现有 40 题 | 标签 2 种",
+    "M2-03 | 掌握 | 文档表格的插入与编辑 | 题库现有 62 题 | 标签 2 种",
+    "M2-04 | 熟悉/掌握 | 页面设置与页眉页脚 | 题库现有 26 题 | 标签 2 种",
+    "M2-05 | 掌握 | 样式与目录 | 题库现有 19 题 | 标签 1 种",
+    "M2-06 | 掌握 | 打印预览与打印 | 题库现有 12 题 | 标签 1 种",
+    "M3-01 | 掌握 | 工作簿、工作表与单元格 | 题库现有 112 题 | 标签 2 种",
+    "M3-02 | 掌握 | 单元格引用与运算符 | 题库现有 41 题 | 标签 2 种",
+    "M3-03 | 掌握 | 公式与常用函数 | 题库现有 107 题 | 标签 2 种",
+    "M3-04 | 了解/掌握 | 图表制作 | 题库现有 49 题 | 标签 2 种",
+    "M3-05 | 掌握 | 筛选、排序与分类汇总 | 题库现有 35 题 | 标签 2 种",
+    "M3-06 | 理解/掌握 | 数据透视表 | 题库现有 18 题 | 标签 1 种",
+    "M4-01 | 了解 | 演示文稿的功能特点与应用场景 | 题库现有 107 题 | 标签 2 种",
+    "M4-02 | 掌握 | 幻灯片基本操作 | 题库现有 11 题 | 标签 1 种",
+    "M4-03 | 掌握 | 幻灯片对象插入 | 题库现有 20 题 | 标签 2 种",
+    "M4-04 | 理解/掌握 | 幻灯片母版 | 题库现有 29 题 | 标签 2 种",
+    "M4-05 | 掌握 | 动画、超链接与切换 | 题库现有 36 题 | 标签 2 种",
+    "M4-06 | 了解 | 放映方式 | 题库现有 14 题 | 标签 1 种",
+    "M5-01 | 了解 | 网络的基础概念、功能及应用 | 题库现有 65 题 | 标签 3 种",
+    "M5-02 | 了解 | 数据通信系统的基本概念 | 题库现有 81 题 | 标签 3 种",
+    "M5-03 | 理解 | 协议的概念及常用网络协议 | 题库现有 79 题 | 标签 3 种",
+    "M5-04 | 理解/掌握 | TCP/IP模型与IP地址 | 题库现有 38 题 | 标签 1 种",
+    "M5-05 | 理解/掌握 | 子网、子网掩码与VLAN | 题库现有 47 题 | 标签 3 种",
+    "M5-06 | 理解 | 常见网络设备的类型和功能 | 题库现有 56 题 | 标签 3 种",
+    "M5-07 | 理解/掌握 | 域名与域名系统DNS | 题库现有 50 题 | 标签 3 种",
+    "M5-08 | 理解 | 交换机的功能及基本应用 | 题库现有 53 题 | 标签 3 种",
+    "M5-09 | 理解 | 路由器的功能及基本应用 | 题库现有 39 题 | 标签 3 种",
+    "M5-10 | 掌握 | 局域网常用的拓扑结构 | 题库现有 35 题 | 标签 3 种",
+    "M5-11 | 掌握 | 常用网络命令的使用 | 题库现有 44 题 | 标签 3 种",
+    "M5-12 | 熟悉 | 借助网络工具多人协作完成任务 | 题库现有 182 题 | 标签 3 种",
+    "M6-01 | 理解 | 程序设计的基本概念 | 题库现有 65 题 | 标签 3 种",
+    "M6-02 | 理解 | 程序框图 | 题库现有 32 题 | 标签 2 种",
+    "M6-03 | 了解 | 程序设计语言的分类与发展历程 | 题库现有 61 题 | 标签 3 种",
+    "M6-04 | 了解 | Python程序设计语言的特点 | 题库现有 75 题 | 标签 3 种",
+    "M6-05 | 掌握 | Python编程工具（IDLE）的安装与使用 | 题库现有 33 题 | 标签 2 种",
+    "M6-06 | 掌握 | 基本语法、数据类型与流程控制 | 题库现有 178 题 | 标签 4 种",
+    "M6-07 | 了解 | math模块与turtle模块 | 题库现有 70 题 | 标签 3 种",
+    "M6-08 | 掌握 | 常用算法的实现 | 题库现有 126 题 | 标签 2 种",
+    "M7-01 | 理解 | 信息安全意识与网络欺诈识别 | 题库现有 101 题 | 标签 3 种",
+    "M7-02 | 了解 | 信息安全基本概念与等级保护 | 题库现有 63 题 | 标签 3 种",
+    "M7-03 | 理解 | 信息安全技术与常见威胁防御 | 题库现有 155 题 | 标签 3 种",
+    "M7-04 | 熟悉 | 常用网络安全设备的功能和部署 | 题库现有 33 题 | 标签 2 种",
+    "M8-01 | 了解 | 人工智能的定义 | 题库现有 170 题 | 标签 2 种",
+    "M8-02 | 了解 | 人工智能发展历程与行业应用 | 题库现有 61 题 | 标签 3 种",
+    "M8-03 | 熟悉 | 人工智能关键技术 | 题库现有 76 题 | 标签 2 种",
+    "M8-04 | 了解 | 人工智能开发工具和框架 | 题库现有 74 题 | 标签 3 种",
+    "M9-01 | 了解 | 大数据基本概念、结构类型和核心特征 | 题库现有 98 题 | 标签 3 种",
+    "M9-02 | 了解 | 大数据时代背景、应用场景和发展趋势 | 题库现有 50 题 | 标签 3 种",
+    "M9-03 | 熟悉 | 大数据处理核心技术 | 题库现有 234 题 | 标签 3 种"
+  ],
+  "audit": {
+    "summary": "题库 3982 题全部带 kd 字段（考点标签），覆盖率 100%；但标签不是一套统一体系：133 个「模块×标签」组合归并后只对应考纲 58 条考点。",
+    "field_note": "题目对象中的 kd 才是知识点标签；另有 tag 字段仅 285 题有，取值 wrong/correct，是生成批次标记，不是知识点；difficulty 也仅 285 题有。",
+    "label_schemes": {
+      "考点N": 2190,
+      "综合/其他": 86,
+      "M-N": 1706
+    },
+    "duplicate_synonym_groups": 49,
+    "duplicate_synonym_detail": [
+      {
+        "id": "M1-01",
+        "title": "信息技术的概念及典型应用",
+        "label_count": 2,
+        "labels": [
+          "考点 1 · 信息技术的概念及典型应用",
+          "1-1 信息技术的概念与社会应用"
+        ]
+      },
+      {
+        "id": "M1-02",
+        "title": "信息技术的发展历程和发展趋势",
+        "label_count": 2,
+        "labels": [
+          "考点 2 · 信息技术的发展历程和发展趋势",
+          "1-2 信息技术的发展历程与趋势"
+        ]
+      },
+      {
+        "id": "M1-03",
+        "title": "信息社会的特征与信息文化、道德、法律常识",
+        "label_count": 2,
+        "labels": [
+          "考点 3 · 信息社会的特征和文化、道德、法律常识",
+          "1-3 信息社会的特征与影响"
+        ]
+      },
+      {
+        "id": "M1-04",
+        "title": "计算机系统组成与进制转换",
+        "label_count": 2,
+        "labels": [
+          "1-4 计算机系统组成与进制转换",
+          "考点 4 · 计算机系统组成与进制转换"
+        ]
+      },
+      {
+        "id": "M1-06",
+        "title": "数据的存储单位及换算",
+        "label_count": 2,
+        "labels": [
+          "考点 6 · 数据的存储单位",
+          "1-6 数据存储单位与换算"
+        ]
+      },
+      {
+        "id": "M1-07",
+        "title": "操作系统的基本概念与快捷键",
+        "label_count": 2,
+        "labels": [
+          "考点 7 · 操作系统的基本概念与常用快捷键",
+          "1-7 操作系统基本概念与快捷键"
+        ]
+      },
+      {
+        "id": "M2-01",
+        "title": "文本编辑与段落格式",
+        "label_count": 2,
+        "labels": [
+          "2-1 文本编辑与段落格式",
+          "考点 1 · 文本编辑与段落格式"
+        ]
+      },
+      {
+        "id": "M2-02",
+        "title": "图片、图形、艺术字与文本框",
+        "label_count": 2,
+        "labels": [
+          "2-2 图片与图形对象操作",
+          "考点 2 · 图片、图形与文本框"
+        ]
+      },
+      {
+        "id": "M2-03",
+        "title": "文档表格的插入与编辑",
+        "label_count": 2,
+        "labels": [
+          "2-3 文档表格操作",
+          "考点 3 · 文档表格的插入与编辑"
+        ]
+      },
+      {
+        "id": "M2-04",
+        "title": "页面设置与页眉页脚",
+        "label_count": 2,
+        "labels": [
+          "考点 4 · 页面设置与页眉页脚",
+          "2-4 页面设置与页眉页脚"
+        ]
+      },
+      {
+        "id": "M3-01",
+        "title": "工作簿、工作表与单元格",
+        "label_count": 2,
+        "labels": [
+          "3-1 工作簿/工作表/单元格操作",
+          "考点 1 · 工作簿、工作表与单元格"
+        ]
+      },
+      {
+        "id": "M3-02",
+        "title": "单元格引用与运算符",
+        "label_count": 2,
+        "labels": [
+          "考点 2 · 单元格引用与运算符",
+          "3-2 单元格引用与运算符"
+        ]
+      },
+      {
+        "id": "M3-03",
+        "title": "公式与常用函数",
+        "label_count": 2,
+        "labels": [
+          "3-3 公式与常用函数",
+          "考点 3 · 公式与常用函数"
+        ]
+      },
+      {
+        "id": "M3-04",
+        "title": "图表制作",
+        "label_count": 2,
+        "labels": [
+          "3-4 图表制作",
+          "考点 4 · 图表制作"
+        ]
+      },
+      {
+        "id": "M3-05",
+        "title": "筛选、排序与分类汇总",
+        "label_count": 2,
+        "labels": [
+          "考点 5 · 筛选、排序与分类汇总",
+          "3-5 数据筛选排序与分类汇总"
+        ]
+      },
+      {
+        "id": "M4-01",
+        "title": "演示文稿的功能特点与应用场景",
+        "label_count": 2,
+        "labels": [
+          "4-1 演示文稿基本概念",
+          "考点 1 · 演示文稿基本概念"
+        ]
+      },
+      {
+        "id": "M4-03",
+        "title": "幻灯片对象插入",
+        "label_count": 2,
+        "labels": [
+          "考点 3 · 幻灯片对象插入",
+          "4-3 幻灯片对象插入"
+        ]
+      },
+      {
+        "id": "M4-04",
+        "title": "幻灯片母版",
+        "label_count": 2,
+        "labels": [
+          "考点 4 · 幻灯片母版",
+          "4-4 幻灯片母版"
+        ]
+      },
+      {
+        "id": "M4-05",
+        "title": "动画、超链接与切换",
+        "label_count": 2,
+        "labels": [
+          "考点 5 · 动画、超链接与切换",
+          "4-5 动画与超链接"
+        ]
+      },
+      {
+        "id": "M5-01",
+        "title": "网络的基础概念、功能及应用",
+        "label_count": 3,
+        "labels": [
+          "5-1 网络基础概念",
+          "考点 1 · 网络的基础概念、功能及应用",
+          "考点 1 · 网络基础概念、功能与分类"
+        ]
+      },
+      {
+        "id": "M5-02",
+        "title": "数据通信系统的基本概念",
+        "label_count": 3,
+        "labels": [
+          "5-2 数据通信基本概念",
+          "考点 2 · 数据通信系统的基本概念",
+          "考点 2 · 数据通信基本概念"
+        ]
+      },
+      {
+        "id": "M5-03",
+        "title": "协议的概念及常用网络协议",
+        "label_count": 3,
+        "labels": [
+          "5-3 常用网络协议",
+          "考点 3 · 协议的概念及常用网络协议",
+          "考点 3 · 网络协议与常用协议"
+        ]
+      },
+      {
+        "id": "M5-05",
+        "title": "子网、子网掩码与VLAN",
+        "label_count": 3,
+        "labels": [
+          "考点 5 · 子网、子网掩码与VLAN",
+          "5-5 子网与子网掩码",
+          "考点 5 · 子网掩码与VLAN划分"
+        ]
+      },
+      {
+        "id": "M5-06",
+        "title": "常见网络设备的类型和功能",
+        "label_count": 3,
+        "labels": [
+          "考点 6 · 常见网络设备的类型和功能",
+          "5-6 网络设备类型与功能",
+          "考点 6 · 常见网络设备类型与功能"
+        ]
+      },
+      {
+        "id": "M5-07",
+        "title": "域名与域名系统DNS",
+        "label_count": 3,
+        "labels": [
+          "考点 7 · 域名与域名系统",
+          "5-7 域名系统",
+          "考点 7 · 域名与域名系统DNS"
+        ]
+      },
+      {
+        "id": "M5-08",
+        "title": "交换机的功能及基本应用",
+        "label_count": 3,
+        "labels": [
+          "5-8 交换机应用",
+          "考点 8 · 交换机的功能及基本应用",
+          "考点 8 · 交换机的功能与应用"
+        ]
+      },
+      {
+        "id": "M5-09",
+        "title": "路由器的功能及基本应用",
+        "label_count": 3,
+        "labels": [
+          "考点 9 · 路由器的功能及基本应用",
+          "5-9 路由器应用",
+          "考点 9 · 路由器的功能与应用"
+        ]
+      },
+      {
+        "id": "M5-10",
+        "title": "局域网常用的拓扑结构",
+        "label_count": 3,
+        "labels": [
+          "考点 10 · 局域网常用的拓扑结构",
+          "5-10 局域网拓扑结构",
+          "考点 10 · 局域网常用拓扑结构"
+        ]
+      },
+      {
+        "id": "M5-11",
+        "title": "常用网络命令的使用",
+        "label_count": 3,
+        "labels": [
+          "考点 11 · 常用网络命令的使用",
+          "5-11 常用网络命令",
+          "考点 11 · 常用网络命令"
+        ]
+      },
+      {
+        "id": "M5-12",
+        "title": "借助网络工具多人协作完成任务",
+        "label_count": 3,
+        "labels": [
+          "考点 12 · 借助网络工具多人协作完成任务",
+          "5-12 网络协作工具",
+          "考点 12 · 网络协作工具"
+        ]
+      },
+      {
+        "id": "M6-01",
+        "title": "程序设计的基本概念",
+        "label_count": 3,
+        "labels": [
+          "6-1 程序设计基本概念",
+          "考点 1 · 程序设计的基本概念",
+          "考点 1 · 程序设计基本概念"
+        ]
+      },
+      {
+        "id": "M6-02",
+        "title": "程序框图",
+        "label_count": 2,
+        "labels": [
+          "考点 2 · 程序框图",
+          "6-2 程序框图"
+        ]
+      },
+      {
+        "id": "M6-03",
+        "title": "程序设计语言的分类与发展历程",
+        "label_count": 3,
+        "labels": [
+          "6-3 程序设计语言分类与发展",
+          "考点 3 · 程序设计语言的分类与发展历程",
+          "考点 3 · 程序设计语言的分类与发展"
+        ]
+      },
+      {
+        "id": "M6-04",
+        "title": "Python程序设计语言的特点",
+        "label_count": 3,
+        "labels": [
+          "6-4 Python语言特点",
+          "考点 4 · Python程序设计语言的特点",
+          "考点 4 · Python语言特点"
+        ]
+      },
+      {
+        "id": "M6-05",
+        "title": "Python编程工具（IDLE）的安装与使用",
+        "label_count": 2,
+        "labels": [
+          "考点 5 · Python编程工具（IDLE）的安装与使用",
+          "考点 5 · Python编程工具IDLE"
+        ]
+      },
+      {
+        "id": "M6-06",
+        "title": "基本语法、数据类型与流程控制",
+        "label_count": 4,
+        "labels": [
+          "考点 6 · 基本语法、数据类型与流程控制",
+          "6-6 Python基本语法与数据类型",
+          "6-7 Python流程控制",
+          "考点 6 · Python基本语法、数据类型与流程控制"
+        ]
+      },
+      {
+        "id": "M6-07",
+        "title": "math模块与turtle模块",
+        "label_count": 3,
+        "labels": [
+          "6-8 Python常用模块",
+          "考点 7 · math模块与turtle模块",
+          "考点 7 · math与turtle模块"
+        ]
+      },
+      {
+        "id": "M6-08",
+        "title": "常用算法的实现",
+        "label_count": 2,
+        "labels": [
+          "考点 8 · 常用算法的实现",
+          "考点 8 · 常用算法实现"
+        ]
+      },
+      {
+        "id": "M7-01",
+        "title": "信息安全意识与网络欺诈识别",
+        "label_count": 3,
+        "labels": [
+          "7-1 信息安全意识",
+          "考点 1 · 信息安全意识与常见网络欺诈",
+          "考点 1 · 信息安全意识与网络欺诈识别"
+        ]
+      },
+      {
+        "id": "M7-02",
+        "title": "信息安全基本概念与等级保护",
+        "label_count": 3,
+        "labels": [
+          "7-2 信息安全基本概念",
+          "考点 2 · 信息安全基本概念",
+          "考点 2 · 信息安全基本概念与等级保护"
+        ]
+      },
+      {
+        "id": "M7-03",
+        "title": "信息安全技术与常见威胁防御",
+        "label_count": 3,
+        "labels": [
+          "7-3 信息安全技术与防御",
+          "考点 3 · 安全威胁与防御技术",
+          "考点 3 · 信息安全技术与常见威胁防御"
+        ]
+      },
+      {
+        "id": "M7-04",
+        "title": "常用网络安全设备的功能和部署",
+        "label_count": 2,
+        "labels": [
+          "考点 4 · 常用网络安全设备",
+          "考点 4 · 网络安全设备与部署"
+        ]
+      },
+      {
+        "id": "M8-01",
+        "title": "人工智能的定义",
+        "label_count": 2,
+        "labels": [
+          "8-1 人工智能定义",
+          "考点 5 · 人工智能的定义"
+        ]
+      },
+      {
+        "id": "M8-02",
+        "title": "人工智能发展历程与行业应用",
+        "label_count": 3,
+        "labels": [
+          "考点 6 · 人工智能发展历程与典型应用",
+          "考点 6 · 人工智能发展历程与行业应用",
+          "8-2 人工智能发展历程与应用"
+        ]
+      },
+      {
+        "id": "M8-03",
+        "title": "人工智能关键技术",
+        "label_count": 2,
+        "labels": [
+          "8-3 人工智能关键技术",
+          "考点 7 · 人工智能关键技术"
+        ]
+      },
+      {
+        "id": "M8-04",
+        "title": "人工智能开发工具和框架",
+        "label_count": 3,
+        "labels": [
+          "8-4 人工智能开发工具与框架",
+          "考点 8 · 人工智能开发工具和框架",
+          "考点 8 · AI开发工具与框架"
+        ]
+      },
+      {
+        "id": "M9-01",
+        "title": "大数据基本概念、结构类型和核心特征",
+        "label_count": 3,
+        "labels": [
+          "9-1 大数据基本概念",
+          "考点 9 · 大数据基本概念、结构类型和核心特征",
+          "考点 9 · 大数据概念、结构与核心特征"
+        ]
+      },
+      {
+        "id": "M9-02",
+        "title": "大数据时代背景、应用场景和发展趋势",
+        "label_count": 3,
+        "labels": [
+          "考点 10 · 大数据时代背景、应用场景和发展趋势",
+          "考点 10 · 大数据时代背景、场景与理念",
+          "9-2 大数据的时代背景与应用"
+        ]
+      },
+      {
+        "id": "M9-03",
+        "title": "大数据处理核心技术",
+        "label_count": 3,
+        "labels": [
+          "考点 11 · 大数据处理核心技术",
+          "9-3 大数据处理核心技术",
+          "考点 11 · 大数据核心技术"
+        ]
+      }
+    ],
+    "cross_module_mislabels": [
+      {
+        "label": "M7|考点 5 · 人工智能的定义",
+        "count": 33,
+        "should_be": "M8-01"
+      }
+    ],
+    "composite_labels": [
+      {
+        "label": "M1|章节测试卷（跨考点综合）",
+        "count": 86
+      }
+    ],
+    "mn_scheme_missing_points": [
+      "M1-05",
+      "M1-08",
+      "M1-09",
+      "M2-05",
+      "M2-06",
+      "M3-06",
+      "M4-02",
+      "M4-06",
+      "M5-04",
+      "M6-05",
+      "M6-08",
+      "M7-04"
+    ],
+    "tag_field_values": {
+      "wrong": 144,
+      "correct": 141
+    },
+    "question_type_distribution": {
+      "单选": 3300,
+      "判断": 511,
+      "多选": 171
+    },
+    "source_generation": {
+      "gen": 2476,
+      "gen4": 285,
+      "other": 1221
+    },
+    "known_issues": [
+      "三套命名并存：「考点 N · 名称」2190 题、「M-N 名称」1706 题、「章节测试卷（跨考点综合）」86 题。",
+      "同一考点存在多种同义标签（如 M5 考点 1 有「网络基础概念、功能与分类」和「网络的基础概念、功能及应用」两种写法），导致诊断雷达按 133 个组合而非 58 个考点统计。",
+      "M7 下 33 题标为「考点 5 · 人工智能的定义」，内容属 M8-01，属跨模块错挂。",
+      "M1 有 86 题为「章节测试卷（跨考点综合）」，不对应单一考点，按考点精简时需单独处理。",
+      "扩展模块「考点 N」为全局连续编号（M7 用 1-4、M8 用 6-8、M9 用 9-11），与考纲各章独立编号不一致。",
+      "M6 的「6-7 Python流程控制」「6-8 Python常用模块」与考纲条目不完全对齐，已做近似归并并在 kd_label_map 标注 note。",
+      "统计口径：modules[].bank_questions 按题目 m 字段统计，points[].bank.total 按归并后的考点统计；M7 错挂的 33 题计入 M8-01，故 M7（385/352）与 M8（348/381）两处数字不等，属预期。"
+    ]
+  },
+  "trim_reference": {
+    "description": "按考纲分值比例把题库压到 1000 题时的模块配额参考（非考纲规定，仅供精简时参考）",
+    "target": 1000,
+    "by_module": [
+      {
+        "code": "M1",
+        "score": 15,
+        "quota": 100,
+        "current": 542,
+        "ratio": 5.42
+      },
+      {
+        "code": "M2",
+        "score": 15,
+        "quota": 100,
+        "current": 337,
+        "ratio": 3.37
+      },
+      {
+        "code": "M3",
+        "score": 15,
+        "quota": 100,
+        "current": 362,
+        "ratio": 3.62
+      },
+      {
+        "code": "M4",
+        "score": 7,
+        "quota": 47,
+        "current": 217,
+        "ratio": 4.65
+      },
+      {
+        "code": "M5",
+        "score": 30,
+        "quota": 200,
+        "current": 769,
+        "ratio": 3.85
+      },
+      {
+        "code": "M6",
+        "score": 30,
+        "quota": 200,
+        "current": 640,
+        "ratio": 3.2
+      },
+      {
+        "code": "M7",
+        "score": 15,
+        "quota": 100,
+        "current": 385,
+        "ratio": 3.85
+      },
+      {
+        "code": "M8",
+        "score": 8,
+        "quota": 53,
+        "current": 348,
+        "ratio": 6.52
+      },
+      {
+        "code": "M9",
+        "score": 15,
+        "quota": 100,
+        "current": 382,
+        "ratio": 3.82
+      }
+    ]
+  }
+}

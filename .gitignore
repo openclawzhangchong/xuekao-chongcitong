@@ -3,6 +3,7 @@ data/
 学生入口二维码.png
 
 # 本地状态与凭证
+.workbuddy/
 .herenow/
 node_modules/
 class-server.log

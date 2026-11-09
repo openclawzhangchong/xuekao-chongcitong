@@ -7,6 +7,22 @@
 
 ---
 
+## 2026-11-09（默认题量白名单 2000 题 + 一键释放全库）
+
+- 背景：题库 3982 题按考纲分值/考点分布失衡（M8 8 分却有 348 题、M4 7 分 217 题；考点最少 11 题、最多 234 题）。需求是「默认只练精选题，按按钮才显示全部」，且不能让 AI 直接删题改真源。
+- 改了什么：
+  1. `docs/考点目录.json`（9 模块 / 58 考点 / 150 分）、`docs/题库精简配额-2000题.json` + `.csv`（模块按分值、考点按能力层级加权且不超过现有题数）、`docs/白名单-2000题.json`（2000 个 qid + 下标；86 道跨考点综合卷排除，另作模拟卷题源）。
+  2. `tools/build-whitelist.js` 按配额确定性取样；`src/whitelist-data.js` 只存 2000 个下标（9.5KB）；`src/bank-gate.js` 在 data.js 之后把 `window.BANK` 指向白名单视图，全库另存 `window.BANK_ALL`。**`src/data.js` 一题未删、题干一字未改，qid 不变，学生档案零断链**。
+  3. 按钮 `data-bank-gate`：首页 header、PK/擂台顶栏、PK 独立版顶栏；默认「🔒 精选 2000 题」，点击确认后释放为「🔓 全库 3982 题」，再点收回；状态存 `xkc.bank.release`，`?full=1` 为无 localStorage 环境的兜底。
+  4. 服务端同构闸门：`cloud/worker.js` 与 `班级版服务.py` 的 `/api/bank` 默认只返回 2000 题，仅 `?full=1` 返回全库；`pk-app.js` 释放时才带 `?full=1`，并对远程/粘贴进来的全库做 `guard` 兜底（教师自定义题库不误伤）。
+  5. `src/build.js` 构建期校验白名单与 JSON 一致、把下标行写进 `site/data.js`、内嵌闸门脚本；`pk/src/pk-build.js` + `template.html` 独立版同步。产物全部重建：`dist/学考冲刺通.html`、`site/index.html` + `site/data.js`、`pk/dist/双人PK答题.html`、桌面副本、客户端 zip / exe。
+- 为什么：闸门放在 `window.BANK` 这一层，刷题 / 模拟考 / 诊断 / PK / 擂台 / 备课夹无需逐个改抽题逻辑；服务端默认白名单，避免云端 PK 从 `/api/bank` 绕过。
+- 拿什么证明：`node tests/bank-gate.test.js` 20/20；既有单测 203 项 + Python 45 项 + 新增 20 项 = **268 项全绿**；`node tools/scan-defects.js` 计数未上升；真实启动班级版服务 `/api/bank` = 2000、`?full=1` = 3982；无头 Edge 实测按钮 `BEFORE 2000 → RELEASED 3982 → RELOCKED 2000`，按钮与版本文案同步；客户端打包 48 文件白名单校验通过（无密钥 / 无学生数据）。
+- 云端同步（2026-11-09 晚）：CF 主站 `xuekao.jiuyeke.cn`（KV，Version `f3cfa755`）、D1 备用 `xuekao.zcvoice-app.workers.dev`（Version `15cbf88d`）、here.now `coral-beacon-g4jx`（version `01M706BG6PPDMQJYDYFQT7TVMQ`）**三处均已部署**。线上实测：主站首页 200、含闸门与按钮，`/api/bank` 无参数 = 2000 题、`?full=1` = 3982 题；here.now 首页 200、含闸门与 `XK_BANK_INDEX` 下标行；无头 Edge 打开两个线上站均为 `BANK=2000 / BANK_ALL=3982`、按钮「🔒 精选 2000 题」。D1 部署成功但国内访问超时（HTTP 000，属文档已记录的 workers.dev 可达性问题），不影响主站与备用站。
+- `git commit / push`：本次同步一并提交。
+
+---
+
 ## 2026-11-07（夜 · ZCode 第八轮：课堂互动名单默认填充 PK 花名册）
 
 - 用户需求：客户端/首页「课堂互动」的点名名单默认就用 PK 里已内置的班级名单（36 人），不用再手动导入

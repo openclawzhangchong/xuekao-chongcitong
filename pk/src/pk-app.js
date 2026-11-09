@@ -192,6 +192,8 @@ window.__PK_MOUNT = function () {
     return base + ' · 已选 ' + selectedModCount() + ' 章 ' + pool.length + ' 题';
   }
   function setBank(arr, from) {
+    // 默认题量闸门：远程/粘贴进来的若是本项目的全库，未释放时压回 2000 题白名单
+    arr = window.XK_BANK_GATE ? window.XK_BANK_GATE.guard(arr) : arr;
     if (!Array.isArray(arr) || !arr.length) throw new Error('题库为空或格式不对');
     arr.forEach(function (q, i) {
       if (!q.s || !q.o || !q.a) throw new Error('第 ' + (i + 1) + ' 题缺少 s/o/a 字段');
@@ -213,11 +215,13 @@ window.__PK_MOUNT = function () {
 
   /* ================= 配置 ================= */
   // 题库地址：默认同源 /api/bank（班级版/云端版都有）；纯静态打开时回退线上主站
+  // 释放开关打开时才向服务端要全库（?full=1）；默认永远拿白名单
+  var BANK_FULL_SUFFIX = (window.XK_BANK_GATE && window.XK_BANK_GATE.isReleased()) ? '?full=1' : '';
   var DEFAULT_BANK_URL = (function () {
     try {
-      if (location.protocol === 'file:') return 'https://xuekao.jiuyeke.cn/api/bank';
-      return location.origin + '/api/bank';
-    } catch (e) { return 'https://xuekao.jiuyeke.cn/api/bank'; }
+      if (location.protocol === 'file:') return 'https://xuekao.jiuyeke.cn/api/bank' + BANK_FULL_SUFFIX;
+      return location.origin + '/api/bank' + BANK_FULL_SUFFIX;
+    } catch (e) { return 'https://xuekao.jiuyeke.cn/api/bank' + BANK_FULL_SUFFIX; }
   })();
 
   var CFG = Store.load(K_CFG, { count: 10, minutes: 10 });
@@ -1136,7 +1140,10 @@ window.__PK_MOUNT = function () {
       fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
         if (j && (j.bank || Array.isArray(j))) {
           var arr = j.bank || j;
-          if (Array.isArray(arr) && arr.length) { BANK = arr; try { renderHome(); } catch (e) { } }
+          if (Array.isArray(arr) && arr.length) {
+            BANK = window.XK_BANK_GATE ? window.XK_BANK_GATE.guard(arr) : arr;
+            try { renderHome(); } catch (e) { }
+          }
         }
       }).catch(function () { });
     } catch (e) { }
