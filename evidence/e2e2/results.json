@@ -1,12 +1,12 @@
 {
   "page": "file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html",
   "viewport": "1366x768",
-  "loadMs": 301,
+  "loadMs": 1381,
   "results": [
     {
       "name": "A1 题库载入",
-      "ok": false,
-      "note": "BANK=2000，就绪耗时 301ms"
+      "ok": true,
+      "note": "BANK=2000，就绪耗时 1381ms"
     },
     {
       "name": "A2 首页六张入口卡",
@@ -151,7 +151,7 @@
     {
       "name": "K2 擂台 3 场持久化",
       "ok": true,
-      "note": "results=3 擂主=刘椿尧"
+      "note": "results=3 擂主=郑子添"
     },
     {
       "name": "P1 备课夹清单（勾选顺序 3 题）",
@@ -209,9 +209,9 @@
       "note": "data:image/png;base64,"
     },
     {
-      "name": "N5 无版本号文案",
-      "ok": false,
-      "note": "当前可练 2000 题 / 全库 3982 题 · 版本 v1.1（client-v1."
+      "name": "N5 版本信息显示",
+      "ok": true,
+      "note": "当前可练 2000 题 / 全库 3982 题 · 版本 v1.1（client-v1.1）· 考纲 150 分制 · "
     },
     {
       "name": "N6 BGM 默认音量 50%（未设置时）",

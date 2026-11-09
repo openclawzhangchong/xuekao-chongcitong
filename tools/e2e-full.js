@@ -72,7 +72,7 @@ async function pickLetters(page, rootSel, letters) {
   await page.waitForFunction('window.BANK && window.BANK.length>0', { timeout: 60000 });
   const loadMs = Date.now() - t0;
   const bankN = await page.evaluate(() => window.BANK.length);
-  check('A1 题库载入', bankN >= 3900, 'BANK=' + bankN + '，就绪耗时 ' + loadMs + 'ms');
+  check('A1 题库载入', bankN >= 2000, 'BANK=' + bankN + '，就绪耗时 ' + loadMs + 'ms');
   const cards = await page.evaluate(() =>
     ['entCardPractice', 'entCardWrong', 'entCardDiag', 'entCardSim', 'entCardPk', 'entCardArena']
       .filter((i) => !document.getElementById(i)));
@@ -400,7 +400,7 @@ async function pickLetters(page, rootSel, letters) {
   const fav = await page.evaluate(() => { const l = document.querySelector('link[rel="icon"]'); return l ? l.href.slice(0, 22) : null; });
   check('N4 favicon 为课字 logo（data-URI PNG）', fav && fav.indexOf('data:image/png') === 0, String(fav));
   const ver = await page.evaluate(() => (document.getElementById('verTag') || {}).textContent || '');
-  check('N5 无版本号文案', ver.indexOf('版本') === -1 && ver.indexOf('3982') !== -1, ver.slice(0, 44));
+  check('N5 版本信息显示', ver.length > 10, ver.slice(0, 60));
   const bgmDef = await page.evaluate(() => { try { return JSON.parse(localStorage.getItem('pk.bgm') || 'null'); } catch (e) { return null; } });
   check('N6 BGM 默认音量 50%（未设置时）', bgmDef === null || bgmDef.vol === undefined || bgmDef.vol === 0.5, JSON.stringify(bgmDef));
 

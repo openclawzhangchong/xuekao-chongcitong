@@ -1,0 +1,80 @@
+{
+  "at": "2026-11-09T16:19:57.037Z",
+  "results": [
+    {
+      "name": "方案A 门户打开含徽标",
+      "ok": true,
+      "note": "title=学考冲刺通 · 课堂版（方案A）"
+    },
+    {
+      "name": "方案A 黑板入口存在",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "方案A 课件跳转第一章",
+      "ok": true,
+      "note": "E8%AE%B2%E8%A7%A3%E5%90%88%E5%B9%B6.html"
+    },
+    {
+      "name": "方案A PK 卡片路由指向 #/pk",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "方案A PK 页打开",
+      "ok": true,
+      "note": "http://127.0.0.1:8953/?client=1#/pk"
+    },
+    {
+      "name": "方案B 门户打开含徽标",
+      "ok": true,
+      "note": "title=学考冲刺通 · 课堂版（方案B 投影大师）"
+    },
+    {
+      "name": "方案B 黑板入口存在",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "方案B 课件跳转第一章",
+      "ok": true,
+      "note": "E8%AE%B2%E8%A7%A3%E5%90%88%E5%B9%B6.html"
+    },
+    {
+      "name": "方案B PK 卡片路由指向 #/pk",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "方案B PK 页打开",
+      "ok": true,
+      "note": "http://127.0.0.1:8953/?client=1#/pk"
+    },
+    {
+      "name": "方案C 门户打开含徽标",
+      "ok": true,
+      "note": "title=学考冲刺通 · 课堂版（方案C 讲练双栏）"
+    },
+    {
+      "name": "方案C 黑板入口存在",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "方案C 课件跳转第一章",
+      "ok": true,
+      "note": "E8%AE%B2%E8%A7%A3%E5%90%88%E5%B9%B6.html"
+    },
+    {
+      "name": "方案C PK 卡片路由指向 #/pk",
+      "ok": true,
+      "note": ""
+    },
+    {
+      "name": "方案C PK 页打开",
+      "ok": true,
+      "note": "http://127.0.0.1:8953/?client=1#/pk"
+    }
+  ]
+}

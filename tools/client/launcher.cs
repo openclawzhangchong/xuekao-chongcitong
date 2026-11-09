@@ -82,17 +82,21 @@ class TrayContext : ApplicationContext {
     }
 
     void OpenApp() {
+        // 整合版：根目录有 portal.html 则以教学门户为入口（课件+黑板+刷题+PK 一站式）
+        string home = File.Exists(Path.Combine(root, "portal.html"))
+            ? "http://127.0.0.1:" + PORT + "/portal.html?client=1"
+            : URL;
         var candidates = new string[] {
             @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
             @"C:\Program Files\Microsoft\Edge\Application\msedge.exe"
         };
         foreach (var e in candidates) {
             if (File.Exists(e)) {
-                Process.Start(e, "--app=" + URL);
+                Process.Start(e, "--app=" + home);
                 return;
             }
         }
-        OpenUrl(URL);   // 兜底：默认浏览器
+        OpenUrl(home);   // 兜底：默认浏览器
     }
 
     void OpenUrl(string u) {
