@@ -158,12 +158,14 @@ function copyDir(src, dest) {
 
   // 7. payload.zip → 编译安装包
   const payloadPath = path.join(DIST, 'payload' + suffix + '.zip');
+  const setupPath = path.join(DIST, '学考冲刺通安装包' + suffix + '.exe');
   const setupName = '学考冲刺通安装包' + suffix + '.exe';
   console.log('组装 ' + path.basename(payloadPath) + ' ...');
   sh('python -I tools/client/ziphelper.py "' + STAGE + '" "' + payloadPath + '"');
-  console.log('编译安装包 ' + setupName + ' ...');
+  console.log('编译安装包 ' + path.basename(setupPath) + ' ...');
+  fs.rmSync(setupPath, { force: true });   // Defender 会瞬锁被覆盖的 exe——先删再让 csc 写新文件
   sh('"' + CSC + '" /nologo /t:winexe /codepage:65001 /out:' +
-     JSON.stringify(path.join(DIST, setupName)) +
+     JSON.stringify(setupPath) +
      ' /win32icon:' + JSON.stringify(path.join(ROOT, 'src', 'assets', 'icon.ico')) +
      ' /r:System.Windows.Forms.dll /r:System.Drawing.dll /r:System.IO.Compression.dll /r:System.IO.Compression.FileSystem.dll ' +
      ' /resource:"' + payloadPath + '"' +

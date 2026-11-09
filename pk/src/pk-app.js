@@ -215,13 +215,18 @@ window.__PK_MOUNT = function () {
 
   /* ================= 配置 ================= */
   // 题库地址：默认同源 /api/bank（班级版/云端版都有）；纯静态打开时回退线上主站
-  // 释放开关打开时才向服务端要全库（?full=1）；默认永远拿白名单
-  var BANK_FULL_SUFFIX = (window.XK_BANK_GATE && window.XK_BANK_GATE.isReleased()) ? '?full=1' : '';
+  // 服务端按当前档位返回题池：?tier=1000|2000|3000，全库档用 ?full=1
+  var BANK_TIER_QUERY = (function () {
+    var G = window.XK_BANK_GATE;
+    if (!G) return '';
+    var t = G.tier ? G.tier() : (G.isReleased() ? 'full' : '1000');
+    return t === 'full' ? '?full=1' : '?tier=' + t;
+  })();
   var DEFAULT_BANK_URL = (function () {
     try {
-      if (location.protocol === 'file:') return 'https://xuekao.jiuyeke.cn/api/bank' + BANK_FULL_SUFFIX;
-      return location.origin + '/api/bank' + BANK_FULL_SUFFIX;
-    } catch (e) { return 'https://xuekao.jiuyeke.cn/api/bank' + BANK_FULL_SUFFIX; }
+      if (location.protocol === 'file:') return 'https://xuekao.jiuyeke.cn/api/bank' + BANK_TIER_QUERY;
+      return location.origin + '/api/bank' + BANK_TIER_QUERY;
+    } catch (e) { return 'https://xuekao.jiuyeke.cn/api/bank' + BANK_TIER_QUERY; }
   })();
 
   var CFG = Store.load(K_CFG, { count: 10, minutes: 10 });

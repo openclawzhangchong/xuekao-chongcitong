@@ -238,14 +238,21 @@ export default {
         let line = text.slice(from, text.indexOf(String.fromCharCode(10), startIdx)).trim();
         if (line.endsWith(';')) line = line.slice(0, -1);
         const bank = JSON.parse(line);
-        // 默认题量闸门：/api/bank 默认只吐 2000 题白名单；只有 ?full=1 才返回全库。
-        // 下标清单随 site/data.js 一起发布，服务端不需要 qid 算法。
-        const im = text.match(/window\.XK_BANK_INDEX=(\[[^\n]*?\]);/);
-        let idx = null;
-        try { if (im) idx = JSON.parse(im[1]); } catch (e) { idx = null; }
-        const full = url.searchParams.get('full') === '1';
-        const outBank = (!full && Array.isArray(idx) && idx.length && idx.length <= bank.length)
-          ? idx.map(i => bank[i]) : bank;
+        // 题量档位闸门：默认 XK_DEFAULT_TIER（1000），?tier=2000|3000 切档，?full=1 给全库。
+        // 三档下标随 site/data.js 一起发布，服务端不需要 qid 算法。
+        const tm = text.match(/window\.XK_TIER_INDEX=(\{[^\n]*\});/);
+        let tiers = null;
+        try { if (tm) tiers = JSON.parse(tm[1]); } catch (e) { tiers = null; }
+        const dm = text.match(/window\.XK_DEFAULT_TIER='([^']+)'/);
+        const want = url.searchParams.get('tier') || (dm ? dm[1] : '1000');
+        const full = url.searchParams.get('full') === '1' || want === 'full';
+        let idx = (!full && tiers && Array.isArray(tiers[want])) ? tiers[want] : null;
+        if (!full && !idx) {
+          // 兼容旧版只有 XK_BANK_INDEX（2000 档）的 data.js
+          const om = text.match(/window\.XK_BANK_INDEX=(\[[^\n]*?\]);/);
+          try { if (om) idx = JSON.parse(om[1]); } catch (e) { idx = null; }
+        }
+        const outBank = (idx && idx.length && idx.length <= bank.length) ? idx.map(i => bank[i]) : bank;
         const vm = text.match(/window\.BANK_VER='([^']+)'/);
         const mm = text.match(/window\.BANK_META=(\[[^\n]*?\]);/);
         return new Response(JSON.stringify({

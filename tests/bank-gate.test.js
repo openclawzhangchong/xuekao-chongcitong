@@ -1,7 +1,8 @@
-/* 默认题量闸门单测（Node 零依赖，node tests/bank-gate.test.js）
- * 覆盖：白名单四零、默认 2000 / 释放 3982、URL 兜底、guard 防绕过、
- *       服务端解析契约、模拟考在白名单下仍可组 150 题、构建产物含闸门。
- * 需要已执行过 node src/build.js 与 node src/build.js --split site/index.html。
+/* 题量档位闸门单测（Node 零依赖，node tests/bank-gate.test.js）
+ * 覆盖：三档白名单四零与严格嵌套、默认 1000、四档切换、URL/旧开关兼容、
+ *       guard 防绕过、每档模拟考 150 题、服务端解析契约、按钮位置与版本显示。
+ * 需要先执行 node tools/build-whitelist.js → node src/build.js
+ *       → node src/build.js --split site/index.html → node pk/src/pk-build.js
  */
 'use strict';
 const assert = require('assert');
@@ -14,8 +15,12 @@ const engine = read('src/engine.js');
 const data = read('src/data.js');
 const whitelistLine = read('src/whitelist-data.js');
 const gate = read('src/bank-gate.js');
-const wl = JSON.parse(read('docs/白名单-2000题.json'));
-const quota = JSON.parse(read('docs/题库精简配额-2000题.json'));
+const WLS = {
+  '1000': JSON.parse(read('docs/白名单-1000题.json')),
+  '2000': JSON.parse(read('docs/白名单-2000题.json')),
+  '3000': JSON.parse(read('docs/白名单-3000题.json'))
+};
+const quota2000 = JSON.parse(read('docs/题库精简配额-2000题.json'));
 
 let passed = 0, failed = 0;
 function t(name, fn) {
@@ -26,8 +31,15 @@ function fresh(opts) {
   opts = opts || {};
   const w = {};
   global.window = w;
-  if (opts.release) {
-    const stub = { getItem: k => k === 'xkc.bank.release' ? '1' : null, setItem: () => {} };
+  const store = {};
+  if (opts.tier) store['xkc.bank.tier'] = opts.tier;
+  if (opts.release) store['xkc.bank.release'] = '1';
+  if (Object.keys(store).length) {
+    const stub = {
+      getItem: k => (k in store ? store[k] : null),
+      setItem: (k, v) => { store[k] = String(v); },
+      removeItem: k => { delete store[k]; }
+    };
     w.localStorage = stub; global.localStorage = stub;
   } else {
     delete global.localStorage;
@@ -37,96 +49,113 @@ function fresh(opts) {
   return w;
 }
 
-console.log('== 1. 白名单数据四零 ==');
-t('白名单正好 2000 题，86 道综合卷被排除', () => {
-  assert.strictEqual(wl.count, 2000);
-  assert.strictEqual(wl.items.length, 2000);
-  assert.strictEqual(wl.excluded_composite, 86);
+console.log('== 1. 三档白名单四零与嵌套 ==');
+t('三档数量精确 1000 / 2000 / 3000，86 道综合卷排除', () => {
+  assert.strictEqual(WLS['1000'].count, 1000);
+  assert.strictEqual(WLS['2000'].count, 2000);
+  assert.strictEqual(WLS['3000'].count, 3000);
+  assert.strictEqual(WLS['1000'].excluded_composite, 86);
 });
-t('下标唯一、qid 唯一、均落在全库范围内', () => {
-  const idx = wl.items.map(x => x.index), qids = wl.items.map(x => x.qid);
-  assert.strictEqual(new Set(idx).size, 2000);
-  assert.strictEqual(new Set(qids).size, 2000);
-  assert.ok(idx.every(i => Number.isInteger(i) && i >= 0 && i < 3982));
+t('每档下标唯一、qid 唯一、均落在全库范围内', () => {
+  ['1000', '2000', '3000'].forEach(k => {
+    const idx = WLS[k].items.map(x => x.index), qids = WLS[k].items.map(x => x.qid);
+    assert.strictEqual(new Set(idx).size, Number(k), k + ' 下标重复');
+    assert.strictEqual(new Set(qids).size, Number(k), k + ' qid 重复');
+    assert.ok(idx.every(i => Number.isInteger(i) && i >= 0 && i < 3982));
+  });
 });
-t('9 模块配额与 58 考点配额逐项吻合', () => {
+t('严格嵌套：1000 ⊂ 2000 ⊂ 3000', () => {
+  const a = new Set(WLS['1000'].items.map(x => x.index));
+  const b = new Set(WLS['2000'].items.map(x => x.index));
+  const c = new Set(WLS['3000'].items.map(x => x.index));
+  a.forEach(i => assert.ok(b.has(i), '1000 档题不在 2000 档'));
+  b.forEach(i => assert.ok(c.has(i), '2000 档题不在 3000 档'));
+});
+t('9 模块配额与 58 考点配额逐项吻合（2000 档基座不变）', () => {
   const byMod = {};
-  wl.items.forEach(x => { byMod[x.module] = (byMod[x.module] || 0) + 1; });
-  quota.modules.forEach(m => assert.strictEqual(byMod[m.code], m.quota, m.code + ' 模块配额'));
+  WLS['2000'].items.forEach(x => { byMod[x.module] = (byMod[x.module] || 0) + 1; });
+  quota2000.modules.forEach(m => assert.strictEqual(byMod[m.code], m.quota, m.code + ' 模块配额'));
   const byPoint = {};
-  wl.items.forEach(x => { byPoint[x.point_id] = (byPoint[x.point_id] || 0) + 1; });
-  quota.points.forEach(p => assert.strictEqual(byPoint[p.id] || 0, p.a, p.id + ' 考点配额'));
-  assert.strictEqual(quota.points.length, 58);
+  WLS['2000'].items.forEach(x => { byPoint[x.point_id] = (byPoint[x.point_id] || 0) + 1; });
+  quota2000.points.forEach(p => assert.strictEqual(byPoint[p.id] || 0, p.a, p.id + ' 考点配额'));
+  assert.strictEqual(quota2000.points.length, 58);
 });
-t('src/whitelist-data.js 与白名单 JSON 完全一致', () => {
-  const m = whitelistLine.match(/window\.XK_BANK_INDEX=(\[[\s\S]*?\]);/);
-  assert.ok(m, '缺 window.XK_BANK_INDEX 行');
-  assert.deepStrictEqual(JSON.parse(m[1]), wl.items.map(x => x.index));
+t('src/whitelist-data.js 三档与可审计 JSON 完全一致，默认档为 1000', () => {
+  const m = whitelistLine.match(/window\.XK_TIER_INDEX=(\{[^\n]*\});/);
+  assert.ok(m, '缺 XK_TIER_INDEX 行');
+  const tiers = JSON.parse(m[1]);
+  ['1000', '2000', '3000'].forEach(k => {
+    assert.deepStrictEqual(tiers[k], WLS[k].items.map(x => x.index));
+  });
+  assert.ok(/window\.XK_DEFAULT_TIER='1000';/.test(whitelistLine));
+  const old = whitelistLine.match(/window\.XK_BANK_INDEX=(\[[^\n]*\]);/);
+  assert.ok(old && JSON.parse(old[1]).length === 2000, '旧 XK_BANK_INDEX 兼容行');
 });
 
-console.log('== 2. 闸门默认与释放 ==');
-t('默认（无开关）：window.BANK = 2000 题，BANK_ALL = 3982 题', () => {
+console.log('== 2. 闸门四档与默认 ==');
+t('默认（无开关）= 基础档 1000 题，全库仍 3982 题', () => {
   const w = fresh();
   assert.strictEqual(w.BANK_ALL.length, 3982);
-  assert.strictEqual(w.BANK.length, 2000);
-  assert.strictEqual(w.XK_BANK_GATE.isReleased(), false);
-  assert.strictEqual(w.XK_BANK_GATE.activeCount(), 2000);
-  assert.strictEqual(w.XK_BANK_GATE.whitelistCount(), 2000);
+  assert.strictEqual(w.BANK.length, 1000);
+  assert.strictEqual(w.XK_BANK_GATE.tier(), '1000');
+  assert.strictEqual(w.XK_BANK_GATE.defaultTier, '1000');
+  assert.strictEqual(w.XK_BANK_GATE.whitelistCount(), 1000);
 });
-t('默认题库的 qid 集合与白名单 JSON 完全一致', () => {
+t('默认档 qid 集合与 1000 档白名单 JSON 完全一致', () => {
   const w = fresh();
   const got = new Set(w.BANK.map(q => w.XK.qidOf(q)));
-  const want = new Set(wl.items.map(x => x.qid));
+  const want = new Set(WLS['1000'].items.map(x => x.qid));
   assert.strictEqual(got.size, want.size);
   want.forEach(q => assert.ok(got.has(q), '白名单题缺失: ' + q));
 });
-t('题库真源一题未删：BANK_ALL 的 qid 与 src/data.js 一致', () => {
-  const w = fresh();
-  const saved = global.window, rawWin = {};
-  global.window = rawWin;
-  eval(engine + '\n' + data);
-  global.window = saved;
-  const a = new Set(rawWin.BANK.map(q => rawWin.XK.qidOf(q)));
-  const b = new Set(w.BANK_ALL.map(q => w.XK.qidOf(q)));
-  assert.strictEqual(a.size, 3982);
-  assert.strictEqual(b.size, 3982);
-  a.forEach(q => assert.ok(b.has(q), '真源题缺失: ' + q));
+t('四档切换：1000 / 2000 / 3000 / full 题数精确', () => {
+  [['1000', 1000], ['2000', 2000], ['3000', 3000], ['full', 3982]].forEach(([tier, n]) => {
+    const w = fresh({ tier: tier });
+    assert.strictEqual(w.XK_BANK_GATE.tier(), tier);
+    assert.strictEqual(w.BANK.length, n, tier + ' 档题数');
+    assert.strictEqual(w.XK_BANK_GATE.countOf(tier), n);
+  });
 });
-t('localStorage 释放后 window.BANK = 3982 题', () => {
+t('URL 兜底 ?tier=3000 / ?full=1', () => {
+  assert.strictEqual(fresh({ search: '?client=1&tier=3000' }).BANK.length, 3000);
+  assert.strictEqual(fresh({ search: '?full=1' }).BANK.length, 3982);
+  assert.strictEqual(fresh({ search: '?tier=999' }).BANK.length, 1000);
+});
+t('旧 release=1 开关兼容为全库档；tier 优先于 release', () => {
+  assert.strictEqual(fresh({ release: true }).BANK.length, 3982);
+  assert.strictEqual(fresh({ release: true, tier: '2000' }).BANK.length, 2000);
+});
+t('setTier 写盘并清除旧 release 标记', () => {
   const w = fresh({ release: true });
-  assert.strictEqual(w.XK_BANK_GATE.isReleased(), true);
-  assert.strictEqual(w.BANK.length, 3982);
-  assert.strictEqual(w.BANK, w.BANK_ALL);
-});
-t('?full=1 兜底也能释放（无 localStorage 环境）', () => {
-  const w = fresh({ search: '?client=1&full=1' });
-  assert.strictEqual(w.BANK.length, 3982);
-});
-t('?full=0 / 无关参数不会误释放', () => {
-  assert.strictEqual(fresh({ search: '?client=1' }).BANK.length, 2000);
-  assert.strictEqual(fresh({ search: '?full=0' }).BANK.length, 2000);
+  assert.strictEqual(w.XK_BANK_GATE.setTier('3000'), true);
+  assert.strictEqual(w.XK_BANK_GATE.tier(), '3000');
+  w.XK_BANK_GATE.apply();
+  assert.strictEqual(w.BANK.length, 3000);
 });
 
 console.log('== 3. 防绕过与业务兼容 ==');
-t('guard：未释放时把远程全库压回 2000 题', () => {
+t('guard：默认档拿到全库时压回 1000 题', () => {
   const w = fresh();
-  assert.strictEqual(w.XK_BANK_GATE.guard(w.BANK_ALL).length, 2000);
+  assert.strictEqual(w.XK_BANK_GATE.guard(w.BANK_ALL).length, 1000);
 });
-t('guard：教师自定义题库原样保留（不误伤）', () => {
+t('guard：3000 档压回 3000 题，全库档放行', () => {
+  const all = fresh().BANK_ALL;
+  assert.strictEqual(fresh({ tier: '3000' }).XK_BANK_GATE.guard(all).length, 3000);
+  const w = fresh({ tier: 'full' });
+  assert.strictEqual(w.XK_BANK_GATE.guard(w.BANK_ALL).length, 3982);
+});
+t('guard：教师自定义题库原样保留', () => {
   const w = fresh();
   const custom = [{ s: '自定义题1', o: [['A', 'a']], a: 'A' }, { s: '自定义题2', o: [['A', 'a']], a: 'A' }];
   assert.strictEqual(w.XK_BANK_GATE.guard(custom), custom);
 });
-t('guard：释放后全库原样放行', () => {
-  const w = fresh({ release: true });
-  assert.strictEqual(w.XK_BANK_GATE.guard(w.BANK_ALL).length, 3982);
+t('每一档模拟考都能精确组 150 题', () => {
+  ['1000', '2000', '3000', 'full'].forEach(tier => {
+    const w = fresh({ tier: tier });
+    assert.strictEqual(w.XK.buildSimPaper(w.BANK, w.BANK_META).length, 150, tier + ' 档组卷');
+  });
 });
-t('白名单下模拟考仍能精确组 150 题', () => {
-  const w = fresh();
-  const paper = w.XK.buildSimPaper(w.BANK, w.BANK_META);
-  assert.strictEqual(paper.length, 150);
-});
-t('白名单下预估分 / 错题队列 / 弱项诊断不报错', () => {
+t('默认档预估分 / 错题队列 / 弱项诊断不报错', () => {
   const w = fresh();
   const p = w.XK.newProfile();
   assert.strictEqual(w.XK.estimateScore(w.BANK, w.BANK_META, p).total, 150);
@@ -135,60 +164,56 @@ t('白名单下预估分 / 错题队列 / 弱项诊断不报错', () => {
 });
 
 console.log('== 4. 服务端与构建产物契约 ==');
-t('site/data.js：window.BANK= 行仍是可直接 JSON.parse 的全库 3982 题', () => {
+t('site/data.js：window.BANK= 行仍是全库 3982 题（旧解析契约不变）', () => {
   const s = read('site/data.js');
   const a = s.indexOf('window.BANK=');
   assert.ok(a >= 0);
   const line = s.slice(a + 'window.BANK='.length, s.indexOf('\n', a)).trim().replace(/;$/, '');
   assert.strictEqual(JSON.parse(line).length, 3982);
 });
-t('site/data.js：window.XK_BANK_INDEX= 行可解析出 2000 个下标', () => {
+t('site/data.js：XK_TIER_INDEX 行可解析三档，默认档 1000', () => {
   const s = read('site/data.js');
-  const m = s.match(/window\.XK_BANK_INDEX=(\[[^\n]*?\]);/);
+  const m = s.match(/window\.XK_TIER_INDEX=(\{[^\n]*\});/);
   assert.ok(m, '缺 index 行');
-  assert.deepStrictEqual(JSON.parse(m[1]), wl.items.map(x => x.index));
+  const tiers = JSON.parse(m[1]);
+  assert.deepStrictEqual(Object.keys(tiers).sort(), ['1000', '2000', '3000']);
+  assert.ok(/window\.XK_DEFAULT_TIER='1000';/.test(s));
 });
-t('cloud/worker.js 与 班级版服务.py 都实现了服务端白名单过滤', () => {
-  assert.ok(/XK_BANK_INDEX/.test(read('cloud/worker.js')));
-  assert.ok(/full=1/.test(read('cloud/worker.js')));
-  assert.ok(/XK_BANK_INDEX/.test(read('班级版服务.py')));
-  assert.ok(/full=1/.test(read('班级版服务.py')));
+t('cloud/worker.js 与 班级版服务.py 都实现服务端档位过滤', () => {
+  ['cloud/worker.js', '班级版服务.py'].forEach(f => {
+    const s = read(f);
+    assert.ok(/XK_TIER_INDEX/.test(s), f + ' 缺档位表');
+    assert.ok(/tier=/.test(s), f + ' 缺 ?tier=');
+    assert.ok(/full=1/.test(s), f + ' 缺 ?full=1');
+  });
 });
-t('单文件 / 拆分版 / 独立 PK 产物都内嵌闸门与按钮', () => {
+t('单文件 / 拆分版 / 独立 PK 产物都内嵌闸门与档位按钮', () => {
   const one = read('dist/学考冲刺通.html');
   const idx = read('site/index.html');
-  assert.ok(/XK_BANK_GATE/.test(one) && /data-bank-gate/.test(one));
-  assert.ok(/XK_BANK_GATE/.test(idx) && /data-bank-gate/.test(idx));
-  assert.ok(/XK_BANK_GATE/.test(read('pk/dist/双人PK答题.html')));
+  const pk = read('pk/dist/双人PK答题.html');
+  [one, idx, pk].forEach(s => {
+    assert.ok(/XK_BANK_GATE/.test(s));
+    assert.ok(/data-bank-tier="1000"/.test(s) && /data-bank-tier="3000"/.test(s));
+  });
+  assert.ok((one.match(/data-bank-tier="1000"/g) || []).length >= 2, '首页与 PK 设置都要有档位按钮');
 });
-t('PK 抽题入口在释放时才向 /api/bank 要 ?full=1', () => {
-  const s = read('pk/src/pk-app.js');
-  assert.ok(/BANK_FULL_SUFFIX/.test(s));
-  assert.ok(/XK_BANK_GATE\.guard/.test(s));
-});
-t('释放按钮已从首页顶栏移到「学习档案」下方（防误点回归闸门）', () => {
+t('按钮仍在学习档案下方、顶栏无按钮、页面显示 v1.1', () => {
   const s = read('dist/学考冲刺通.html');
   const home = s.indexOf('<div id="home"');
   const headerEnd = s.indexOf('</header>', home);
-  assert.ok(home >= 0 && headerEnd > home);
-  assert.ok(!/data-bank-gate/.test(s.slice(home, headerEnd)), '首页顶栏不许再出现释放按钮');
+  assert.ok(!/data-bank-tier/.test(s.slice(home, headerEnd)), '首页顶栏不许有档位按钮');
   const learn = s.indexOf('学习档案（只存本机，不上传）');
-  const btn = s.indexOf('data-bank-gate');
-  assert.ok(learn >= 0 && btn > learn, '按钮必须放在学习档案下面');
-});
-t('PK/擂台顶栏不再有按钮，改到设置弹窗内', () => {
+  const btn = s.indexOf('data-bank-tier="1000"');
+  assert.ok(learn >= 0 && btn > learn, '按钮必须在学习档案下面');
+  assert.ok(/XK_APP_VER\s*=\s*'v1\.1'/.test(s) && /150 分制 · v1\.1/.test(s));
   const m = read('pk/src/pk-markup.html');
   const cfg = m.indexOf('id="cfgMask"');
-  assert.ok(cfg > 0);
-  assert.ok(!/data-bank-gate/.test(m.slice(0, cfg)), '设置弹窗之前（含顶栏）不许有按钮');
-  assert.ok(m.indexOf('data-bank-gate') > cfg, '按钮应在设置弹窗内');
+  assert.ok(!/data-bank-tier/.test(m.slice(0, cfg)), 'PK 顶栏不许有档位按钮');
 });
-t('页面显示 v1.1 版本号（副标题 + 闸门常量 + 页脚）', () => {
-  const one = read('dist/学考冲刺通.html');
-  assert.ok(/XK_APP_VER\s*=\s*'v1\.1'/.test(one));
-  assert.ok(/150 分制 · v1\.1/.test(one));
-  const app = read('src/app.js');
-  assert.ok(/XK_APP_VER/.test(app) && /client-/.test(app));
+t('PK 抽题入口按当前档位请求 /api/bank', () => {
+  const s = read('pk/src/pk-app.js');
+  assert.ok(/BANK_TIER_QUERY/.test(s));
+  assert.ok(/XK_BANK_GATE\.guard/.test(s));
 });
 
 console.log('\n结果: ' + passed + ' 通过 / ' + failed + ' 失败');

@@ -1,0 +1,68 @@
+
+== 方案A https://onyx-cliff-823a.here.now/ ==
+  ✓ P1 门户打开含徽标 —— title=学考冲刺通 · 课堂版（方案A）
+  ✓ P2 黑板入口存在
+  ✓ P3 课件第一章加载 —— 第一章_信息技术应用基础_课堂讲解和练习讲解合并.html len=599639
+  ✓ P4 PK 直达真实呈现 —— pkOn=true homeOff=true pkMode=true
+  ✓ P5 client 模式生效 —— body.client=true
+  ✓ P6 题库加载（全库 3982 + 运行时白名单） —— BANK=2000 全库=3982
+  ✓ P7 排行榜打开 —— 
+    🏆 排行榜 · 荣誉墙
+      ←
+      →
+    
+ 
+  ✓ P8 擂台打开
+  ✓ P9 刷题首页呈现 —— 
+    
+      
+        🎯 学考冲刺通
+        信息技术基础 · 福建中
+  ✓ P10 黑板加载
+  ✓ P11 无硬报错（/api 404 属静态托管预期） —— clean，全部报错 8 条: A bad HTTP response code (404) was received when fetching the script. § Failed to load resource: the ser
+
+== 方案B https://flowing-flame-dcc7.here.now/ ==
+  ✓ P1 门户打开含徽标 —— title=学考冲刺通 · 课堂版（方案B 投影大师）
+  ✓ P2 黑板入口存在
+  ✓ P3 课件第一章加载 —— 第一章_信息技术应用基础_课堂讲解和练习讲解合并.html len=599645
+  ✓ P4 PK 直达真实呈现 —— pkOn=true homeOff=true pkMode=true
+  ✓ P5 client 模式生效 —— body.client=true
+  ✓ P6 题库加载（全库 3982 + 运行时白名单） —— BANK=2000 全库=3982
+  ✓ P7 排行榜打开 —— 
+    🏆 排行榜 · 荣誉墙
+      ←
+      →
+    
+ 
+  ✓ P8 擂台打开
+  ✓ P9 刷题首页呈现 —— 
+    
+      
+        🎯 学考冲刺通
+        信息技术基础 · 福建中
+  ✓ P10 黑板加载
+  ✓ P11 无硬报错（/api 404 属静态托管预期） —— clean，全部报错 8 条: A bad HTTP response code (404) was received when fetching the script. § Failed to load resource: the ser
+
+== 方案C https://golden-tassel-43qq.here.now/ ==
+  ✓ P1 门户打开含徽标 —— title=学考冲刺通 · 课堂版（方案C 讲练双栏）
+  ✓ P2 黑板入口存在
+  ✓ P3 课件第一章加载 —— 第一章_信息技术应用基础_课堂讲解和练习讲解合并.html len=599627
+  ✓ P4 PK 直达真实呈现 —— pkOn=true homeOff=true pkMode=true
+  ✓ P5 client 模式生效 —— body.client=true
+  ✓ P6 题库加载（全库 3982 + 运行时白名单） —— BANK=2000 全库=3982
+  ✓ P7 排行榜打开 —— 
+    🏆 排行榜 · 荣誉墙
+      ←
+      →
+    
+ 
+  ✓ P8 擂台打开
+  ✓ P9 刷题首页呈现 —— 
+    
+      
+        🎯 学考冲刺通
+        信息技术基础 · 福建中
+  ✓ P10 黑板加载
+  ✓ P11 无硬报错（/api 404 属静态托管预期） —— clean，全部报错 8 条: A bad HTTP response code (404) was received when fetching the script. § Failed to load resource: the ser
+
+== 汇总: 33 PASS / 0 FAIL ==

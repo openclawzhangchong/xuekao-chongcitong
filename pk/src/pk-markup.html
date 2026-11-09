@@ -177,11 +177,14 @@
         <div style="margin-top:8px"><button class="tbtn" id="cfgPasteApply">📥 应用粘贴题库</button></div>
       </div>
       <div class="set-item set-full"><label>当前题库</label><div class="muted" id="bankInfo2" style="font-size:14px"></div></div>
-      <div class="set-item set-full"><label>教师选项 · 题量范围</label>
+      <div class="set-item set-full"><label>教师选项 · 题量档位（默认基础 1000 题）</label>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <button class="tbtn" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部 3982 题，再点收回">🔒 精选 2000 题</button>
-          <span class="muted" style="font-size:12px">默认精选白名单；点一次释放全库，再点收回（学生档案不受影响）</span>
+          <button class="tbtn" data-bank-tier="1000">基础 1000 题</button>
+          <button class="tbtn" data-bank-tier="2000">高级 2000 题</button>
+          <button class="tbtn" data-bank-tier="3000">终极 3000 题</button>
+          <button class="tbtn" data-bank-tier="full">全库 3982 题</button>
         </div>
+        <div class="muted" data-tier-status style="font-size:12px;margin-top:6px"></div>
       </div>
       <div class="set-item set-full"><label>🎵 背景音乐（对战进行中播放，TTS 播报自动压低）</label>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">

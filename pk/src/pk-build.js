@@ -54,10 +54,10 @@ eval(sfxJs);
 eval(praiseJs);
 eval(bankJsWithIndex);
 eval(bankGateJs); // 无 document 环境下闸门仍应把 window.BANK 压成 2000 题白名单
-if (!window.XK_BANK_INDEX || window.XK_BANK_INDEX.length !== 2000) {
-  throw new Error('PK 独立版缺少 2000 题白名单下标');
+if (!window.XK_TIER_INDEX || ['1000', '2000', '3000'].some(k => window.XK_TIER_INDEX[k].length !== Number(k))) {
+  throw new Error('PK 独立版缺少 1000/2000/3000 三档白名单下标');
 }
-if (window.BANK.length !== 2000) throw new Error('PK 独立版默认题库不是 2000 题白名单: ' + window.BANK.length);
+if (window.BANK.length !== 1000) throw new Error('PK 独立版默认题库不是 1000 题基础档: ' + window.BANK.length);
 if (window.BANK_ALL.length !== 3982) throw new Error('PK 独立版全库题数异常: ' + window.BANK_ALL.length);
 if (typeof window.XK !== 'object' || typeof window.XK.cleanStem !== 'function') {
   throw new Error('独立版 PK 缺少引擎 XK.cleanStem，题干残留会原样显示');
@@ -67,4 +67,4 @@ if (typeof window.XKP !== 'object' || typeof window.XKP.pickPraise !== 'function
 }
 eval(pkAppJs.replace(/\(function \(\) \{/, '(function () { return;')); // app 层依赖 DOM，跳过执行
 console.log('PK BUILD OK →', outPath);
-console.log('大小:', (fs.statSync(outPath).size / 1024).toFixed(0), 'KB | 默认白名单:', window.BANK.length, '题 | 全库:', window.BANK_ALL.length, '题 | 表扬语:', window.XKP.praiseCount(), '条');
+console.log('大小:', (fs.statSync(outPath).size / 1024).toFixed(0), 'KB | 默认基础档:', window.BANK.length, '题 | 档位 1000/2000/3000:', Object.keys(window.XK_TIER_INDEX).join('/'), '| 全库:', window.BANK_ALL.length, '题 | 表扬语:', window.XKP.praiseCount(), '条');

@@ -413,15 +413,24 @@ class Handler(BaseHTTPRequestHandler):
                 if line.endswith(';'):
                     line = line[:-1]
                 bank = json.loads(line[len('window.BANK='):])
-                # 默认题量闸门：与云端 worker.js 同构，默认只吐 2000 题白名单，
-                # 只有 ?full=1（页面「释放全部题量」按钮打开后）才返回全库。
-                marker = 'window.XK_BANK_INDEX='
-                if 'full=1' not in self.path and marker in text:
+                # 题量档位闸门：与云端 worker.js 同构，默认 XK_DEFAULT_TIER（1000），
+                # ?tier=2000|3000 切档，?full=1 或 tier=full 返回全库。
+                marker = 'window.XK_TIER_INDEX='
+                want_full = ('full=1' in self.path) or ('tier=full' in self.path)
+                if not want_full and marker in text:
                     s2 = text.index(marker) + len(marker)
                     line2 = text[s2:text.index(chr(10), s2)].strip()
                     if line2.endswith(';'):
                         line2 = line2[:-1]
-                    idx = json.loads(line2)
+                    tiers = json.loads(line2)
+                    want = '1000'
+                    if 'tier=' in self.path:
+                        want = self.path.split('tier=', 1)[1].split('&', 1)[0]
+                    else:
+                        dm = "window.XK_DEFAULT_TIER='"
+                        if dm in text:
+                            want = text.split(dm, 1)[1].split("'", 1)[0]
+                    idx = tiers.get(want) if isinstance(tiers, dict) else None
                     if isinstance(idx, list) and idx and len(idx) <= len(bank):
                         bank = [bank[i] for i in idx]
                 ver = ''

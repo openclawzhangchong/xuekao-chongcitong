@@ -1080,12 +1080,16 @@ body.arena-mode .app{max-width:none}
         <input type="file" id="importFile" accept=".json,application/json" class="hidden">
         <div class="hint">换手机/换电脑：先「导出档案」得到 JSON 文件，再到新设备「导入档案」。学习记录、错题本、预估分曲线都会跟着走。</div>
       </div>
-      <div class="card" style="margin-top:13px">
-        <div class="sec-t"><span class="dot"></span>教师选项 · 题量范围</div>
-        <div class="hint">默认只开放 2000 题精选白名单（按考纲分值 + 58 个考点配平）。需要全量练习时再点下面这个按钮，随时可以再点一次收回；不改变题库真源，学生档案不受影响。</div>
-        <div style="margin-top:10px">
-          <button class="btn ghost sm" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部 3982 题，再点收回">🔒 精选 2000 题</button>
+      <div class="card" style="margin-top:13px" data-bank-gate>
+        <div class="sec-t"><span class="dot"></span>教师选项 · 题量档位</div>
+        <div class="hint">默认 <b>基础档 1000 题</b>；三档白名单是嵌套子集（1000 ⊂ 2000 ⊂ 3000），升档不会丢掉做过的题。切换只改本机设置，题库一题不删、学生档案不受影响。</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn ghost sm" data-bank-tier="1000">基础 1000 题</button>
+          <button class="btn ghost sm" data-bank-tier="2000">高级 2000 题</button>
+          <button class="btn ghost sm" data-bank-tier="3000">终极 3000 题</button>
+          <button class="btn ghost sm" data-bank-tier="full">全库 3982 题</button>
         </div>
+        <div class="hint" data-tier-status style="margin-top:8px"></div>
       </div>
       <div class="ver-tag" id="verTag"></div>
     </div>
@@ -1426,11 +1430,14 @@ body.arena-mode .app{max-width:none}
         <div style="margin-top:8px"><button class="tbtn" id="cfgPasteApply">📥 应用粘贴题库</button></div>
       </div>
       <div class="set-item set-full"><label>当前题库</label><div class="muted" id="bankInfo2" style="font-size:14px"></div></div>
-      <div class="set-item set-full"><label>教师选项 · 题量范围</label>
+      <div class="set-item set-full"><label>教师选项 · 题量档位（默认基础 1000 题）</label>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <button class="tbtn" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部 3982 题，再点收回">🔒 精选 2000 题</button>
-          <span class="muted" style="font-size:12px">默认精选白名单；点一次释放全库，再点收回（学生档案不受影响）</span>
+          <button class="tbtn" data-bank-tier="1000">基础 1000 题</button>
+          <button class="tbtn" data-bank-tier="2000">高级 2000 题</button>
+          <button class="tbtn" data-bank-tier="3000">终极 3000 题</button>
+          <button class="tbtn" data-bank-tier="full">全库 3982 题</button>
         </div>
+        <div class="muted" data-tier-status style="font-size:12px;margin-top:6px"></div>
       </div>
       <div class="set-item set-full"><label>🎵 背景音乐（对战进行中播放，TTS 播报自动压低）</label>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -2499,101 +2506,139 @@ body.arena-mode .app{max-width:none}
 
 </script>
 <script>window.BANK_VER='20261106';</script>
-<script src="data.js?v=202611091557"></script>
+<script src="data.js?v=202611092302"></script>
 <script>
 /* =====================================================================
- * 默认题量闸门（在 data.js 之后、app.js / pk-app.js / arena-app.js 之前执行）
+ * 题量档位闸门（在 data.js 之后、app.js / pk-app.js / arena-app.js 之前执行）
  * ---------------------------------------------------------------------
  * 铁律：一题都不删。src/data.js 的 3982 题仍是唯一真源，题干一字未改，
- *       所以 qid=djb2(m|qt|s) 不变，学生档案 / 错题本 / 班级版战绩零断链。
- * 做法：window.BANK_ALL 保存全库；window.BANK 指向「当前可练题库」——
- *       默认按 XK_BANK_INDEX 映射成 2000 题白名单视图；释放开关打开时指回全库。
- *       所有业务代码（刷题/模拟考/诊断/PK/擂台/备课夹）都读 window.BANK，
- *       因此一处闸门即可覆盖全站，无需逐个模块改抽题逻辑。
- * 服务端：/api/bank 同样按 XK_BANK_INDEX 过滤，只有 ?full=1 才返回全库。
- * 开关：localStorage['xkc.bank.release'] === '1'（默认关=白名单，fail-closed）；
- *       地址栏 ?full=1 为无 localStorage 环境的兜底。
+ *       qid=djb2(m|qt|s) 不变，学生档案 / 错题本 / 班级版战绩零断链。
+ * 档位：1000 基础（默认）⊂ 2000 高级 ⊂ 3000 终极 ⊂ 3982 全库。
+ *       三份白名单是严格嵌套子集，升档时学生做过的题不会跑出题池。
+ *       window.BANK_ALL 保存全库；window.BANK 指向当前档题目视图。
+ * 开关：localStorage['xkc.bank.tier'] = 1000|2000|3000|full（默认 1000，fail-closed）；
+ *       兼容旧 xkc.bank.release==='1'（等价于 full）；地址栏 ?tier= / ?full=1 兜底。
+ * 服务端：/api/bank 按 XK_DEFAULT_TIER 与 XK_TIER_INDEX 同构过滤，?tier= 切档、?full=1 给全库。
  * ===================================================================== */
 (function () {
   'use strict';
   var root = window;
+  var TIER_KEY = 'xkc.bank.tier';
   var RELEASE_KEY = 'xkc.bank.release';
   // 应用版本号：与 GitHub tag client-v1.1 对齐；改发版只改这一处
   root.XK_APP_VER = 'v1.1';
   root.BANK_ALL = root.BANK || [];
-  var INDEX = root.XK_BANK_INDEX || [];
+  var TIERS = root.XK_TIER_INDEX || {};
+  var DEFAULT_TIER = root.XK_DEFAULT_TIER || '1000';
+  var ORDER = ['1000', '2000', '3000', 'full'];
+  var LABELS = {
+    '1000': '基础档 1000 题', '2000': '高级档 2000 题',
+    '3000': '终极档 3000 题', 'full': '全库 ' + root.BANK_ALL.length + ' 题'
+  };
 
-  function isReleased() {
+  function qs(name) {
     try {
-      if (root.localStorage && localStorage.getItem(RELEASE_KEY) === '1') return true;
-    } catch (e) { }
-    try {
-      return /(?:^|[?&])full=1(?:&|$)/.test(root.location.search || '');
-    } catch (e) { return false; }
+      var m = new RegExp('[?&]' + name + '=([^&]*)').exec(root.location.search || '');
+      return m ? decodeURIComponent(m[1]) : null;
+    } catch (e) { return null; }
   }
-  function setReleased(v) {
+  function normalize(v) { return ORDER.indexOf(v) >= 0 ? v : null; }
+  function tier() {
+    var t = null;
+    try { if (root.localStorage) t = normalize(localStorage.getItem(TIER_KEY)); } catch (e) { }
+    if (t) return t;
+    // 兼容上一版的「释放全部题量」开关
+    try { if (root.localStorage && localStorage.getItem(RELEASE_KEY) === '1') return 'full'; } catch (e) { }
+    var q = normalize(qs('tier'));
+    if (q) return q;
+    if (qs('full') === '1') return 'full';
+    return DEFAULT_TIER;
+  }
+  function countOf(t) {
+    return t === 'full' ? root.BANK_ALL.length : ((TIERS[t] || []).length);
+  }
+  function setTier(v) {
+    var t = normalize(v) || DEFAULT_TIER;
     try {
-      localStorage.setItem(RELEASE_KEY, v ? '1' : '0');
+      localStorage.setItem(TIER_KEY, t);
+      localStorage.removeItem(RELEASE_KEY);
       return true;
     } catch (e) { return false; }
   }
-  function whitelistBank() {
-    // 构建期守卫保证 INDEX 一定存在且为 2000 项；真缺失时保持全库，避免白屏
-    if (!INDEX.length) return root.BANK_ALL;
-    return INDEX.map(function (i) { return root.BANK_ALL[i]; });
+  function bankOf(t) {
+    if (t === 'full') return root.BANK_ALL;
+    var idx = TIERS[t];
+    // 构建期守卫保证三档都存在；真缺失时保持全库避免白屏
+    if (!idx || !idx.length) return root.BANK_ALL;
+    return idx.map(function (i) { return root.BANK_ALL[i]; });
   }
-  function apply() {
-    root.BANK = isReleased() ? root.BANK_ALL : whitelistBank();
-  }
-  // 供 PK 远程拉取 / 粘贴题库兜底：未释放且拿到的是本项目全库时，压回白名单；
-  // 教师自定义题库（题数或首题题干不同）原样保留，不破坏导入功能。
+  function apply() { root.BANK = bankOf(tier()); }
+  // 供 PK 远程拉取 / 粘贴题库兜底：拿到本项目全库时压回当前档；教师自定义题库原样保留
   function guard(arr) {
-    if (isReleased() || !Array.isArray(arr) || !root.BANK_ALL.length) return arr;
+    var t = tier();
+    if (t === 'full' || !Array.isArray(arr) || !root.BANK_ALL.length) return arr;
     if (arr.length !== root.BANK_ALL.length) return arr;
-    if (arr[0] && root.BANK_ALL[0] && arr[0].s === root.BANK_ALL[0].s) return whitelistBank();
+    if (arr[0] && root.BANK_ALL[0] && arr[0].s === root.BANK_ALL[0].s) return bankOf(t);
     return arr;
   }
-
-  // 按钮：主站首页 header 与 PK 独立版共用这一套行为（点一下才释放，随时可收回）
-  function toggle() {
-    var toRelease = !isReleased();
-    var msg = toRelease
-      ? '释放全部题库？\n\n当前：精选 ' + INDEX.length + ' 题；释放后：全部 ' + root.BANK_ALL.length + ' 题（刷题、模拟考、诊断、PK、擂台）。\n题库一题不删、学生档案不受影响；设置只存本机，再点一次即可收回。'
-      : '收回全部题库？\n\n将恢复默认：只开放 ' + INDEX.length + ' 题精选白名单；已作答记录不受影响。';
+  function switchTier(v) {
+    var t = normalize(v);
+    if (!t) return;
+    var cur = tier();
+    if (t === cur) return;
+    var msg = '切换题量档位？\n\n当前：' + LABELS[cur] + '\n切换后：' + LABELS[t] +
+      '\n\n刷题、模拟考、诊断、PK、擂台都会使用新题池；题库一题不删、学生档案不受影响，随时可以切回。';
+    if (t === 'full') msg += '\n\n注意：全库档包含全部 ' + root.BANK_ALL.length + ' 题（含 86 道跨考点综合卷）。';
     if (typeof root.confirm === 'function' && !root.confirm(msg)) return;
-    if (setReleased(toRelease)) { root.location.reload(); return; }
-    // localStorage 不可用（隐私模式等）时，用地址栏 ?full=1 兜底，保留其余参数
+    if (setTier(t)) { root.location.reload(); return; }
+    // localStorage 不可用（隐私模式等）时，用地址栏 ?tier= 兜底，保留其余参数
     try {
       var u = new URL(root.location.href);
-      if (toRelease) u.searchParams.set('full', '1'); else u.searchParams.delete('full');
+      u.searchParams.set('tier', t);
       root.location.href = u.toString();
     } catch (e) {
-      if (typeof root.alert === 'function') root.alert('本机无法保存设置；请在地址栏末尾加 ?full=1 后回车以释放全部题库');
+      if (typeof root.alert === 'function') root.alert('本机无法保存设置；请在地址栏末尾加 ?tier=' + t + ' 后回车切换档位');
     }
   }
   function renderButton() {
     if (typeof document === 'undefined' || !document.querySelectorAll) return;
-    // 主站首页 header、PK/擂台顶栏、PK 独立版顶栏都可以放按钮，用 data-bank-gate 统一挂
-    var list = document.querySelectorAll('[data-bank-gate]');
-    Array.prototype.forEach.call(list, function (b) {
-      var released = isReleased();
-      b.textContent = released ? '🔓 全库 ' + root.BANK_ALL.length + ' 题' : '🔒 精选 ' + INDEX.length + ' 题';
-      b.setAttribute('title', released
-        ? '当前已释放全部 ' + root.BANK_ALL.length + ' 题；点击收回为精选 ' + INDEX.length + ' 题'
-        : '当前默认只开放精选 ' + INDEX.length + ' 题；点击释放全部 ' + root.BANK_ALL.length + ' 题');
-      b.onclick = toggle;
+    var cur = tier();
+    // 档位按钮组（首页「教师选项」卡片 / PK 设置弹窗）
+    var btns = document.querySelectorAll('[data-bank-tier]');
+    Array.prototype.forEach.call(btns, function (b) {
+      var t = b.getAttribute('data-bank-tier'), on = (t === cur);
+      if (b.classList) { b.classList.toggle('on', on); b.classList.toggle('tier-on', on); }
+      b.style.opacity = on ? '1' : '0.62';
+      b.style.outline = on ? '2px solid var(--color-text-primary, #333)' : 'none';
+      b.style.outlineOffset = '2px';
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.setAttribute('title', LABELS[t] + (on ? '（当前档）' : ' · 点击切换'));
+      b.onclick = function () { switchTier(t); };
+    });
+    // 容器只显示状态，不覆盖里面的按钮
+    var boxes = document.querySelectorAll('[data-bank-gate]');
+    Array.prototype.forEach.call(boxes, function (b) { b.setAttribute('data-current-tier', cur); });
+    var statuses = document.querySelectorAll('[data-tier-status]');
+    Array.prototype.forEach.call(statuses, function (s) {
+      s.textContent = '当前：' + LABELS[cur] + '（默认 ' + LABELS[DEFAULT_TIER] + '）';
     });
   }
 
   root.XK_BANK_GATE = {
-    isReleased: isReleased,
-    setReleased: setReleased,
+    tier: tier,
+    setTier: setTier,
+    switchTier: switchTier,
     apply: apply,
     guard: guard,
-    toggle: toggle,
     renderButton: renderButton,
+    countOf: countOf,
+    labels: LABELS,
+    defaultTier: DEFAULT_TIER,
+    isReleased: function () { return tier() === 'full'; },
+    setReleased: function (v) { return setTier(v ? 'full' : DEFAULT_TIER); },
+    toggle: function () { switchTier(tier() === 'full' ? DEFAULT_TIER : 'full'); },
     fullCount: function () { return root.BANK_ALL.length; },
-    whitelistCount: function () { return INDEX.length; },
+    whitelistCount: function () { return countOf(DEFAULT_TIER); },
     activeCount: function () { return (root.BANK || []).length; }
   };
   apply();
@@ -3033,7 +3078,7 @@ body.arena-mode .app{max-width:none}
   }
   function navBack() { try { history.back(); } catch (e) { } }
   function navFwd() { try { history.forward(); } catch (e) { } }
-  window.XKNav = { back: navBack, forward: navFwd };
+  window.XKNav = { back: navBack, forward: navFwd, rehash: routeTo };
   window.addEventListener('popstate', function () {
     var h = location.hash || '#/home';
     if (sessionAlive() && h !== NAV.cur) {
@@ -4028,9 +4073,13 @@ body.arena-mode .app{max-width:none}
     bindSetup();
     renderHome();
     refreshBadges();
-    showPanel('home');
+    // 启动 hash 直达（如门户跳 #/pk）时：前段 routeTo 已切目标面板，
+    // 这里不能再 showPanel('home') 覆盖回去；非 home 直达交给构建尾段统一 rehash
+    if (!(location.hash && location.hash !== '#/home')) showPanel('home');
     var ver = window.XK_APP_VER || 'v1.1';
-    $('verTag').textContent = '当前可练 ' + BANK.length + ' 题 / 全库 ' + (window.BANK_ALL || BANK).length + ' 题 · 版本 ' + ver + '（client-' + ver + '）· 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
+    var G = window.XK_BANK_GATE;
+    var tierLabel = (G && G.labels && G.labels[G.tier()]) ? G.labels[G.tier()] : ('基础档 ' + BANK.length + ' 题');
+    $('verTag').textContent = '当前 ' + tierLabel + ' / 全库 ' + (window.BANK_ALL || BANK).length + ' 题 · 版本 ' + ver + '（client-' + ver + '）· 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';
     applyTheme(currentTheme());
     renderBankGateBtn();
     loadBig();
@@ -4283,13 +4332,18 @@ window.__PK_MOUNT = function () {
 
   /* ================= 配置 ================= */
   // 题库地址：默认同源 /api/bank（班级版/云端版都有）；纯静态打开时回退线上主站
-  // 释放开关打开时才向服务端要全库（?full=1）；默认永远拿白名单
-  var BANK_FULL_SUFFIX = (window.XK_BANK_GATE && window.XK_BANK_GATE.isReleased()) ? '?full=1' : '';
+  // 服务端按当前档位返回题池：?tier=1000|2000|3000，全库档用 ?full=1
+  var BANK_TIER_QUERY = (function () {
+    var G = window.XK_BANK_GATE;
+    if (!G) return '';
+    var t = G.tier ? G.tier() : (G.isReleased() ? 'full' : '1000');
+    return t === 'full' ? '?full=1' : '?tier=' + t;
+  })();
   var DEFAULT_BANK_URL = (function () {
     try {
-      if (location.protocol === 'file:') return 'https://xuekao.jiuyeke.cn/api/bank' + BANK_FULL_SUFFIX;
-      return location.origin + '/api/bank' + BANK_FULL_SUFFIX;
-    } catch (e) { return 'https://xuekao.jiuyeke.cn/api/bank' + BANK_FULL_SUFFIX; }
+      if (location.protocol === 'file:') return 'https://xuekao.jiuyeke.cn/api/bank' + BANK_TIER_QUERY;
+      return location.origin + '/api/bank' + BANK_TIER_QUERY;
+    } catch (e) { return 'https://xuekao.jiuyeke.cn/api/bank' + BANK_TIER_QUERY; }
   })();
 
   var CFG = Store.load(K_CFG, { count: 10, minutes: 10 });
@@ -6010,6 +6064,14 @@ window.__ARENA_MOUNT = function () {
   try { bind(); } catch (e) { if (window.console) console.error('[ARENA] bind:', e); }
 };
 
+</script>
+<script>
+/* 启动 hash 直达修复：app.js 段先于 pk/arena 段执行——直达 #/pk、#/arena 时
+ * __PK_MOUNT 尚未定义（mount 被跳过），且 app 启动段默认展示 home。
+ * 所有段就绪后统一 rehash 一次（navPush 同 hash 短路，不产生重复历史）。 */
+if ((location.hash || '').indexOf('#/') === 0 && location.hash !== '#/home' && window.XKNav && window.XKNav.rehash) {
+  try { window.XKNav.rehash(location.hash); } catch (e) { }
+}
 </script>
 </body>
 </html>

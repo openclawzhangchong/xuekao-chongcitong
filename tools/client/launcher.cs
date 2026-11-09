@@ -66,19 +66,46 @@ class TrayContext : ApplicationContext {
     }
 
     void StartServerAndOpen() {
-        if (!ServerAlive()) {
-            var py = Path.Combine(root, "python", "pythonw.exe");
-            if (!File.Exists(py)) py = "pythonw.exe";   // 兜底：系统 Python
-            var script = Path.Combine(root, "server.py");
-            var psi = new ProcessStartInfo(py, "-I \"" + script + "\"");
-            psi.WorkingDirectory = root;
-            psi.UseShellExecute = false;
-            psi.CreateNoWindow = true;
-            server = Process.Start(psi);
-            for (int i = 0; i < 30 && !ServerAlive(); i++) Thread.Sleep(500);
-        }
+        KillPort8953();   // 旧版/别目录的服务占着 8953 时，serve 的是旧文件——必须顶掉，保证本目录内容生效
+        var py = Path.Combine(root, "python", "pythonw.exe");
+        if (!File.Exists(py)) py = "pythonw.exe";   // 兜底：系统 Python
+        var script = Path.Combine(root, "server.py");
+        var psi = new ProcessStartInfo(py, "-I \"" + script + "\"");
+        psi.WorkingDirectory = root;
+        psi.UseShellExecute = false;
+        psi.CreateNoWindow = true;
+        server = Process.Start(psi);
+        for (int i = 0; i < 30 && !ServerAlive(); i++) Thread.Sleep(500);
         OpenApp();
         tray.ShowBalloonTip(2000, "学考冲刺通 · 课堂版", "服务已就绪，主界面已打开", ToolTipIcon.Info);
+    }
+
+    /* 杀掉 8953 端口占用进程（旧版课堂版服务残留）——修「装了新版还是旧页面」 */
+    void KillPort8953() {
+        if (!ServerAlive()) return;
+        try {
+            var psi = new ProcessStartInfo("cmd.exe", "/c netstat -ano | findstr :8953 | findstr LISTENING");
+            psi.UseShellExecute = false;
+            psi.RedirectStandardOutput = true;
+            psi.CreateNoWindow = true;
+            var outp = Process.Start(psi).StandardOutput.ReadToEnd();
+            var pids = new System.Collections.Generic.List<string>();
+            foreach (var line in outp.Split('\n')) {
+                var parts = line.Trim().Split(' ');
+                if (parts.Length >= 5) {
+                    int tmp;
+                    if (int.TryParse(parts[parts.Length - 1].Trim(), out tmp)) pids.Add(parts[parts.Length - 1].Trim());
+                }
+            }
+            foreach (var pid in pids) {
+                try {
+                    var k = new ProcessStartInfo("taskkill", "/F /T /PID " + pid);
+                    k.UseShellExecute = false; k.CreateNoWindow = true;
+                    Process.Start(k).WaitForExit(3000);
+                } catch { }
+            }
+            Thread.Sleep(400);   // 等端口释放
+        } catch { }
     }
 
     void OpenApp() {

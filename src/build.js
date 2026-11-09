@@ -49,6 +49,22 @@ if (JSON.stringify(IDX) !== JSON.stringify(whitelistJson.items.map(x => x.index)
   throw new Error('src/whitelist-data.js 与 docs/白名单-2000题.json 不一致，请重跑 node tools/build-whitelist.js');
 }
 if (whitelistJson.by_module && Object.keys(whitelistJson.by_module).length !== 9) throw new Error('白名单模块覆盖异常');
+// 三档闸门：1000 ⊂ 2000 ⊂ 3000，且每档与可审计 JSON 完全一致
+const TIER = window.XK_TIER_INDEX || {};
+['1000', '2000', '3000'].forEach(k => {
+  if (!Array.isArray(TIER[k]) || TIER[k].length !== Number(k)) throw new Error('档位 ' + k + ' 题数异常');
+  if (new Set(TIER[k]).size !== Number(k)) throw new Error('档位 ' + k + ' 下标重复');
+  if (TIER[k].some(i => !Number.isInteger(i) || i < 0 || i >= window.BANK.length)) throw new Error('档位 ' + k + ' 下标越界');
+});
+if (window.XK_DEFAULT_TIER !== '1000') throw new Error('默认档必须是基础档 1000');
+const S1 = new Set(TIER['1000']), S2 = new Set(TIER['2000']), S3 = new Set(TIER['3000']);
+if ([...S1].some(i => !S2.has(i)) || [...S2].some(i => !S3.has(i))) throw new Error('三档白名单必须严格嵌套');
+[['1000', '白名单-1000题.json'], ['3000', '白名单-3000题.json']].forEach(([k, f]) => {
+  const j = JSON.parse(fs.readFileSync(path.join(SRC, '..', 'docs', f), 'utf8'));
+  if (JSON.stringify(TIER[k]) !== JSON.stringify(j.items.map(x => x.index))) {
+    throw new Error('档位 ' + k + ' 与 ' + f + ' 不一致，请重跑 node tools/build-whitelist.js');
+  }
+});
 
 [engine, dataWithIndex, bankGate, app, praise, sfx, pkApp, arenaLines, arenaApp].forEach((code, i) => {
   if (/<\/script/i.test(code)) throw new Error('内嵌脚本含 </script>，会破坏 HTML（脚本#' + i + '）');
@@ -217,12 +233,16 @@ ${arenaStyle}
         <input type="file" id="importFile" accept=".json,application/json" class="hidden">
         <div class="hint">换手机/换电脑：先「导出档案」得到 JSON 文件，再到新设备「导入档案」。学习记录、错题本、预估分曲线都会跟着走。</div>
       </div>
-      <div class="card" style="margin-top:13px">
-        <div class="sec-t"><span class="dot"></span>教师选项 · 题量范围</div>
-        <div class="hint">默认只开放 2000 题精选白名单（按考纲分值 + 58 个考点配平）。需要全量练习时再点下面这个按钮，随时可以再点一次收回；不改变题库真源，学生档案不受影响。</div>
-        <div style="margin-top:10px">
-          <button class="btn ghost sm" data-bank-gate title="默认只开放 2000 题精选白名单；点击释放全部 3982 题，再点收回">🔒 精选 2000 题</button>
+      <div class="card" style="margin-top:13px" data-bank-gate>
+        <div class="sec-t"><span class="dot"></span>教师选项 · 题量档位</div>
+        <div class="hint">默认 <b>基础档 1000 题</b>；三档白名单是嵌套子集（1000 ⊂ 2000 ⊂ 3000），升档不会丢掉做过的题。切换只改本机设置，题库一题不删、学生档案不受影响。</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn ghost sm" data-bank-tier="1000">基础 1000 题</button>
+          <button class="btn ghost sm" data-bank-tier="2000">高级 2000 题</button>
+          <button class="btn ghost sm" data-bank-tier="3000">终极 3000 题</button>
+          <button class="btn ghost sm" data-bank-tier="full">全库 3982 题</button>
         </div>
+        <div class="hint" data-tier-status style="margin-top:8px"></div>
       </div>
       <div class="ver-tag" id="verTag"></div>
     </div>
@@ -477,4 +497,6 @@ if (splitMode) {
 }
 const kb = (fs.statSync(out).size / 1024).toFixed(0);
 console.log('BUILD OK →', out);
-console.log('大小:', kb, 'KB | 全库', window.BANK.length, '题 | 默认白名单', IDX.length, '题 | ID唯一 ✓ | 考纲总分', total150, '✓');
+console.log('大小:', kb, 'KB | 全库', window.BANK.length, '题 | 档位 1000/2000/3000:',
+  TIER['1000'].length + '/' + TIER['2000'].length + '/' + TIER['3000'].length,
+  '| 默认', window.XK_DEFAULT_TIER, '| 嵌套 ✓ | ID唯一 ✓ | 考纲总分', total150, '✓');

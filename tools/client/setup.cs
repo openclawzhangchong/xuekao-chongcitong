@@ -23,6 +23,7 @@ static class Program {
     public static string DefaultPath() { return "C:" + Path.DirectorySeparatorChar + "学考冲刺通"; }
 
     public static void InstallTo(string target) {
+        StopOldService();   // 旧服务占着 8953/pythonw.exe 会导致：①文件占用安装失败 ②装完打开的仍是旧内容
         var asm = Assembly.GetExecutingAssembly();
         using (var stream = asm.GetManifestResourceStream("payload.zip")) {
             if (stream == null) throw new Exception("安装包缺少内嵌资源 payload.zip");
@@ -39,6 +40,37 @@ static class Program {
         MakeShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "学考冲刺通课堂版.lnk"), target);
         var startMenu = Environment.GetFolderPath(Environment.SpecialFolder.StartMenu);
         MakeShortcut(Path.Combine(startMenu, "学考冲刺通课堂版.lnk"), target);
+    }
+
+    /* 停掉旧课堂版：杀 8953 监听进程 + 杀旧 launcher——修「装了新版还是旧页面」与文件占用安装失败 */
+    public static void StopOldService() {
+        try {
+            var psi = new ProcessStartInfo("cmd.exe", "/c netstat -ano | findstr :8953 | findstr LISTENING");
+            psi.UseShellExecute = false;
+            psi.RedirectStandardOutput = true;
+            psi.CreateNoWindow = true;
+            var outp = Process.Start(psi).StandardOutput.ReadToEnd();
+            foreach (var line in outp.Split('\n')) {
+                var parts = line.Trim().Split(' ');
+                if (parts.Length >= 5) {
+                    int tmp;
+                    var pid = parts[parts.Length - 1].Trim();
+                    if (int.TryParse(pid, out tmp)) {
+                        try {
+                            var k = new ProcessStartInfo("taskkill", "/F /T /PID " + pid);
+                            k.UseShellExecute = false; k.CreateNoWindow = true;
+                            Process.Start(k).WaitForExit(3000);
+                        } catch { }
+                    }
+                }
+            }
+        } catch { }
+        try {
+            foreach (var p in Process.GetProcessesByName("学考冲刺通")) {
+                try { p.Kill(); p.WaitForExit(3000); } catch { }
+            }
+        } catch { }
+        System.Threading.Thread.Sleep(500);
     }
 
     public static void MakeShortcut(string lnk, string target) {
