@@ -1,0 +1,73 @@
+== 全站 E2E ==
+   地址 file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html
+   视口 1366×768（本地文件）
+  ✓ A1 题库载入 —— BANK=1000，就绪耗时 329ms
+  ✓ A2 首页六张入口卡 —— 6/6
+  ✓ A3 底部页签 5 个
+  ✓ A4 首页有预估分卡
+  ✓ A5 课堂互动名单默认填充 PK 花名册（36 人） —— 已存 36 人（含学号 36 人）· 剩余未点 36 人
+  ✓ A6 学生入口二维码弹窗（img+网址）
+  ✓ A6b 二维码弹窗关闭
+  ✓ B1 主题切换落盘 —— light → dark
+    📷 evidence\e2e2\01-theme-dark.png
+  ✓ B2 切回浅色
+  ✓ C1 出题面板渲染 —— 4 个选项
+    📷 evidence\e2e2\02-quiz-report.png
+  ✓ C2 全组答完出报告
+  ✓ D1 模拟考入口可用
+  ✓ E1 错题本空态文案
+  ✓ E2 空错题点重练不崩 —— 无新报错
+  ✓ F1 诊断页渲染 —— canvas=0
+    📷 evidence\e2e2\03-diag-radar.png
+  ✓ G1 投屏模式切换 —— big
+    📷 evidence\e2e2\04-bigscreen.png
+  ✓ G2 退出投屏
+  ✓ H1 TTS 音色列表非空 —— 3 个音色
+  ✓ H2 名单清空生效 —— 剩余 0 人
+  ✓ I1 开赛出题
+  ✓ I2 左侧全对 10/10
+  ✓ I3 右侧低于左侧 —— R=0
+  ✓ I4 结算弹层出现
+    📷 evidence\e2e2\05-pk-end.png
+  ✓ I5 排行榜有参赛记录 —— 3 行
+    📷 evidence\e2e2\06-pk-leaderboard.png
+  ✓ J1 擂台页打开
+    📷 evidence\e2e2\07-arena-defending.png
+  ✓ J2 打满 3 场（results=3） —— 实际 3，round=3
+  ✓ J3 结算页出现且含擂主 —— settle=true
+  ✓ J4 结算含未上台名单
+    📷 evidence\e2e2\08-arena-settle.png
+  ✓ K1 PK 战绩持久化 —— 1 场
+  ✓ K2 擂台 3 场持久化 —— results=3 擂主=宋政烨
+  ✓ P1 备课夹清单（勾选顺序 3 题）
+  ✓ P2 备课夹按勾选顺序出题
+  ✓ P2b 备课夹两侧同序（讲完就打）
+  ✓ P3 键盘 A 键选左侧首选项 —— A vs A
+  ✓ P4 键盘 1 键选右侧首选项 —— A vs A
+  ✓ P5 换一题双方同步换新
+  ✓ N1 切页入历史栈 —— #/diag
+  ✓ N2 后退回 diag —— #/diag
+  ✓ N3 前进回 home —— #/home
+  ✓ N3b 首页顶栏导航按钮 —— ←
+  ✓ N4 favicon 为课字 logo（data-URI PNG） —— data:image/png;base64,
+  ✓ N5 版本信息显示 —— 当前 基础档 1000 题 / 全库 3982 题 · 版本 v1.2（client-v1.2）· 考纲 150 分制 
+  ✓ N6 BGM 默认音量 50%（未设置时） —— null
+  ✓ H1 荣誉榜摘要（班级擂王+今日战况） —— 👑 班级擂王：荣誉甲（累计获胜 2 场）
+📅 今日：还没开打 ｜ 🥊 本周擂主：荣誉丙
+📋 展开完整榜单
+  ✓ H2 周擂主（被踢馆换人）
+  ✓ H3 BGM 歌单加载（2 首轮换） —— 歌单 2 首 · 当前第 1 首：a.mp3
+  ✓ H4 BGM 开启即播第一首 —— {"on":true,"src":"file:///C:/m/a.mp3"}
+  ✓ CL1 客户端 tab 六项 —— 6
+  ✓ CL2 排行榜 tab 存在
+  ✓ CL3 排行榜页六区块 —— 🏆 排行榜 · 荣誉墙
+⚔️ 擂台竞技，强者登场！每一场 PK，都是向更高段位发起挑战！
+👑 至尊 · 班级擂王
+榜
+  ✓ CL4 备课夹独立页（清单同步渲染） —— 出题顺序（勾选顺序）：
+还没挑题——点上面列表里的题目加入备课夹
+  ✓ CL5 点名台大按钮
+  ✓ CL6 对战进行中 tab 隐藏（投屏一屏） —— 实际 true
+
+== 结果 == 53 通过 / 0 失败 / 截图 8 张
+页面报错 1 条（首条）：console: Failed to load resource: net::ERR_FILE_NOT_FOUND
