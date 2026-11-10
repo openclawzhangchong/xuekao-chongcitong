@@ -386,6 +386,7 @@ ${arenaStyle}
         <span id="qIdx">第 1 / 20 题</span>
         <span class="kd" id="qKd"></span>
         <button class="mini-btn" id="editQBtn" style="padding:2px 8px;font-size:11px" title="教师修正本题（需密码）">✏️ 修正本题</button>
+        <button class="mini-btn" id="delQBtn" style="padding:2px 8px;font-size:11px" title="教师删除本题（需密码，可恢复）">🗑 删除本题</button>
         <span class="pick-badge hidden" id="pickBadge"></span>
         <span class="diff-badge hidden" id="diffBadge"></span>
       </div>
@@ -468,6 +469,41 @@ ${pkMarkup}
           <span class="hint" style="margin:0" id="qeditCount"></span>
         </div>
         <div class="hint" style="margin-top:8px">修正只保存在本机，换设备请用「导出 / 导入」。改题干不会改变题目 ID，学生档案不受影响；刷新页面后其它页面（PK / 擂台 / 备课夹）同样生效。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 教师删除题目（密码保护 · 可恢复） ============ -->
+  <div class="dlg-mask hidden" id="qdelMask">
+    <div class="dlg" style="max-width:540px;max-height:88vh;overflow-y:auto">
+      <div class="dlg-t">🗑 删除本题 <span id="qdelQid" style="font-size:11px;font-weight:400;color:#888"></span></div>
+      <div id="qdelGate">
+        <div class="hint" style="margin-bottom:8px">教师专用：每次打开都要输入教师密码。删除只把题目从本机题池隐藏，可随时在下方清单恢复。</div>
+        <input id="qdelPwd" type="password" placeholder="教师密码" autocomplete="off">
+        <div class="dlg-err" id="qdelErr"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn sm" id="qdelUnlock">解锁 →</button>
+          <button class="btn ghost sm" id="qdelCancel">取消</button>
+        </div>
+      </div>
+      <div id="qdelForm" class="hidden">
+        <div class="sec-t" style="font-size:13px;margin:6px 0">即将删除的题目</div>
+        <div id="qdelPreview" style="padding:10px;border:2px solid var(--line);border-radius:10px;font-size:14px;line-height:1.5;word-break:break-all"></div>
+        <div class="hint" style="margin-top:8px">删除后本题从所有档位题池隐藏、本次练习立即跳过；题库真源一题不删、题目 ID 不变，学生档案 / 错题本不受影响。误删可在下方清单恢复。</div>
+        <div class="dlg-err" id="qdelFormErr"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+          <button class="btn warn sm" id="qdelDo">🗑 确认删除本题</button>
+          <button class="btn ghost sm" id="qdelClose">关闭</button>
+        </div>
+        <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:10px">
+          <div class="sec-t" style="font-size:13px;margin:0 0 6px">已删除题目 <span id="qdelCount" class="hint" style="font-weight:400"></span></div>
+          <div id="qdelList" style="max-height:180px;overflow-y:auto"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
+            <button class="mini-btn" id="qdelExport" style="padding:4px 9px;font-size:12px">⬆ 导出清单</button>
+            <label class="mini-btn" style="display:inline-block;padding:4px 9px;font-size:12px;cursor:pointer">⬇ 导入清单<input type="file" id="qdelImportFile" accept=".json,application/json" class="hidden"></label>
+          </div>
+        </div>
+        <div class="hint" style="margin-top:8px">删除清单只保存在本机，换设备请用「导出 / 导入清单」。</div>
       </div>
     </div>
   </div>

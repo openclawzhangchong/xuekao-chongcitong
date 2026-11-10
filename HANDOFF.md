@@ -477,6 +477,15 @@ cat README.md
 - 限制：修正**只存本机**，不同设备 / 不同站点不共享，靠导出导入 JSON 迁移；前端密码只防误触（F12 可绕过），且密码是手机号，建议换成普通口令。若要全班生效，需要另做服务端修正同步接口（带真鉴权），目前没做。
 - 测试：`node tests/question-override.test.js`（14 项）+ 全量 284 项；重建与部署照第十二节流程。
 
+## 十四、教师删除题目（2026-11-10 夜，接手必读）
+
+- 答题页「🗑 删除本题」→ `#qdelMask`：**每次打开都要重输教师密码**，解锁后显示题目预览 + 二次确认；弹窗下方「已删除题目」清单可逐条「↩ 恢复」，另有导出 / 导入清单。
+- 核心在 `src/question-override.js` 的 `window.XK_QDEL`：按**原 qid** 存 `localStorage['xkc.qdeleted.v1']`，`filter()` 只过滤题池视图。**绝对不要 splice `window.BANK_ALL`**——`XK_TIER_INDEX` 三档白名单存的是 BANK_ALL 的下标，动一下全档错位。原对象仍留在全库，真源一题不删、qid 不变、可恢复。
+- `src/bank-gate.js` 三个配套改动：`bankOf()` 末尾 `XK_QDEL.filter(base)`；`apply()` **就地同步 `window.BANK` 数组内容**（`cur.length=0` + push），因为 `app.js` / `pk-app.js` 启动时缓存了这个引用，换引用会让它们继续用旧题池；`full` 档返回 `BANK_ALL.slice()` 保证 `BANK !== BANK_ALL`。`guard()` 顺序是「先 `XK_QOVER.applyTo` 挂 `_origQid`，再 `XK_QDEL.filter`」，远程题库也生效。
+- 删除后 `app.js` 把当前题从 `S.list` / `S.answers` 一起 splice（索引对齐），立即跳到下一题；列表空了返回首页。
+- 限制：只存本机，不同步其它设备 / 云端；前端密码只防误触（F12 可绕过），密码是手机号，建议换普通口令。
+- 测试：`node tests/question-delete.test.js`（17 项）+ 全量 301 项；重建与部署照第十二节流程。
+
 ---
 
 *本文档由 ZCode 于 2026-11-06 生成，基于项目当前真实状态（git commit 1c0d631）。*

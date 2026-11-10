@@ -1232,6 +1232,7 @@ body.arena-mode .app{max-width:none}
         <span id="qIdx">第 1 / 20 题</span>
         <span class="kd" id="qKd"></span>
         <button class="mini-btn" id="editQBtn" style="padding:2px 8px;font-size:11px" title="教师修正本题（需密码）">✏️ 修正本题</button>
+        <button class="mini-btn" id="delQBtn" style="padding:2px 8px;font-size:11px" title="教师删除本题（需密码，可恢复）">🗑 删除本题</button>
         <span class="pick-badge hidden" id="pickBadge"></span>
         <span class="diff-badge hidden" id="diffBadge"></span>
       </div>
@@ -1646,6 +1647,41 @@ body.arena-mode .app{max-width:none}
           <span class="hint" style="margin:0" id="qeditCount"></span>
         </div>
         <div class="hint" style="margin-top:8px">修正只保存在本机，换设备请用「导出 / 导入」。改题干不会改变题目 ID，学生档案不受影响；刷新页面后其它页面（PK / 擂台 / 备课夹）同样生效。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 教师删除题目（密码保护 · 可恢复） ============ -->
+  <div class="dlg-mask hidden" id="qdelMask">
+    <div class="dlg" style="max-width:540px;max-height:88vh;overflow-y:auto">
+      <div class="dlg-t">🗑 删除本题 <span id="qdelQid" style="font-size:11px;font-weight:400;color:#888"></span></div>
+      <div id="qdelGate">
+        <div class="hint" style="margin-bottom:8px">教师专用：每次打开都要输入教师密码。删除只把题目从本机题池隐藏，可随时在下方清单恢复。</div>
+        <input id="qdelPwd" type="password" placeholder="教师密码" autocomplete="off">
+        <div class="dlg-err" id="qdelErr"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn sm" id="qdelUnlock">解锁 →</button>
+          <button class="btn ghost sm" id="qdelCancel">取消</button>
+        </div>
+      </div>
+      <div id="qdelForm" class="hidden">
+        <div class="sec-t" style="font-size:13px;margin:6px 0">即将删除的题目</div>
+        <div id="qdelPreview" style="padding:10px;border:2px solid var(--line);border-radius:10px;font-size:14px;line-height:1.5;word-break:break-all"></div>
+        <div class="hint" style="margin-top:8px">删除后本题从所有档位题池隐藏、本次练习立即跳过；题库真源一题不删、题目 ID 不变，学生档案 / 错题本不受影响。误删可在下方清单恢复。</div>
+        <div class="dlg-err" id="qdelFormErr"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+          <button class="btn warn sm" id="qdelDo">🗑 确认删除本题</button>
+          <button class="btn ghost sm" id="qdelClose">关闭</button>
+        </div>
+        <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:10px">
+          <div class="sec-t" style="font-size:13px;margin:0 0 6px">已删除题目 <span id="qdelCount" class="hint" style="font-weight:400"></span></div>
+          <div id="qdelList" style="max-height:180px;overflow-y:auto"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
+            <button class="mini-btn" id="qdelExport" style="padding:4px 9px;font-size:12px">⬆ 导出清单</button>
+            <label class="mini-btn" style="display:inline-block;padding:4px 9px;font-size:12px;cursor:pointer">⬇ 导入清单<input type="file" id="qdelImportFile" accept=".json,application/json" class="hidden"></label>
+          </div>
+        </div>
+        <div class="hint" style="margin-top:8px">删除清单只保存在本机，换设备请用「导出 / 导入清单」。</div>
       </div>
     </div>
   </div>
@@ -2572,6 +2608,8 @@ window.XK_DEFAULT_TIER='1000';
  * 开关：localStorage['xkc.bank.tier'] = 1000|2000|3000|full（默认 1000，fail-closed）；
  *       兼容旧 xkc.bank.release==='1'（等价于 full）；地址栏 ?tier= / ?full=1 兜底。
  * 服务端：/api/bank 按 XK_DEFAULT_TIER 与 XK_TIER_INDEX 同构过滤，?tier= 切档、?full=1 给全库。
+ * 教师删除：XK_QDEL.filter 在构造视图时按原 qid 隐藏本机删除清单里的题；
+ *       BANK_ALL 绝不 splice（下标白名单依赖它），apply() 就地同步 BANK 保引用。
  * ===================================================================== */
 (function () {
   'use strict';
@@ -2619,13 +2657,28 @@ window.XK_DEFAULT_TIER='1000';
     } catch (e) { return false; }
   }
   function bankOf(t) {
-    if (t === 'full') return root.BANK_ALL;
-    var idx = TIERS[t];
+    var base = root.BANK_ALL, idx = TIERS[t];
     // 构建期守卫保证三档都存在；真缺失时保持全库避免白屏
-    if (!idx || !idx.length) return root.BANK_ALL;
-    return idx.map(function (i) { return root.BANK_ALL[i]; });
+    if (t !== 'full' && idx && idx.length) {
+      base = idx.map(function (i) { return root.BANK_ALL[i]; });
+    }
+    // full / 兜底给独立副本：apply() 就地同步数组，必须保证 window.BANK !== BANK_ALL
+    if (base === root.BANK_ALL) base = root.BANK_ALL.slice();
+    // 教师删除清单只过滤视图；BANK_ALL 原数组长度/顺序绝不动（白名单存的是它的下标）
+    return (root.XK_QDEL && root.XK_QDEL.filter) ? root.XK_QDEL.filter(base) : base;
   }
-  function apply() { root.BANK = bankOf(tier()); }
+  // 就地同步 window.BANK 的内容，不换数组引用：
+  // app.js / pk-app.js 启动时缓存了 window.BANK，换引用会让它们继续用旧题池。
+  function apply() {
+    var want = bankOf(tier()), cur = root.BANK;
+    if (Array.isArray(cur) && cur !== root.BANK_ALL) {
+      cur.length = 0;
+      for (var i = 0; i < want.length; i++) cur.push(want[i]);
+    } else {
+      root.BANK = want; // 首次执行：cur 是 data.js 的原始全库（== BANK_ALL）
+    }
+    return root.BANK;
+  }
   // 供 PK 远程拉取 / 粘贴题库兜底：拿到本项目全库时压回当前档；教师自定义题库原样保留。
   // 末尾统一交给 XK_QOVER.applyTo，保证远程题库也带上教师修正（按原 qid 匹配）。
   function guard(arr) {
@@ -2638,7 +2691,9 @@ window.XK_DEFAULT_TIER='1000';
       }
       if (same) out = bankOf(t);
     }
-    return (root.XK_QOVER && root.XK_QOVER.applyTo) ? root.XK_QOVER.applyTo(out) : out;
+    var res = (root.XK_QOVER && root.XK_QOVER.applyTo) ? root.XK_QOVER.applyTo(out) : out;
+    // 先套修正（挂 _origQid）再按原 qid 过滤本机删除清单，远程题库同样生效
+    return (root.XK_QDEL && root.XK_QDEL.filter) ? root.XK_QDEL.filter(res) : res;
   }
   function switchTier(v) {
     var t = normalize(v);
@@ -2711,28 +2766,38 @@ window.XK_DEFAULT_TIER='1000';
 </script>
 <script>
 /* =====================================================================
- * 教师题目修正层（在 bank-gate.js 之后、app.js / pk-app.js / arena-app.js 之前执行）
+ * 教师题目修正与删除层（在 bank-gate.js 之后、app.js / pk-app.js / arena-app.js 之前执行）
  * ---------------------------------------------------------------------
- * 场景：做题时发现某题题干 / 选项 / 答案有误，老师在答题页点「✏️ 修正」，
- *       输入教师密码后在模态框里改，保存即生效。
- * 存储：localStorage['xkc.qoverrides.v1']，按【原 qid】存覆盖字段。
- *       src/data.js 真源一字不改，构建产物不需要重新生成。
- * 关键：修正会挂 _origQid（原 qid）；engine.qidOf 优先返回它，
- *       所以「改题干」不会改变 qid，学生历史作答 / 错题本 / 备课夹零断链。
- * 作用范围：window.BANK_ALL 里的原对象就地合并覆盖，因此所有档位视图、
- *       刷题 / 模拟考 / 诊断 / 错题本 / PK / 擂台 / 备课夹同步生效（同一对象引用）。
- * 限制：修正存本机，不自动同步到其它设备或云端；提供导出 / 导入 JSON 迁移。
+ * 【修正】做题时发现题干 / 选项 / 答案有误，点「✏️ 修正本题」输密码后改。
+ *   存储：localStorage['xkc.qoverrides.v1']，按【原 qid】存覆盖字段。
+ *   关键：修正会挂 _origQid（原 qid）；engine.qidOf 优先返回它，
+ *         所以「改题干」不会改变 qid，学生历史作答 / 错题本 / 备课夹零断链。
+ *   作用范围：window.BANK_ALL 里的原对象就地合并，所有档位视图 / 各业务模块
+ *         共享同一对象引用，因此同步生效。
+ *
+ * 【删除】题目有硬伤、不想再让学生练到，点「🗑 删除本题」输密码后隐藏。
+ *   存储：localStorage['xkc.qdeleted.v1']，按【原 qid】存删除标记 + 题干摘要。
+ *   铁律：绝不改动 window.BANK_ALL 数组的长度或顺序！
+ *         三档白名单（XK_TIER_INDEX）存的是 BANK_ALL 的【下标】，一旦 splice
+ *         会全档错位。删除只是在构造 window.BANK 视图时过滤掉这些题，
+ *         原对象仍留在 BANK_ALL 里（真源一题不删、qid 不变、可随时恢复）。
+ *   apply() 就地同步 window.BANK 数组内容（不换引用），因为 app.js 缓存了该引用。
+ *
+ * 限制：修正与删除都只存本机，不自动同步到其它设备或云端；各自提供导出 / 导入。
  * 密码：只放哈希常量，不放明文；前端校验只能防误触，不是真正的访问控制。
  * ===================================================================== */
 (function () {
   'use strict';
   var root = window;
   var STORE_KEY = 'xkc.qoverrides.v1';
+  var DEL_KEY = 'xkc.qdeleted.v1';
   var PWD_HASH = 998481989;
   var XK = root.XK;
   var store = Object.create(null);
   var orig = Object.create(null);
   var loaded = false;
+  var delStore = Object.create(null);
+  var delLoaded = false;
 
   function pwdHash(s) {
     var h = 2166136261;
@@ -2853,6 +2918,122 @@ window.XK_DEFAULT_TIER='1000';
     return { ok: true, count: n, err: '' };
   }
 
+  /* ==================== 删除层：本机隐藏标记（不碰 BANK_ALL） ==================== */
+  function validQid(id) {
+    return typeof id === 'string' && id.length > 0 && id.length <= 64 && !/[\r\n<>]/.test(id);
+  }
+  function loadDel() {
+    delStore = Object.create(null);
+    try {
+      var raw = root.localStorage && localStorage.getItem(DEL_KEY);
+      var j = raw ? JSON.parse(raw) : null;
+      if (j && j.items && typeof j.items === 'object') {
+        Object.keys(j.items).forEach(function (id) {
+          if (!validQid(id)) return;
+          var it = j.items[id] || {};
+          delStore[id] = {
+            s: typeof it.s === 'string' ? it.s.slice(0, 120) : '',
+            m: typeof it.m === 'string' ? it.m.slice(0, 8) : '',
+            at: Number(it.at) || 0
+          };
+        });
+      }
+    } catch (e) { delStore = Object.create(null); }
+    delLoaded = true;
+    return delStore;
+  }
+  function saveDel() {
+    try {
+      localStorage.setItem(DEL_KEY, JSON.stringify({
+        v: 1, title: '学考冲刺通 · 教师删除题目清单',
+        count: Object.keys(delStore).length, items: delStore
+      }));
+      return true;
+    } catch (e) { return false; }
+  }
+  function ensureDel() { if (!delLoaded) loadDel(); return delStore; }
+  function isDeleted(id) { return !!ensureDel()[id]; }
+  function deletedCount() { return Object.keys(ensureDel()).length; }
+  // 供 bank-gate.bankOf / guard 调用：只过滤视图，绝不改 BANK_ALL
+  function filter(arr) {
+    if (!Array.isArray(arr) || !deletedCount()) return arr;
+    return arr.filter(function (q) { return !delStore[qid(q)]; });
+  }
+  // 视图重建：gate.apply() 就地同步 window.BANK，app.js 持有的数组引用不断
+  function rebuildView() {
+    var G = root.XK_BANK_GATE;
+    if (G && G.apply) G.apply();
+    return root.BANK;
+  }
+  function del(id, info) {
+    if (!validQid(id)) return false;
+    ensureDel();
+    info = info || {};
+    delStore[id] = {
+      s: typeof info.s === 'string' ? info.s.slice(0, 120) : '',
+      m: typeof info.m === 'string' ? info.m.slice(0, 8) : '',
+      at: Date.now()
+    };
+    var ok = saveDel();
+    rebuildView();
+    return ok;
+  }
+  function undel(id) {
+    if (!isDeleted(id)) return false;
+    delete delStore[id];
+    var ok = saveDel();
+    rebuildView();
+    return ok;
+  }
+  function delList() {
+    return Object.keys(ensureDel()).map(function (id) {
+      var it = delStore[id];
+      return { qid: id, s: it.s, m: it.m, at: it.at };
+    }).sort(function (a, b) { return b.at - a.at; });
+  }
+  function delExportText() {
+    return JSON.stringify({
+      v: 1, title: '学考冲刺通 · 教师删除题目清单',
+      count: deletedCount(), items: delStore
+    }, null, 2);
+  }
+  function delImportText(text) {
+    var j;
+    try { j = JSON.parse(text); } catch (e) { return { ok: false, count: 0, err: '不是合法 JSON' }; }
+    if (!j || !j.items || typeof j.items !== 'object') return { ok: false, count: 0, err: '缺少 items 字段' };
+    ensureDel();
+    var n = 0;
+    Object.keys(j.items).forEach(function (id) {
+      if (!validQid(id)) return;
+      var it = j.items[id] || {};
+      delStore[id] = {
+        s: typeof it.s === 'string' ? it.s.slice(0, 120) : '',
+        m: typeof it.m === 'string' ? it.m.slice(0, 8) : '',
+        at: Number(it.at) || Date.now()
+      };
+      n++;
+    });
+    saveDel();
+    rebuildView();
+    return { ok: true, count: n, err: '' };
+  }
+
+  root.XK_QDEL = {
+    checkPwd: checkPwd,
+    qid: qid,
+    filter: filter,
+    del: del,
+    undel: undel,
+    has: isDeleted,
+    count: deletedCount,
+    list: delList,
+    load: loadDel,
+    save: saveDel,
+    exportText: delExportText,
+    importText: delImportText,
+    rebuildView: rebuildView
+  };
+
   root.XK_QOVER = {
     checkPwd: checkPwd,
     load: load,
@@ -2868,7 +3049,8 @@ window.XK_DEFAULT_TIER='1000';
     exportText: exportText,
     importText: importText
   };
-  refresh();
+  refresh();       // 先给 BANK_ALL 挂 _origQid 并套用本机修正
+  rebuildView();   // 再按删除清单重建 BANK 视图（此时 qid 已稳定）
 })();
 
 </script>
@@ -4084,6 +4266,121 @@ window.XK_DEFAULT_TIER='1000';
   if (qeditImportFile) qeditImportFile.onchange = qeditImport;
   var qeditPwd = $('qeditPwd');
   if (qeditPwd) qeditPwd.onkeydown = function (ev) { if (ev.key === 'Enter') qeditUnlock(); };
+
+  /* ---------- 教师删除题目（密码模态框 · 每次打开都要输密码） ---------- */
+  var QD = { q: null, unlocked: false };
+  function qdelOpen() {
+    var QDEL = window.XK_QDEL;
+    if (!QDEL || !S.list[S.idx]) return;
+    QD.q = S.list[S.idx]; QD.unlocked = false;
+    $('qdelQid').textContent = QDEL.qid(QD.q);
+    $('qdelGate').classList.remove('hidden');
+    $('qdelForm').classList.add('hidden');
+    $('qdelPwd').value = '';
+    $('qdelErr').textContent = '';
+    $('qdelMask').classList.remove('hidden');
+    setTimeout(function () { try { $('qdelPwd').focus(); } catch (e) { } }, 40);
+  }
+  function qdelClose() { $('qdelMask').classList.add('hidden'); }
+  function qdelUnlock() {
+    if (!window.XK_QOVER.checkPwd($('qdelPwd').value)) {
+      $('qdelErr').textContent = '密码不正确，请联系授课教师'; return;
+    }
+    QD.unlocked = true;
+    $('qdelGate').classList.add('hidden');
+    $('qdelForm').classList.remove('hidden');
+    qdelRender();
+  }
+  function qdelRender() {
+    var QDEL = window.XK_QDEL, q = QD.q;
+    $('qdelPreview').textContent = q
+      ? '【' + q.qt + ' · ' + (q.m || '') + '】' + String(q.s || '').slice(0, 120)
+      : '';
+    var done = q && QDEL.has(QDEL.qid(q));
+    var doBtn = $('qdelDo');
+    doBtn.disabled = !!done;
+    doBtn.textContent = done ? '✅ 本题已删除' : '🗑 确认删除本题';
+    $('qdelFormErr').textContent = '';
+    var items = QDEL.list();
+    $('qdelCount').textContent = '（本机共 ' + items.length + ' 题）';
+    var box = $('qdelList'); box.innerHTML = '';
+    if (!items.length) {
+      var empty = document.createElement('div');
+      empty.className = 'hint'; empty.style.margin = '0';
+      empty.textContent = '暂无已删除题目。';
+      box.appendChild(empty);
+    }
+    items.forEach(function (it) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)';
+      var txt = document.createElement('div');
+      txt.style.cssText = 'flex:1;min-width:0;font-size:12px;word-break:break-all';
+      txt.textContent = it.qid + ' · ' + (it.s || '（无题干摘要）');
+      var b = document.createElement('button');
+      b.className = 'mini-btn'; b.style.cssText = 'padding:3px 9px;font-size:12px;flex:none';
+      b.textContent = '↩ 恢复';
+      b.onclick = function () { qdelRestore(it.qid); };
+      row.appendChild(txt); row.appendChild(b); box.appendChild(row);
+    });
+  }
+  function qdelDo() {
+    if (!QD.unlocked || !QD.q) return;
+    var QDEL = window.XK_QDEL, id = QDEL.qid(QD.q);
+    if (QDEL.has(id)) { $('qdelFormErr').textContent = '本题已在删除清单中'; return; }
+    if (!confirm('确认删除这道题？\n\n本题将从本机所有档位题池隐藏，本次练习立即跳过它；题库真源一题不删、学生档案不受影响。误删可在弹窗下方清单恢复。')) return;
+    if (!QDEL.del(id, { s: QD.q.s, m: QD.q.m })) {
+      $('qdelFormErr').textContent = '本机存储不可用，无法删除'; return;
+    }
+    // 本次答题列表同步跳过：S.answers 按索引存，一起 splice 保持对齐
+    S.list.splice(S.idx, 1);
+    S.answers.splice(S.idx, 1);
+    if (S.idx >= S.list.length) S.idx = Math.max(0, S.list.length - 1);
+    S.curSel = []; S.judged = false;
+    qdelClose();
+    if (!S.list.length) {
+      alert('本题已删除；本次练习已没有剩余题目，返回首页。');
+      stopSpeak(); switchTab('home'); return;
+    }
+    renderQuestion();
+  }
+  function qdelRestore(id) {
+    if (!QD.unlocked) return;
+    if (!confirm('恢复这道题？\n\n它会重新出现在当前档位题池中（本次练习不重新加题）。')) return;
+    window.XK_QDEL.undel(id);
+    qdelRender();
+  }
+  function qdelExport() {
+    var blob = new Blob([window.XK_QDEL.exportText()], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '学考冲刺通_删除题目清单_' + XK.todayStr() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  function qdelImport(ev) {
+    var f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      var r = window.XK_QDEL.importText(fr.result);
+      alert(r.ok ? ('已导入 ' + r.count + ' 条删除记录，本机共 ' + window.XK_QDEL.count() + ' 题')
+        : ('导入失败：' + r.err));
+      qdelRender();
+    };
+    fr.readAsText(f);
+    ev.target.value = '';
+  }
+  var qdelBtns = {
+    delQBtn: qdelOpen, qdelCancel: qdelClose, qdelClose: qdelClose,
+    qdelUnlock: qdelUnlock, qdelDo: qdelDo, qdelExport: qdelExport
+  };
+  Object.keys(qdelBtns).forEach(function (id) {
+    var b = $(id); if (b) b.onclick = qdelBtns[id];
+  });
+  var qdelImportFile = $('qdelImportFile');
+  if (qdelImportFile) qdelImportFile.onchange = qdelImport;
+  var qdelPwd = $('qdelPwd');
+  if (qdelPwd) qdelPwd.onkeydown = function (ev) { if (ev.key === 'Enter') qdelUnlock(); };
 
   /* ---------- 结束与成绩 ---------- */
   function finishSession() {

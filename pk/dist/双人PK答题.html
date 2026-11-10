@@ -1548,6 +1548,8 @@ window.XK_DEFAULT_TIER='1000';
  * 开关：localStorage['xkc.bank.tier'] = 1000|2000|3000|full（默认 1000，fail-closed）；
  *       兼容旧 xkc.bank.release==='1'（等价于 full）；地址栏 ?tier= / ?full=1 兜底。
  * 服务端：/api/bank 按 XK_DEFAULT_TIER 与 XK_TIER_INDEX 同构过滤，?tier= 切档、?full=1 给全库。
+ * 教师删除：XK_QDEL.filter 在构造视图时按原 qid 隐藏本机删除清单里的题；
+ *       BANK_ALL 绝不 splice（下标白名单依赖它），apply() 就地同步 BANK 保引用。
  * ===================================================================== */
 (function () {
   'use strict';
@@ -1595,13 +1597,28 @@ window.XK_DEFAULT_TIER='1000';
     } catch (e) { return false; }
   }
   function bankOf(t) {
-    if (t === 'full') return root.BANK_ALL;
-    var idx = TIERS[t];
+    var base = root.BANK_ALL, idx = TIERS[t];
     // 构建期守卫保证三档都存在；真缺失时保持全库避免白屏
-    if (!idx || !idx.length) return root.BANK_ALL;
-    return idx.map(function (i) { return root.BANK_ALL[i]; });
+    if (t !== 'full' && idx && idx.length) {
+      base = idx.map(function (i) { return root.BANK_ALL[i]; });
+    }
+    // full / 兜底给独立副本：apply() 就地同步数组，必须保证 window.BANK !== BANK_ALL
+    if (base === root.BANK_ALL) base = root.BANK_ALL.slice();
+    // 教师删除清单只过滤视图；BANK_ALL 原数组长度/顺序绝不动（白名单存的是它的下标）
+    return (root.XK_QDEL && root.XK_QDEL.filter) ? root.XK_QDEL.filter(base) : base;
   }
-  function apply() { root.BANK = bankOf(tier()); }
+  // 就地同步 window.BANK 的内容，不换数组引用：
+  // app.js / pk-app.js 启动时缓存了 window.BANK，换引用会让它们继续用旧题池。
+  function apply() {
+    var want = bankOf(tier()), cur = root.BANK;
+    if (Array.isArray(cur) && cur !== root.BANK_ALL) {
+      cur.length = 0;
+      for (var i = 0; i < want.length; i++) cur.push(want[i]);
+    } else {
+      root.BANK = want; // 首次执行：cur 是 data.js 的原始全库（== BANK_ALL）
+    }
+    return root.BANK;
+  }
   // 供 PK 远程拉取 / 粘贴题库兜底：拿到本项目全库时压回当前档；教师自定义题库原样保留。
   // 末尾统一交给 XK_QOVER.applyTo，保证远程题库也带上教师修正（按原 qid 匹配）。
   function guard(arr) {
@@ -1614,7 +1631,9 @@ window.XK_DEFAULT_TIER='1000';
       }
       if (same) out = bankOf(t);
     }
-    return (root.XK_QOVER && root.XK_QOVER.applyTo) ? root.XK_QOVER.applyTo(out) : out;
+    var res = (root.XK_QOVER && root.XK_QOVER.applyTo) ? root.XK_QOVER.applyTo(out) : out;
+    // 先套修正（挂 _origQid）再按原 qid 过滤本机删除清单，远程题库同样生效
+    return (root.XK_QDEL && root.XK_QDEL.filter) ? root.XK_QDEL.filter(res) : res;
   }
   function switchTier(v) {
     var t = normalize(v);
@@ -1687,28 +1706,38 @@ window.XK_DEFAULT_TIER='1000';
 </script>
 <script>
 /* =====================================================================
- * 教师题目修正层（在 bank-gate.js 之后、app.js / pk-app.js / arena-app.js 之前执行）
+ * 教师题目修正与删除层（在 bank-gate.js 之后、app.js / pk-app.js / arena-app.js 之前执行）
  * ---------------------------------------------------------------------
- * 场景：做题时发现某题题干 / 选项 / 答案有误，老师在答题页点「✏️ 修正」，
- *       输入教师密码后在模态框里改，保存即生效。
- * 存储：localStorage['xkc.qoverrides.v1']，按【原 qid】存覆盖字段。
- *       src/data.js 真源一字不改，构建产物不需要重新生成。
- * 关键：修正会挂 _origQid（原 qid）；engine.qidOf 优先返回它，
- *       所以「改题干」不会改变 qid，学生历史作答 / 错题本 / 备课夹零断链。
- * 作用范围：window.BANK_ALL 里的原对象就地合并覆盖，因此所有档位视图、
- *       刷题 / 模拟考 / 诊断 / 错题本 / PK / 擂台 / 备课夹同步生效（同一对象引用）。
- * 限制：修正存本机，不自动同步到其它设备或云端；提供导出 / 导入 JSON 迁移。
+ * 【修正】做题时发现题干 / 选项 / 答案有误，点「✏️ 修正本题」输密码后改。
+ *   存储：localStorage['xkc.qoverrides.v1']，按【原 qid】存覆盖字段。
+ *   关键：修正会挂 _origQid（原 qid）；engine.qidOf 优先返回它，
+ *         所以「改题干」不会改变 qid，学生历史作答 / 错题本 / 备课夹零断链。
+ *   作用范围：window.BANK_ALL 里的原对象就地合并，所有档位视图 / 各业务模块
+ *         共享同一对象引用，因此同步生效。
+ *
+ * 【删除】题目有硬伤、不想再让学生练到，点「🗑 删除本题」输密码后隐藏。
+ *   存储：localStorage['xkc.qdeleted.v1']，按【原 qid】存删除标记 + 题干摘要。
+ *   铁律：绝不改动 window.BANK_ALL 数组的长度或顺序！
+ *         三档白名单（XK_TIER_INDEX）存的是 BANK_ALL 的【下标】，一旦 splice
+ *         会全档错位。删除只是在构造 window.BANK 视图时过滤掉这些题，
+ *         原对象仍留在 BANK_ALL 里（真源一题不删、qid 不变、可随时恢复）。
+ *   apply() 就地同步 window.BANK 数组内容（不换引用），因为 app.js 缓存了该引用。
+ *
+ * 限制：修正与删除都只存本机，不自动同步到其它设备或云端；各自提供导出 / 导入。
  * 密码：只放哈希常量，不放明文；前端校验只能防误触，不是真正的访问控制。
  * ===================================================================== */
 (function () {
   'use strict';
   var root = window;
   var STORE_KEY = 'xkc.qoverrides.v1';
+  var DEL_KEY = 'xkc.qdeleted.v1';
   var PWD_HASH = 998481989;
   var XK = root.XK;
   var store = Object.create(null);
   var orig = Object.create(null);
   var loaded = false;
+  var delStore = Object.create(null);
+  var delLoaded = false;
 
   function pwdHash(s) {
     var h = 2166136261;
@@ -1829,6 +1858,122 @@ window.XK_DEFAULT_TIER='1000';
     return { ok: true, count: n, err: '' };
   }
 
+  /* ==================== 删除层：本机隐藏标记（不碰 BANK_ALL） ==================== */
+  function validQid(id) {
+    return typeof id === 'string' && id.length > 0 && id.length <= 64 && !/[\r\n<>]/.test(id);
+  }
+  function loadDel() {
+    delStore = Object.create(null);
+    try {
+      var raw = root.localStorage && localStorage.getItem(DEL_KEY);
+      var j = raw ? JSON.parse(raw) : null;
+      if (j && j.items && typeof j.items === 'object') {
+        Object.keys(j.items).forEach(function (id) {
+          if (!validQid(id)) return;
+          var it = j.items[id] || {};
+          delStore[id] = {
+            s: typeof it.s === 'string' ? it.s.slice(0, 120) : '',
+            m: typeof it.m === 'string' ? it.m.slice(0, 8) : '',
+            at: Number(it.at) || 0
+          };
+        });
+      }
+    } catch (e) { delStore = Object.create(null); }
+    delLoaded = true;
+    return delStore;
+  }
+  function saveDel() {
+    try {
+      localStorage.setItem(DEL_KEY, JSON.stringify({
+        v: 1, title: '学考冲刺通 · 教师删除题目清单',
+        count: Object.keys(delStore).length, items: delStore
+      }));
+      return true;
+    } catch (e) { return false; }
+  }
+  function ensureDel() { if (!delLoaded) loadDel(); return delStore; }
+  function isDeleted(id) { return !!ensureDel()[id]; }
+  function deletedCount() { return Object.keys(ensureDel()).length; }
+  // 供 bank-gate.bankOf / guard 调用：只过滤视图，绝不改 BANK_ALL
+  function filter(arr) {
+    if (!Array.isArray(arr) || !deletedCount()) return arr;
+    return arr.filter(function (q) { return !delStore[qid(q)]; });
+  }
+  // 视图重建：gate.apply() 就地同步 window.BANK，app.js 持有的数组引用不断
+  function rebuildView() {
+    var G = root.XK_BANK_GATE;
+    if (G && G.apply) G.apply();
+    return root.BANK;
+  }
+  function del(id, info) {
+    if (!validQid(id)) return false;
+    ensureDel();
+    info = info || {};
+    delStore[id] = {
+      s: typeof info.s === 'string' ? info.s.slice(0, 120) : '',
+      m: typeof info.m === 'string' ? info.m.slice(0, 8) : '',
+      at: Date.now()
+    };
+    var ok = saveDel();
+    rebuildView();
+    return ok;
+  }
+  function undel(id) {
+    if (!isDeleted(id)) return false;
+    delete delStore[id];
+    var ok = saveDel();
+    rebuildView();
+    return ok;
+  }
+  function delList() {
+    return Object.keys(ensureDel()).map(function (id) {
+      var it = delStore[id];
+      return { qid: id, s: it.s, m: it.m, at: it.at };
+    }).sort(function (a, b) { return b.at - a.at; });
+  }
+  function delExportText() {
+    return JSON.stringify({
+      v: 1, title: '学考冲刺通 · 教师删除题目清单',
+      count: deletedCount(), items: delStore
+    }, null, 2);
+  }
+  function delImportText(text) {
+    var j;
+    try { j = JSON.parse(text); } catch (e) { return { ok: false, count: 0, err: '不是合法 JSON' }; }
+    if (!j || !j.items || typeof j.items !== 'object') return { ok: false, count: 0, err: '缺少 items 字段' };
+    ensureDel();
+    var n = 0;
+    Object.keys(j.items).forEach(function (id) {
+      if (!validQid(id)) return;
+      var it = j.items[id] || {};
+      delStore[id] = {
+        s: typeof it.s === 'string' ? it.s.slice(0, 120) : '',
+        m: typeof it.m === 'string' ? it.m.slice(0, 8) : '',
+        at: Number(it.at) || Date.now()
+      };
+      n++;
+    });
+    saveDel();
+    rebuildView();
+    return { ok: true, count: n, err: '' };
+  }
+
+  root.XK_QDEL = {
+    checkPwd: checkPwd,
+    qid: qid,
+    filter: filter,
+    del: del,
+    undel: undel,
+    has: isDeleted,
+    count: deletedCount,
+    list: delList,
+    load: loadDel,
+    save: saveDel,
+    exportText: delExportText,
+    importText: delImportText,
+    rebuildView: rebuildView
+  };
+
   root.XK_QOVER = {
     checkPwd: checkPwd,
     load: load,
@@ -1844,7 +1989,8 @@ window.XK_DEFAULT_TIER='1000';
     exportText: exportText,
     importText: importText
   };
-  refresh();
+  refresh();       // 先给 BANK_ALL 挂 _origQid 并套用本机修正
+  rebuildView();   // 再按删除清单重建 BANK 视图（此时 qid 已稳定）
 })();
 
 </script>

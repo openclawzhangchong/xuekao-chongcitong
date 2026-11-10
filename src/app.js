@@ -1210,6 +1210,121 @@
   var qeditPwd = $('qeditPwd');
   if (qeditPwd) qeditPwd.onkeydown = function (ev) { if (ev.key === 'Enter') qeditUnlock(); };
 
+  /* ---------- 教师删除题目（密码模态框 · 每次打开都要输密码） ---------- */
+  var QD = { q: null, unlocked: false };
+  function qdelOpen() {
+    var QDEL = window.XK_QDEL;
+    if (!QDEL || !S.list[S.idx]) return;
+    QD.q = S.list[S.idx]; QD.unlocked = false;
+    $('qdelQid').textContent = QDEL.qid(QD.q);
+    $('qdelGate').classList.remove('hidden');
+    $('qdelForm').classList.add('hidden');
+    $('qdelPwd').value = '';
+    $('qdelErr').textContent = '';
+    $('qdelMask').classList.remove('hidden');
+    setTimeout(function () { try { $('qdelPwd').focus(); } catch (e) { } }, 40);
+  }
+  function qdelClose() { $('qdelMask').classList.add('hidden'); }
+  function qdelUnlock() {
+    if (!window.XK_QOVER.checkPwd($('qdelPwd').value)) {
+      $('qdelErr').textContent = '密码不正确，请联系授课教师'; return;
+    }
+    QD.unlocked = true;
+    $('qdelGate').classList.add('hidden');
+    $('qdelForm').classList.remove('hidden');
+    qdelRender();
+  }
+  function qdelRender() {
+    var QDEL = window.XK_QDEL, q = QD.q;
+    $('qdelPreview').textContent = q
+      ? '【' + q.qt + ' · ' + (q.m || '') + '】' + String(q.s || '').slice(0, 120)
+      : '';
+    var done = q && QDEL.has(QDEL.qid(q));
+    var doBtn = $('qdelDo');
+    doBtn.disabled = !!done;
+    doBtn.textContent = done ? '✅ 本题已删除' : '🗑 确认删除本题';
+    $('qdelFormErr').textContent = '';
+    var items = QDEL.list();
+    $('qdelCount').textContent = '（本机共 ' + items.length + ' 题）';
+    var box = $('qdelList'); box.innerHTML = '';
+    if (!items.length) {
+      var empty = document.createElement('div');
+      empty.className = 'hint'; empty.style.margin = '0';
+      empty.textContent = '暂无已删除题目。';
+      box.appendChild(empty);
+    }
+    items.forEach(function (it) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)';
+      var txt = document.createElement('div');
+      txt.style.cssText = 'flex:1;min-width:0;font-size:12px;word-break:break-all';
+      txt.textContent = it.qid + ' · ' + (it.s || '（无题干摘要）');
+      var b = document.createElement('button');
+      b.className = 'mini-btn'; b.style.cssText = 'padding:3px 9px;font-size:12px;flex:none';
+      b.textContent = '↩ 恢复';
+      b.onclick = function () { qdelRestore(it.qid); };
+      row.appendChild(txt); row.appendChild(b); box.appendChild(row);
+    });
+  }
+  function qdelDo() {
+    if (!QD.unlocked || !QD.q) return;
+    var QDEL = window.XK_QDEL, id = QDEL.qid(QD.q);
+    if (QDEL.has(id)) { $('qdelFormErr').textContent = '本题已在删除清单中'; return; }
+    if (!confirm('确认删除这道题？\n\n本题将从本机所有档位题池隐藏，本次练习立即跳过它；题库真源一题不删、学生档案不受影响。误删可在弹窗下方清单恢复。')) return;
+    if (!QDEL.del(id, { s: QD.q.s, m: QD.q.m })) {
+      $('qdelFormErr').textContent = '本机存储不可用，无法删除'; return;
+    }
+    // 本次答题列表同步跳过：S.answers 按索引存，一起 splice 保持对齐
+    S.list.splice(S.idx, 1);
+    S.answers.splice(S.idx, 1);
+    if (S.idx >= S.list.length) S.idx = Math.max(0, S.list.length - 1);
+    S.curSel = []; S.judged = false;
+    qdelClose();
+    if (!S.list.length) {
+      alert('本题已删除；本次练习已没有剩余题目，返回首页。');
+      stopSpeak(); switchTab('home'); return;
+    }
+    renderQuestion();
+  }
+  function qdelRestore(id) {
+    if (!QD.unlocked) return;
+    if (!confirm('恢复这道题？\n\n它会重新出现在当前档位题池中（本次练习不重新加题）。')) return;
+    window.XK_QDEL.undel(id);
+    qdelRender();
+  }
+  function qdelExport() {
+    var blob = new Blob([window.XK_QDEL.exportText()], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '学考冲刺通_删除题目清单_' + XK.todayStr() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  function qdelImport(ev) {
+    var f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      var r = window.XK_QDEL.importText(fr.result);
+      alert(r.ok ? ('已导入 ' + r.count + ' 条删除记录，本机共 ' + window.XK_QDEL.count() + ' 题')
+        : ('导入失败：' + r.err));
+      qdelRender();
+    };
+    fr.readAsText(f);
+    ev.target.value = '';
+  }
+  var qdelBtns = {
+    delQBtn: qdelOpen, qdelCancel: qdelClose, qdelClose: qdelClose,
+    qdelUnlock: qdelUnlock, qdelDo: qdelDo, qdelExport: qdelExport
+  };
+  Object.keys(qdelBtns).forEach(function (id) {
+    var b = $(id); if (b) b.onclick = qdelBtns[id];
+  });
+  var qdelImportFile = $('qdelImportFile');
+  if (qdelImportFile) qdelImportFile.onchange = qdelImport;
+  var qdelPwd = $('qdelPwd');
+  if (qdelPwd) qdelPwd.onkeydown = function (ev) { if (ev.key === 'Enter') qdelUnlock(); };
+
   /* ---------- 结束与成绩 ---------- */
   function finishSession() {
     stopSpeak();

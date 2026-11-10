@@ -9,6 +9,8 @@
  * 开关：localStorage['xkc.bank.tier'] = 1000|2000|3000|full（默认 1000，fail-closed）；
  *       兼容旧 xkc.bank.release==='1'（等价于 full）；地址栏 ?tier= / ?full=1 兜底。
  * 服务端：/api/bank 按 XK_DEFAULT_TIER 与 XK_TIER_INDEX 同构过滤，?tier= 切档、?full=1 给全库。
+ * 教师删除：XK_QDEL.filter 在构造视图时按原 qid 隐藏本机删除清单里的题；
+ *       BANK_ALL 绝不 splice（下标白名单依赖它），apply() 就地同步 BANK 保引用。
  * ===================================================================== */
 (function () {
   'use strict';
@@ -56,13 +58,28 @@
     } catch (e) { return false; }
   }
   function bankOf(t) {
-    if (t === 'full') return root.BANK_ALL;
-    var idx = TIERS[t];
+    var base = root.BANK_ALL, idx = TIERS[t];
     // 构建期守卫保证三档都存在；真缺失时保持全库避免白屏
-    if (!idx || !idx.length) return root.BANK_ALL;
-    return idx.map(function (i) { return root.BANK_ALL[i]; });
+    if (t !== 'full' && idx && idx.length) {
+      base = idx.map(function (i) { return root.BANK_ALL[i]; });
+    }
+    // full / 兜底给独立副本：apply() 就地同步数组，必须保证 window.BANK !== BANK_ALL
+    if (base === root.BANK_ALL) base = root.BANK_ALL.slice();
+    // 教师删除清单只过滤视图；BANK_ALL 原数组长度/顺序绝不动（白名单存的是它的下标）
+    return (root.XK_QDEL && root.XK_QDEL.filter) ? root.XK_QDEL.filter(base) : base;
   }
-  function apply() { root.BANK = bankOf(tier()); }
+  // 就地同步 window.BANK 的内容，不换数组引用：
+  // app.js / pk-app.js 启动时缓存了 window.BANK，换引用会让它们继续用旧题池。
+  function apply() {
+    var want = bankOf(tier()), cur = root.BANK;
+    if (Array.isArray(cur) && cur !== root.BANK_ALL) {
+      cur.length = 0;
+      for (var i = 0; i < want.length; i++) cur.push(want[i]);
+    } else {
+      root.BANK = want; // 首次执行：cur 是 data.js 的原始全库（== BANK_ALL）
+    }
+    return root.BANK;
+  }
   // 供 PK 远程拉取 / 粘贴题库兜底：拿到本项目全库时压回当前档；教师自定义题库原样保留。
   // 末尾统一交给 XK_QOVER.applyTo，保证远程题库也带上教师修正（按原 qid 匹配）。
   function guard(arr) {
@@ -75,7 +92,9 @@
       }
       if (same) out = bankOf(t);
     }
-    return (root.XK_QOVER && root.XK_QOVER.applyTo) ? root.XK_QOVER.applyTo(out) : out;
+    var res = (root.XK_QOVER && root.XK_QOVER.applyTo) ? root.XK_QOVER.applyTo(out) : out;
+    // 先套修正（挂 _origQid）再按原 qid 过滤本机删除清单，远程题库同样生效
+    return (root.XK_QDEL && root.XK_QDEL.filter) ? root.XK_QDEL.filter(res) : res;
   }
   function switchTier(v) {
     var t = normalize(v);
