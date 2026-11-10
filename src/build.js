@@ -60,12 +60,28 @@ const TIER = window.XK_TIER_INDEX || {};
 if (window.XK_DEFAULT_TIER !== '1000') throw new Error('默认档必须是基础档 1000');
 const S1 = new Set(TIER['1000']), S2 = new Set(TIER['2000']), S3 = new Set(TIER['3000']);
 if ([...S1].some(i => !S2.has(i)) || [...S2].some(i => !S3.has(i))) throw new Error('三档白名单必须严格嵌套');
-[['1000', '白名单-1000题.json'], ['3000', '白名单-3000题.json']].forEach(([k, f]) => {
+[['1000', '白名单-1000题.json'], ['2000', '白名单-2000题.json'], ['3000', '白名单-3000题.json']].forEach(([k, f]) => {
   const j = JSON.parse(fs.readFileSync(path.join(SRC, '..', 'docs', f), 'utf8'));
   if (JSON.stringify(TIER[k]) !== JSON.stringify(j.items.map(x => x.index))) {
     throw new Error('档位 ' + k + ' 与 ' + f + ' 不一致，请重跑 node tools/build-whitelist.js');
   }
 });
+
+// 干净池硬校验：任何档位白名单都不得含 DELETE 题（规则单一真源 tools/quality-rules.js）
+{
+  const { classify, optKey } = require(path.join(SRC, '..', 'tools', 'quality-rules.js'));
+  const qids = window.BANK.map(q => window.XK.qidOf(q));
+  const byOpts = Object.create(null);
+  window.BANK.forEach((q, i) => { const k = optKey(q); (byOpts[k] = byOpts[k] || []).push(qids[i]); });
+  const verdicts = window.BANK.map((q, i) => classify(q, { qid: qids[i], byOpts: byOpts }));
+  ['1000', '2000', '3000'].forEach(k => {
+    const bad = TIER[k].filter(i => verdicts[i] && verdicts[i].state === 'DELETE');
+    if (bad.length) {
+      throw new Error('档位 ' + k + ' 白名单含 ' + bad.length + ' 道 DELETE 题（例：' +
+        bad.slice(0, 3).map(i => qids[i]).join(', ') + '），请重跑 node tools/build-whitelist.js');
+    }
+  });
+}
 
 [engine, dataWithIndex, bankGate, qover, app, praise, sfx, pkApp, arenaLines, arenaApp].forEach((code, i) => {
   if (/<\/script/i.test(code)) throw new Error('内嵌脚本含 </script>，会破坏 HTML（脚本#' + i + '）');

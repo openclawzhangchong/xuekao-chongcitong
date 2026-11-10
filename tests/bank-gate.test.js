@@ -50,11 +50,16 @@ function fresh(opts) {
 }
 
 console.log('== 1. 三档白名单四零与嵌套 ==');
-t('三档数量精确 1000 / 2000 / 3000，86 道综合卷排除', () => {
+t('三档数量精确 1000 / 2000 / 3000，综合卷与跨模块错挂题已排除', () => {
   assert.strictEqual(WLS['1000'].count, 1000);
   assert.strictEqual(WLS['2000'].count, 2000);
   assert.strictEqual(WLS['3000'].count, 3000);
-  assert.strictEqual(WLS['1000'].excluded_composite, 86);
+  const pool = WLS['1000'].pool;
+  assert.strictEqual(pool.total_bank, 3982);
+  assert.strictEqual(pool.KEEP + pool.CLEAN + pool.DELETE, 3982, '三态之和应等于全库');
+  assert.ok(pool.excluded_composite > 0, '跨考点综合卷应被排除');
+  assert.ok(pool.excluded_mislabeled > 0, '跨模块错挂题应被排除');
+  assert.strictEqual(pool.mislabeled_sample.length, Math.min(20, pool.excluded_mislabeled));
 });
 t('每档下标唯一、qid 唯一、均落在全库范围内', () => {
   ['1000', '2000', '3000'].forEach(k => {
@@ -71,14 +76,30 @@ t('严格嵌套：1000 ⊂ 2000 ⊂ 3000', () => {
   a.forEach(i => assert.ok(b.has(i), '1000 档题不在 2000 档'));
   b.forEach(i => assert.ok(c.has(i), '2000 档题不在 3000 档'));
 });
-t('9 模块配额与 58 考点配额逐项吻合（2000 档基座不变）', () => {
+t('9 模块配额与 58 考点配额逐项吻合（干净池重配后）', () => {
   const byMod = {};
   WLS['2000'].items.forEach(x => { byMod[x.module] = (byMod[x.module] || 0) + 1; });
   quota2000.modules.forEach(m => assert.strictEqual(byMod[m.code], m.quota, m.code + ' 模块配额'));
   const byPoint = {};
   WLS['2000'].items.forEach(x => { byPoint[x.point_id] = (byPoint[x.point_id] || 0) + 1; });
-  quota2000.points.forEach(p => assert.strictEqual(byPoint[p.id] || 0, p.a, p.id + ' 考点配额'));
+  quota2000.points.forEach(p => assert.strictEqual(byPoint[p.id] || 0, p.quota, p.id + ' 考点配额'));
   assert.strictEqual(quota2000.points.length, 58);
+});
+t('三档白名单零 DELETE 题（干净池硬约束，规则来自 quality-rules.js）', () => {
+  const { classify, optKey } = require('../tools/quality-rules');
+  const w = {}; global.window = w;
+  eval(engine + '\n' + data);
+  const B = w.BANK;
+  const ids = B.map(q => w.XK.qidOf(q));
+  const byOpts = Object.create(null);
+  B.forEach((q, i) => { const k = optKey(q); (byOpts[k] = byOpts[k] || []).push(ids[i]); });
+  const V = B.map((q, i) => classify(q, { qid: ids[i], byOpts }));
+  const at = Object.create(null);
+  ids.forEach((id, i) => { at[id] = i; });
+  ['1000', '2000', '3000'].forEach(k => {
+    const bad = WLS[k].items.filter(x => at[x.qid] == null || V[at[x.qid]].state === 'DELETE');
+    assert.strictEqual(bad.length, 0, k + ' 档含 DELETE 题：' + bad.slice(0, 3).map(x => x.qid).join(', '));
+  });
 });
 t('src/whitelist-data.js 三档与可审计 JSON 完全一致，默认档为 1000', () => {
   const m = whitelistLine.match(/window\.XK_TIER_INDEX=(\{[^\n]*\});/);

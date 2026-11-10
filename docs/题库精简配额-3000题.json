@@ -1,352 +1,294 @@
 {
   "target": 3000,
-  "method": "模块按考纲分值比例（最大余数法）；考点按 2000 档比例/3000 档理想缺口加权分配，且不超过该考点现有题数",
+  "method": "模块按考纲分值比例（最大余数法），受干净题容量封顶；考点按能力层级加权+保底，不超过该考点干净题数",
   "modules": [
     {
       "code": "M1",
       "score": 15,
-      "quota": 300,
-      "actual": 300
+      "quota": 306,
+      "actual": 306
     },
     {
       "code": "M2",
       "score": 15,
-      "quota": 300,
-      "actual": 300
+      "quota": 306,
+      "actual": 306
     },
     {
       "code": "M3",
       "score": 15,
-      "quota": 300,
-      "actual": 300
+      "quota": 306,
+      "actual": 306
     },
     {
       "code": "M4",
       "score": 7,
-      "quota": 140,
-      "actual": 140
+      "quota": 142,
+      "actual": 142
     },
     {
       "code": "M5",
       "score": 30,
-      "quota": 600,
-      "actual": 600
+      "quota": 613,
+      "actual": 613
     },
     {
       "code": "M6",
       "score": 30,
-      "quota": 600,
-      "actual": 600
+      "quota": 579,
+      "actual": 579
     },
     {
       "code": "M7",
       "score": 15,
-      "quota": 300,
-      "actual": 300
+      "quota": 279,
+      "actual": 279
     },
     {
       "code": "M8",
       "score": 8,
-      "quota": 160,
-      "actual": 160
+      "quota": 163,
+      "actual": 163
     },
     {
       "code": "M9",
       "score": 15,
-      "quota": 300,
-      "actual": 300
+      "quota": 306,
+      "actual": 306
     }
   ],
   "points": [
     {
       "id": "M1-01",
-      "quota": 40,
-      "base2000": 26
+      "quota": 45
     },
     {
       "id": "M1-02",
-      "quota": 27,
-      "base2000": 17
+      "quota": 44
     },
     {
       "id": "M1-03",
-      "quota": 27,
-      "base2000": 17
+      "quota": 36
     },
     {
       "id": "M1-04",
-      "quota": 30,
-      "base2000": 19
+      "quota": 49
     },
     {
       "id": "M1-05",
-      "quota": 31,
-      "base2000": 22
+      "quota": 18
     },
     {
       "id": "M1-06",
-      "quota": 45,
-      "base2000": 30
+      "quota": 40
     },
     {
       "id": "M1-07",
-      "quota": 27,
-      "base2000": 17
+      "quota": 40
     },
     {
       "id": "M1-08",
-      "quota": 32,
-      "base2000": 22
+      "quota": 11
     },
     {
       "id": "M1-09",
-      "quota": 41,
-      "base2000": 30
+      "quota": 23
     },
     {
       "id": "M2-01",
-      "quota": 141,
-      "base2000": 52
+      "quota": 147
     },
     {
       "id": "M2-02",
-      "quota": 40,
-      "base2000": 40
+      "quota": 40
     },
     {
       "id": "M2-03",
-      "quota": 62,
-      "base2000": 51
+      "quota": 62
     },
     {
       "id": "M2-04",
-      "quota": 26,
-      "base2000": 26
+      "quota": 26
     },
     {
       "id": "M2-05",
-      "quota": 19,
-      "base2000": 19
+      "quota": 19
     },
     {
       "id": "M2-06",
-      "quota": 12,
-      "base2000": 12
+      "quota": 12
     },
     {
       "id": "M3-01",
-      "quota": 79,
-      "base2000": 39
+      "quota": 90
     },
     {
       "id": "M3-02",
-      "quota": 41,
-      "base2000": 39
+      "quota": 39
     },
     {
       "id": "M3-03",
-      "quota": 78,
-      "base2000": 39
+      "quota": 89
     },
     {
       "id": "M3-04",
-      "quota": 49,
-      "base2000": 30
+      "quota": 38
     },
     {
       "id": "M3-05",
-      "quota": 35,
-      "base2000": 35
+      "quota": 32
     },
     {
       "id": "M3-06",
-      "quota": 18,
-      "base2000": 18
+      "quota": 18
     },
     {
       "id": "M4-01",
-      "quota": 30,
-      "base2000": 12
+      "quota": 45
     },
     {
       "id": "M4-02",
-      "quota": 11,
-      "base2000": 11
+      "quota": 11
     },
     {
       "id": "M4-03",
-      "quota": 20,
-      "base2000": 20
+      "quota": 19
     },
     {
       "id": "M4-04",
-      "quota": 29,
-      "base2000": 18
+      "quota": 29
     },
     {
       "id": "M4-05",
-      "quota": 36,
-      "base2000": 20
+      "quota": 24
     },
     {
       "id": "M4-06",
-      "quota": 14,
-      "base2000": 12
+      "quota": 14
     },
     {
       "id": "M5-01",
-      "quota": 50,
-      "base2000": 23
+      "quota": 61
     },
     {
       "id": "M5-02",
-      "quota": 50,
-      "base2000": 23
+      "quota": 60
     },
     {
       "id": "M5-03",
-      "quota": 75,
-      "base2000": 35
+      "quota": 61
     },
     {
       "id": "M5-04",
-      "quota": 38,
-      "base2000": 37
+      "quota": 20
     },
     {
       "id": "M5-05",
-      "quota": 47,
-      "base2000": 37
+      "quota": 43
     },
     {
       "id": "M5-06",
-      "quota": 56,
-      "base2000": 35
+      "quota": 48
     },
     {
       "id": "M5-07",
-      "quota": 50,
-      "base2000": 37
+      "quota": 33
     },
     {
       "id": "M5-08",
-      "quota": 53,
-      "base2000": 35
+      "quota": 34
     },
     {
       "id": "M5-09",
-      "quota": 39,
-      "base2000": 34
+      "quota": 23
     },
     {
       "id": "M5-10",
-      "quota": 35,
-      "base2000": 35
+      "quota": 25
     },
     {
       "id": "M5-11",
-      "quota": 44,
-      "base2000": 40
+      "quota": 41
     },
     {
       "id": "M5-12",
-      "quota": 63,
-      "base2000": 29
+      "quota": 164
     },
     {
       "id": "M6-01",
-      "quota": 65,
-      "base2000": 63
+      "quota": 63
     },
     {
       "id": "M6-02",
-      "quota": 32,
-      "base2000": 32
+      "quota": 31
     },
     {
       "id": "M6-03",
-      "quota": 61,
-      "base2000": 42
+      "quota": 55
     },
     {
       "id": "M6-04",
-      "quota": 75,
-      "base2000": 42
+      "quota": 72
     },
     {
       "id": "M6-05",
-      "quota": 33,
-      "base2000": 33
+      "quota": 32
     },
     {
       "id": "M6-06",
-      "quota": 138,
-      "base2000": 73
+      "quota": 149
     },
     {
       "id": "M6-07",
-      "quota": 70,
-      "base2000": 42
+      "quota": 66
     },
     {
       "id": "M6-08",
-      "quota": 126,
-      "base2000": 73
+      "quota": 111
     },
     {
       "id": "M7-01",
-      "quota": 101,
-      "base2000": 63
+      "quota": 75
     },
     {
       "id": "M7-02",
-      "quota": 63,
-      "base2000": 42
+      "quota": 53
     },
     {
       "id": "M7-03",
-      "quota": 103,
-      "base2000": 62
+      "quota": 133
     },
     {
       "id": "M7-04",
-      "quota": 33,
-      "base2000": 33
+      "quota": 18
     },
     {
       "id": "M8-01",
-      "quota": 38,
-      "base2000": 25
+      "quota": 39
     },
     {
       "id": "M8-02",
-      "quota": 38,
-      "base2000": 25
+      "quota": 38
     },
     {
       "id": "M8-03",
-      "quota": 47,
-      "base2000": 32
+      "quota": 48
     },
     {
       "id": "M8-04",
-      "quota": 37,
-      "base2000": 25
+      "quota": 38
     },
     {
       "id": "M9-01",
-      "quota": 98,
-      "base2000": 67
+      "quota": 84
     },
     {
       "id": "M9-02",
-      "quota": 50,
-      "base2000": 50
+      "quota": 44
     },
     {
       "id": "M9-03",
-      "quota": 152,
-      "base2000": 83
+      "quota": 178
     }
   ]
 }

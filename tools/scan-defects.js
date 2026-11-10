@@ -26,6 +26,16 @@ const XK = window.XK, BANK = window.BANK;
 
 const norm = (s) => String(s == null ? '' : s).replace(/\s+/g, '').trim();
 
+/* ⑥ 质检三态（规则单一真源 tools/quality-rules.js）：DELETE 数进闸门，CLEAN/KEEP 仅记录。
+ *    这样「白名单里有坏题」「规则漏判导致坏题回流」都会在闸门里暴露。 */
+const { classify, optKey: fullOptKey } = require('./quality-rules');
+const qidList = BANK.map((q) => XK.qidOf(q));
+const byOpts = Object.create(null);
+BANK.forEach((q) => { const k = fullOptKey(q); (byOpts[k] = byOpts[k] || []).push(XK.qidOf(q)); });
+const verdicts = BANK.map((q, i) => classify(q, { qid: qidList[i], byOpts: byOpts }));
+const qc = { DELETE: 0, CLEAN: 0, KEEP: 0 };
+verdicts.forEach((v) => { qc[v.state]++; });
+
 /* ① 题面残留：题干里混进了整段「A. 选项B. 选项…」（运行时由 cleanStem 剥离） */
 const residue = BANK.filter((q) => XK.cleanStem(q.s) !== q.s);
 
@@ -55,7 +65,8 @@ const counts = {
   题面残留: residue.length,
   重复选项: dupOpt.length,
   过短解析: shortExp.length,
-  纯模板解析: tmplExp.length
+  纯模板解析: tmplExp.length,
+  质检DELETE: qc.DELETE
 };
 const GATED = Object.keys(counts);
 
@@ -66,7 +77,9 @@ if (process.argv.includes('--json')) {
 } else {
   console.log('题库 ' + BANK.length + ' 题 缺陷复扫 @ ' + report.at.slice(0, 19).replace('T', ' '));
   console.log('─'.repeat(58));
-  GATED.forEach((k) => console.log('  ' + k.padEnd(8) + String(counts[k]).padStart(5) + ' 题'));
+  GATED.forEach((k) => console.log('  ' + k.padEnd(10) + String(counts[k]).padStart(5) + ' 题'));
+  console.log('  质检CLEAN ' + String(qc.CLEAN).padStart(5) + ' 题（格式瑕疵，仅记录，不进闸门）');
+  console.log('  质检KEEP  ' + String(qc.KEEP).padStart(5) + ' 题（可用池，仅记录）');
   console.log('  截断候选  ' + String(truncCand.length).padStart(5) + ' 题（启发式，误报极多，不计入闸门、需逐题复核）');
   console.log('─'.repeat(58));
   if (dupOpt.length) {
@@ -97,9 +110,11 @@ const base = JSON.parse(fs.readFileSync(BASELINE, 'utf8'));
 let worse = 0;
 console.log('\n与基线（' + base.at.slice(0, 10) + '，题库 ' + base.total + ' 题）对比：');
 GATED.forEach((k) => {
-  const d = counts[k] - base.counts[k];
-  if (d > 0) { worse++; console.log('  ✗ ' + k + ' ' + base.counts[k] + ' → ' + counts[k] + '（+' + d + '，不允许）'); }
-  else if (d < 0) console.log('  ✓ ' + k + ' ' + base.counts[k] + ' → ' + counts[k] + '（' + d + '）');
+  const b = base.counts[k];
+  if (typeof b !== 'number') { console.log('  + ' + k + ' 新增指标 ' + counts[k] + '（存基线后纳入闸门）'); return; }
+  const d = counts[k] - b;
+  if (d > 0) { worse++; console.log('  ✗ ' + k + ' ' + b + ' → ' + counts[k] + '（+' + d + '，不允许）'); }
+  else if (d < 0) console.log('  ✓ ' + k + ' ' + b + ' → ' + counts[k] + '（' + d + '）');
   else console.log('  = ' + k + ' ' + counts[k]);
 });
 if (worse) { console.log('\n✗ 有 ' + worse + ' 类缺陷计数上升'); process.exit(1); }
