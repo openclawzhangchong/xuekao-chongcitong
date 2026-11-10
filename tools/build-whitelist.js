@@ -41,7 +41,15 @@ const byHash = (a, b) => (djb2(a.qid) - djb2(b.qid)) || (a.index - b.index);
 const qids = BANK.map(qidOf);
 const byOpts = Object.create(null);
 BANK.forEach(q => { const k = optKey(q); (byOpts[k] = byOpts[k] || []).push(qidOf(q)); });
-const verdicts = BANK.map((q, i) => classify(q, { qid: qids[i], byOpts: byOpts }));
+const byStemDir = Object.create(null);
+BANK.forEach(q => {
+  if (q.qt !== '单选') return;
+  const nk = optKey(q);
+  const norm = String(q.s || '').trim().replace(/^【[^】]{1,24}】/, '').replace(/s+/g, '');
+  const dir = /(错误的是|不正确|不属于|有误)/.test(norm) ? 'neg' : 'pos';
+  (byStemDir[nk] = byStemDir[nk] || new Set()).add(dir + ':' + String(q.a || '').trim());
+});
+const verdicts = BANK.map((q, i) => classify(q, { qid: qids[i], byOpts: byOpts, byStemDir: byStemDir }));
 const stateCount = { DELETE: 0, CLEAN: 0, KEEP: 0 };
 verdicts.forEach(v => { stateCount[v.state]++; });
 

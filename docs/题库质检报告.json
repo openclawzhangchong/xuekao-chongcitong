@@ -1,21 +1,24 @@
 {
-  "generated_at": "2026-11-10T15:07:59.454Z",
+  "generated_at": "2026-11-10T23:03:54.558Z",
   "note": "只读扫描：一题未删、白名单未改、未部署。DELETE 表示「排除出候选白名单」，不是物理删除。",
   "summary": {
     "total": 3982,
-    "DELETE": 596,
-    "CLEAN": 39,
-    "KEEP": 3347,
-    "clean_pool": 3386,
+    "DELETE": 613,
+    "CLEAN": 38,
+    "KEEP": 3331,
+    "clean_pool": 3369,
     "cleanable_duplicate": 29,
-    "delete_rate": 15
+    "delete_rate": 15.4
   },
   "by_rule": {
-    "R3": 39,
+    "R3": 38,
+    "R14": 4,
     "R8": 29,
-    "R2": 492,
+    "R2": 533,
     "R1": 58,
-    "R9": 86
+    "R10": 89,
+    "R9": 48,
+    "R11": 3
   },
   "by_source": {
     "📘 复习手册·例题 + 习题册_终版": {
@@ -34,8 +37,8 @@
     },
     "📘 复习手册·同步练习": {
       "total": 44,
-      "DELETE": 0,
-      "CLEAN": 9,
+      "DELETE": 1,
+      "CLEAN": 8,
       "KEEP": 35,
       "trusted": false
     },
@@ -69,9 +72,9 @@
     },
     "📘 复习手册·章节测试卷": {
       "total": 27,
-      "DELETE": 0,
+      "DELETE": 1,
       "CLEAN": 0,
-      "KEEP": 27,
+      "KEEP": 26,
       "trusted": true
     },
     "📘 复习手册·章节测试卷 + 习题册_终版": {
@@ -97,9 +100,9 @@
     },
     "📖 综合模拟卷": {
       "total": 45,
-      "DELETE": 0,
+      "DELETE": 1,
       "CLEAN": 0,
-      "KEEP": 45,
+      "KEEP": 44,
       "trusted": true
     },
     "📖 考点补充": {
@@ -188,187 +191,187 @@
     },
     "gen": {
       "total": 2476,
-      "DELETE": 524,
+      "DELETE": 534,
       "CLEAN": 1,
-      "KEEP": 1951,
+      "KEEP": 1941,
       "trusted": false
     },
     "gen4": {
       "total": 285,
-      "DELETE": 72,
+      "DELETE": 76,
       "CLEAN": 0,
-      "KEEP": 213,
+      "KEEP": 209,
       "trusted": false
     }
   },
   "by_tier": {
     "1000": {
       "total": 1000,
-      "DELETE": 0,
+      "DELETE": 16,
       "CLEAN": 0
     },
     "2000": {
       "total": 2000,
-      "DELETE": 0,
+      "DELETE": 32,
       "CLEAN": 0
     },
     "3000": {
       "total": 3000,
-      "DELETE": 0,
+      "DELETE": 40,
       "CLEAN": 0
     }
   },
   "feasibility": {
     "M1": {
       "total": 542,
-      "clean": 416,
+      "clean": 412,
       "by_tier": {
         "1000": {
           "quota": 100,
           "ok": true
         },
         "2000": {
-          "quota": 200,
+          "quota": 201,
           "ok": true
         },
         "3000": {
-          "quota": 315,
+          "quota": 319,
           "ok": true
         }
       }
     },
     "M7": {
-      "total": 385,
-      "clean": 300,
+      "total": 401,
+      "clean": 311,
       "by_tier": {
         "1000": {
           "quota": 100,
           "ok": true
         },
         "2000": {
-          "quota": 200,
+          "quota": 201,
           "ok": true
         },
         "3000": {
-          "quota": 279,
+          "quota": 275,
           "ok": true
         }
       }
     },
     "M8": {
-      "total": 348,
-      "clean": 312,
+      "total": 382,
+      "clean": 342,
       "by_tier": {
         "1000": {
           "quota": 53,
           "ok": true
         },
         "2000": {
-          "quota": 107,
+          "quota": 106,
           "ok": true
         },
         "3000": {
-          "quota": 167,
+          "quota": 281,
           "ok": true
         }
       }
     },
     "M9": {
-      "total": 382,
-      "clean": 324,
+      "total": 332,
+      "clean": 260,
       "by_tier": {
         "1000": {
           "quota": 100,
           "ok": true
         },
         "2000": {
-          "quota": 200,
+          "quota": 186,
           "ok": true
         },
         "3000": {
-          "quota": 314,
+          "quota": 186,
           "ok": true
         }
       }
     },
     "M3": {
       "total": 362,
-      "clean": 331,
+      "clean": 330,
       "by_tier": {
         "1000": {
           "quota": 100,
           "ok": true
         },
         "2000": {
-          "quota": 200,
+          "quota": 201,
           "ok": true
         },
         "3000": {
-          "quota": 314,
+          "quota": 327,
           "ok": true
         }
       }
     },
     "M2": {
       "total": 337,
-      "clean": 333,
+      "clean": 330,
       "by_tier": {
         "1000": {
           "quota": 100,
           "ok": true
         },
         "2000": {
-          "quota": 200,
+          "quota": 201,
           "ok": true
         },
         "3000": {
-          "quota": 314,
+          "quota": 304,
           "ok": true
         }
       }
     },
     "M5": {
       "total": 769,
-      "clean": 604,
+      "clean": 618,
       "by_tier": {
         "1000": {
-          "quota": 200,
+          "quota": 201,
           "ok": true
         },
         "2000": {
-          "quota": 400,
+          "quota": 407,
           "ok": true
         },
         "3000": {
-          "quota": 592,
+          "quota": 590,
           "ok": true
         }
       }
     },
     "M6": {
       "total": 640,
-      "clean": 565,
+      "clean": 568,
       "by_tier": {
         "1000": {
           "quota": 200,
           "ok": true
         },
         "2000": {
-          "quota": 400,
+          "quota": 404,
           "ok": true
         },
         "3000": {
-          "quota": 559,
+          "quota": 538,
           "ok": true
         }
       }
     },
     "M4": {
       "total": 217,
-      "clean": 201,
+      "clean": 198,
       "by_tier": {
         "1000": {
-          "quota": 47,
+          "quota": 46,
           "ok": true
         },
         "2000": {
@@ -376,7 +379,7 @@
           "ok": true
         },
         "3000": {
-          "quota": 146,
+          "quota": 180,
           "ok": true
         }
       }
@@ -384,6 +387,54 @@
   },
   "samples": {
     "DELETE": [
+      {
+        "qid": "M1-2wjc6b",
+        "rules": [
+          "R14"
+        ],
+        "reason": "结构性损坏",
+        "stem": "【拔高】下列关于计算机采用二进制原因的说法，错误的是（ ）。",
+        "options": [
+          "物理上容易实现",
+          "运算规则简单",
+          "适合人类阅读",
+          "适合逻辑运算"
+        ],
+        "answer": "C",
+        "src": "📘 复习手册·同步练习"
+      },
+      {
+        "qid": "M1-dudzob",
+        "rules": [
+          "R14"
+        ],
+        "reason": "结构性损坏",
+        "stem": "计算机采用二进制的原因不包括（ ）。",
+        "options": [
+          "物理上容易实现",
+          "运算规则简单",
+          "适合人类阅读",
+          "适合逻辑运算"
+        ],
+        "answer": "C",
+        "src": "📘 复习手册·章节测试卷"
+      },
+      {
+        "qid": "M5-1quebd3",
+        "rules": [
+          "R14"
+        ],
+        "reason": "结构性损坏",
+        "stem": "用于将域名转换为IP 地址的协议是 ( )。",
+        "options": [
+          "HTTP",
+          "FTP",
+          "TCP",
+          "DNS"
+        ],
+        "answer": "D",
+        "src": "📖 综合模拟卷"
+      },
       {
         "qid": "M1-c1tqlm",
         "rules": [
@@ -399,54 +450,6 @@
         ],
         "answer": "A",
         "src": "gen:fwdJudge:1"
-      },
-      {
-        "qid": "M1-s1h3ip",
-        "rules": [
-          "R2"
-        ],
-        "reason": "结构性损坏",
-        "stem": "【信息技术的概念及典型应用】（一）下列说法错误的是（ ）。",
-        "options": [
-          "信息技术主要包括计算机技术、通信技术、传感技术和控制技术。",
-          "信息技术主要用于以上都是。",
-          "下列技术中，属于信息技术核心的是计算机技术。",
-          "下列技术中，属于信息技术核心的是传感技术。"
-        ],
-        "answer": "D",
-        "src": "gen:fwdJudge:1"
-      },
-      {
-        "qid": "M1-1xqc9gm",
-        "rules": [
-          "R2"
-        ],
-        "reason": "结构性损坏",
-        "stem": "【信息技术的概念及典型应用】（二）下列说法正确的是（ ）。",
-        "options": [
-          "下列技术中，相当于人的\"感觉器官\"的是通信技术。",
-          "信息技术主要包括计算机技术、通信技术、传感技术和控制技术。",
-          "信息技术主要包括计算机技术、通信技术、传感技术和纳米技术。",
-          "信息技术的核心是传感技术。"
-        ],
-        "answer": "B",
-        "src": "gen:fallback:3"
-      },
-      {
-        "qid": "M1-9p40m5",
-        "rules": [
-          "R2"
-        ],
-        "reason": "结构性损坏",
-        "stem": "【信息技术的概念及典型应用】（二）下列说法错误的是（ ）。",
-        "options": [
-          "信息技术主要用于获取信息。",
-          "信息技术主要包括计算机技术、通信技术、传感技术和控制技术。",
-          "下列技术中，属于信息技术核心的是计算机技术。",
-          "信息技术的英文缩写是IT。"
-        ],
-        "answer": "A",
-        "src": "gen:fallback:3"
       }
     ],
     "CLEAN": [
@@ -499,19 +502,19 @@
         "src": "📘 复习手册·同步练习"
       },
       {
-        "qid": "M1-2wjc6b",
+        "qid": "M1-1op5fgt",
         "rules": [
           "R3"
         ],
         "reason": "题干含批次/难度标签，仅洗标签、不删题",
-        "stem": "【拔高】下列关于计算机采用二进制原因的说法，错误的是（ ）。",
+        "stem": "【拔高】在GBK编码中，一个汉字占几个字节？（ ）",
         "options": [
-          "物理上容易实现",
-          "运算规则简单",
-          "适合人类阅读",
-          "适合逻辑运算"
+          "1个",
+          "2个",
+          "3个",
+          "4个"
         ],
-        "answer": "C",
+        "answer": "B",
         "src": "📘 复习手册·同步练习"
       }
     ],
@@ -547,6 +550,9 @@
     ]
   },
   "delete_qids": [
+    "M1-2wjc6b",
+    "M1-dudzob",
+    "M5-1quebd3",
     "M1-c1tqlm",
     "M1-s1h3ip",
     "M1-1xqc9gm",
@@ -613,7 +619,9 @@
     "M1-u18fwi",
     "M1-ibo515",
     "M1-k533e",
+    "M1-1tvmtqp",
     "M1-mkcon5",
+    "M1-1cx7g8q",
     "M1-15vmhq6",
     "M1-gc6333",
     "M1-surbt1",
@@ -714,10 +722,14 @@
     "M7-xs6jj",
     "M7-1cuhnl5",
     "M7-1pt49w2",
+    "M7-1kivf3j",
     "M7-bxuges",
+    "M7-1bcytlj",
     "M7-nd73ho",
     "M7-1n56pb6",
     "M7-1hlnbt",
+    "M7-dbbilg",
+    "M7-e762hr",
     "M7-frgvah",
     "M7-hcex1p",
     "M7-1oe6b5i",
@@ -732,14 +744,13 @@
     "M7-uzxouj",
     "M7-23087r",
     "M7-1iutp6h",
+    "M7-r8y06v",
     "M7-18ddv82",
-    "M8-gyt4n3",
     "M8-lh4kck",
     "M8-4rgg4p",
     "M8-ellrju",
     "M8-c92i84",
     "M8-sasu2n",
-    "M8-450bew",
     "M8-v6nsj7",
     "M8-1vxhpkd",
     "M8-afxmvq",
@@ -767,9 +778,28 @@
     "M8-i6cgyz",
     "M8-18n5uwu",
     "M8-n8xurn",
+    "M8-1kfb8fv",
+    "M8-1es9m4g",
+    "M8-1ihknma",
+    "M8-bkqz55",
+    "M8-f5q9kw",
+    "M8-1dd7cvv",
     "M9-h4pmt7",
     "M9-q522ev",
+    "M9-15fcqwj",
+    "M9-18nkdc8",
+    "M9-72yslb",
+    "M9-1m7redg",
     "M9-fhxhsf",
+    "M9-1cvx34h",
+    "M9-10bcucq",
+    "M9-1imwi2r",
+    "M9-5eqg54",
+    "M9-hepoks",
+    "M9-1xglahj",
+    "M9-5t7nhx",
+    "M9-1rug2u3",
+    "M9-8ridls",
     "M9-1s7r1h",
     "M9-1se8p3y",
     "M9-1pagsqn",
@@ -777,10 +807,8 @@
     "M9-1815jzh",
     "M9-lofeqe",
     "M9-kxg4hw",
-    "M9-171zzmc",
     "M9-tzafri",
     "M9-z6dj91",
-    "M9-1sjjqux",
     "M9-13ohb22",
     "M9-15xii0x",
     "M9-11o0wpf",
@@ -813,7 +841,8 @@
     "M9-lnz2h1",
     "M9-1drbz3e",
     "M9-1wge9ta",
-    "M9-rk7cqf",
+    "M9-1u6nffh",
+    "M9-18nq6xw",
     "M3-lsy3sf",
     "M3-1qqt4d1",
     "M3-185x30i",
@@ -834,14 +863,18 @@
     "M3-1jsvolc",
     "M3-okqm3r",
     "M3-14p97k5",
+    "M3-jiiql",
     "M3-118kc89",
     "M3-h30fku",
     "M3-1jb42mi",
     "M3-wxzrn8",
-    "M3-68o82g",
-    "M3-1q1jim1",
+    "M3-3i39j4",
+    "M3-e8cppv",
     "M3-1jh4m1v",
-    "M2-vhymc7",
+    "M2-xtudxk",
+    "M2-197xtyr",
+    "M2-1cdehqh",
+    "M2-jkfyia",
     "M2-1jvsv06",
     "M2-1grnick",
     "M2-1o22z4l",
@@ -849,7 +882,7 @@
     "M5-1hkekas",
     "M5-1acfa04",
     "M5-1i2n5pb",
-    "M5-hnoljy",
+    "M5-1blaiuq",
     "M5-vwt5ex",
     "M5-tcuxid",
     "M5-1voz3wy",
@@ -877,9 +910,6 @@
     "M5-1gpoa5q",
     "M5-h380ig",
     "M5-gdz4e6",
-    "M5-t2y92p",
-    "M5-18f9hv4",
-    "M5-qrjbkp",
     "M5-1irx04",
     "M5-3qlldh",
     "M5-14tm9hq",
@@ -901,7 +931,6 @@
     "M5-z4xz6m",
     "M5-18uzn8w",
     "M5-g5t18r",
-    "M5-1qu65tk",
     "M5-ssjrfs",
     "M5-14hz1hv",
     "M5-wwriaa",
@@ -916,47 +945,31 @@
     "M5-zxxr12",
     "M5-1bl4ezx",
     "M5-1ut4zdm",
-    "M5-8unwm9",
     "M5-136vx1b",
     "M5-kerwx9",
     "M5-go2a61",
     "M5-12lty6z",
-    "M5-1dfbnyt",
-    "M5-1qjxz4p",
     "M5-kk40p0",
     "M5-36znun",
     "M5-1tf1s72",
     "M5-1bquwi",
     "M5-17xjiz5",
-    "M5-1ulhir",
-    "M5-1m704f1",
     "M5-1q9h7p1",
-    "M5-16apgf3",
-    "M5-2uii8u",
-    "M5-1ajw7ul",
     "M5-19cmu6y",
-    "M5-1jujsqh",
     "M5-12c0mg3",
-    "M5-qrd5i0",
-    "M5-11mlipj",
     "M5-5rquwd",
-    "M5-14de324",
-    "M5-1f71y8t",
-    "M5-1mgq4e",
-    "M5-n9plnj",
     "M5-18pkmjo",
     "M5-1urb0q2",
     "M5-1aueys",
+    "M5-o6h7c3",
     "M5-1lkjikq",
     "M5-1ju1jtg",
     "M5-8jkgid",
     "M5-18u22jx",
-    "M5-t7uf58",
     "M5-1xzyftn",
     "M5-1gdbq5c",
     "M5-1b96fy6",
     "M5-1d23cg5",
-    "M5-1dxrhg0",
     "M5-1gwk5ac",
     "M5-1bt6j3z",
     "M5-1l7bbdj",
@@ -965,6 +978,8 @@
     "M5-1cj7fsf",
     "M5-1sojk7o",
     "M5-8s9hvd",
+    "M5-1t6fqgu",
+    "M5-ic2zph",
     "M5-1eaeydf",
     "M5-1kpubck",
     "M5-r6m87j",
@@ -974,6 +989,8 @@
     "M5-1jkgf2o",
     "M5-ndvb1n",
     "M5-16mb24e",
+    "M5-13h3h5b",
+    "M5-10y1zqs",
     "M5-1it39wn",
     "M5-1a2fw5",
     "M5-4mvecz",
@@ -1017,12 +1034,9 @@
     "M6-1ih5otb",
     "M6-r6tm1f",
     "M6-xnnc1p",
-    "M6-15eyi7l",
     "M6-19sj8no",
-    "M6-1833x8o",
     "M6-mrnyz6",
     "M6-13iuasp",
-    "M6-v1eazp",
     "M6-14tyvjx",
     "M6-1lcilhi",
     "M6-b4mpgi",
@@ -1030,7 +1044,6 @@
     "M6-6uokbk",
     "M6-bfn8n5",
     "M6-6k997s",
-    "M6-nbv57h",
     "M6-bth7v2",
     "M6-1dtaxh1",
     "M6-dhqyzl",
@@ -1039,22 +1052,27 @@
     "M6-3g9x8p",
     "M6-hp8xx5",
     "M6-1ledsua",
-    "M6-uyjin0",
     "M6-10f1r7k",
-    "M6-1gb2anz",
     "M6-8ddd52",
     "M6-105kiov",
     "M6-eq2nok",
     "M6-163hw6d",
-    "M6-1ldt1r5",
+    "M6-jo322a",
+    "M6-3zo8jv",
+    "M6-2wkqr4",
     "M6-13onlab",
     "M6-1t9pm9l",
     "M6-v4ks76",
     "M6-1guo0e1",
+    "M6-8fbute",
     "M6-1wx0389",
     "M6-ek8tqr",
     "M6-166emj5",
     "M6-7le97u",
+    "M4-qr3d3j",
+    "M4-r5zv78",
+    "M4-q720a5",
+    "M4-euyuhi",
     "M4-bifohq",
     "M4-efby6d",
     "M4-1xjz7zz",
@@ -1068,9 +1086,7 @@
     "M4-er8tuk",
     "M4-13kjn53",
     "M4-15uzv9r",
-    "M4-7yck9o",
     "M4-1uzuh00",
-    "M4-1ljf54l",
     "M1-l28h2v",
     "M1-1nd1b11",
     "M1-kvonoh",
@@ -1089,6 +1105,8 @@
     "M3-nm2vzy",
     "M3-1wu8s1d",
     "M3-f9x53v",
+    "M4-lfqrjz",
+    "M5-rm4356",
     "M5-1jmu5pm",
     "M5-qjqxh7",
     "M5-1jyodio",
@@ -1132,6 +1150,8 @@
     "M7-1hgdr0n",
     "M8-1vxmry7",
     "M8-lwzlh4",
+    "M9-1pipfsz",
+    "M9-suh3nl",
     "M9-1uh3y5i",
     "M9-p5yy6i",
     "M9-dbuh6j",

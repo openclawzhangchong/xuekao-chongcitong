@@ -1,0 +1,15 @@
+C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通\tools\build-whitelist.js:141
+  throw new Error('KEEP 干净池不足 3000 题，缺 ' + cap3000.shortage + ' 道：' + JSON.stringify(modCap));
+  ^
+
+Error: KEEP 干净池不足 3000 题，缺 68 道：{"M1":315,"M2":297,"M3":324,"M4":171,"M5":580,"M6":506,"M7":257,"M8":316,"M9":166}
+    at Object.<anonymous> (C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通\tools\build-whitelist.js:141:9)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+
+Node.js v24.21.0

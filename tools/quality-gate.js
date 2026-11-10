@@ -31,7 +31,15 @@ BANK.forEach(q => {
 });
 
 const qids = BANK.map(XK.qidOf);
-const verdicts = BANK.map((q, i) => classify(q, { qid: qids[i], byOpts: byOpts }));
+const byStemDir = Object.create(null);
+BANK.forEach(q => {
+  if (q.qt !== '单选') return;
+  const nk = optKey(q);
+  const norm = String(q.s || '').trim().replace(/^【[^】]{1,24}】/, '').replace(/s+/g, '');
+  const dir = /(错误的是|不正确|不属于|有误)/.test(norm) ? 'neg' : 'pos';
+  (byStemDir[nk] = byStemDir[nk] || new Set()).add(dir + ':' + String(q.a || '').trim());
+});
+const verdicts = BANK.map((q, i) => classify(q, { qid: qids[i], byOpts: byOpts, byStemDir: byStemDir }));
 const states = { DELETE: 0, CLEAN: 0, KEEP: 0 };
 verdicts.forEach(v => { states[v.state]++; });
 const byRule = {};

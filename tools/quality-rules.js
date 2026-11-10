@@ -8,7 +8,7 @@
 
 const TAG_HEAD = /^【(拔高|基础|提升|拓展|变式|易错|强化|进阶|生成)】/;
 const TAG_ANY = /【(拔高|基础|提升|拓展|变式|易错|强化|进阶|生成)】/;
-const CLICHE = /下列|下列说法|以下说法|以下哪/;
+const CLICHE = /下列|下列说法|以下说法|以下哪|以下不是/;
 const TRUSTED = /习题册_终版|习题册|福州抽测|综合模拟卷|复习手册·例题|章节测试卷/;
 const TEMPLATE = /^(下列[^，。]{0,24}(?:中|里)?[，,][^。]{0,28}?的是)(.+?)。?$/;
 
@@ -21,7 +21,12 @@ const RULES = {
   R6: '单选/判断题却有多个答案',
   R7: 'src 属于正式资料来源（仅降低复核优先级，不豁免结构规则）',
   R8: '四选项共享同一「下列…的是X」前缀，剥离后与库内已有题重复（删除零损失）',
-  R9: '解析给出的结论答案（因此/故/所以/答案/应选 X）与 a 字段矛盾，数据不可信'
+  R9: '解析给出的结论答案（因此/故/所以/答案/应选 X）与 a 字段矛盾，数据不可信',
+  R10: '首选项以「以上/以下」开头（组合选项拆项残留的悬空引用）',
+  R11: '选项残留判断题格式（（ ）A.正确B.错误）',
+  R12: '选项以占位符「（ ）」开头（生成器拼接缺陷）',
+  R13: '选项复制题干（选项内含题干前 12 字）',
+  R14: '正反双题 key 冲突（同选项集合+方向相反+答案相同）——REVIEW 留人工'
 };
 
 /* 从解析里提取 AI 给出的结论答案：「因此选X」「故选X」「答案是X」「应选X」等。
@@ -66,6 +71,23 @@ function classify(q, ctx) {
     const said = saidAnswer(q.e);
     if (said && String(q.a || '').toUpperCase() !== said) hits.push('R9');
   }
+  // R10：首选项以「以上/以下」开头 —— 反转句式拼接（可作答但呈现病态）→ 信息规则，KEEP+标记留人工
+  // R11：判断题格式残留（变式拼接把「（ ）A.正确B.错误」塞进选项）
+  if (os.some(s => /[（(]\s*[)）]\s*A[.、．]\s*正确\s*B[.、．]\s*错误/.test(s))) hits.push('R11');
+  // R12：选项以占位符「（ ）」开头（生成器拼接缺陷）
+  if (os.some(s => /^[（(]\s*[)）]/.test(s))) hits.push('R12');
+  // R13：选项复制题干 → 信息规则，KEEP+标记留人工
+  // R14：正反双题 key 冲突（同选项集合、题干方向相反、答案相同 → 必有一题 key 错）——REVIEW 留人工
+  if (ctx.byStemDir) {
+    const nk = optKey(q);
+    const norm = String(q.s || '').trim().replace(/^【[^】]{1,24}】/, '').replace(/\s+/g, '');
+    const dir = /(错误的是|不正确|不属于|有误)/.test(norm) ? 'neg' : 'pos';
+    const twin = ctx.byStemDir[nk];
+    if (twin && twin.size > 1) {
+      const opp = dir === 'pos' ? 'neg' : 'pos';
+      if (twin.has(opp + ':' + String(q.a || '').trim())) hits.push('R14');
+    }
+  }
 
   const cliche = os.some(s => CLICHE.test(s));
   const clean = cliche ? cleanable(q) : null;
@@ -81,7 +103,13 @@ function classify(q, ctx) {
   if (clean && dup) return { state: 'DELETE', rules: ['R8'], reason: '清洗后与库内已有正常题选项完全相同，删除零知识点损失', clean: clean, dup: true };
   if (clean) return { state: 'CLEAN', rules: ['R2'], reason: '剥离选项模板前缀后可用（需去重）', clean: clean, dup: false };
   if (TAG_ANY.test(q.s || '')) return { state: 'CLEAN', rules: ['R3'], reason: '题干含批次/难度标签，仅洗标签、不删题', clean: null, dup: false };
-  return { state: 'KEEP', rules: [], reason: '', clean: null, dup: false };
+  const info = [];
+  if (q.qt === '单选' && os.length && /^(以上|以下)/.test(os[0])) info.push('R10');
+  {
+    const s12 = String(q.s || '').trim().replace(/^【[^】]{1,24}】/, '').slice(0, 12);
+    if (s12.length >= 12 && q.qt === '单选' && os.some(o => o.includes(s12))) info.push('R13');
+  }
+  return { state: 'KEEP', rules: info, reason: info.length ? '呈现病态标记（保留入池，留人工复核）' : '', clean: null, dup: false };
 }
 
 function isTrusted(q) { return TRUSTED.test(String(q.src || '')); }

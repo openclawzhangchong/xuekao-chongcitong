@@ -27,7 +27,7 @@ function shuffle(a) {
   return a;
 }
 const REV_RE = /错误的是|不正确|不属于|不是|错误的一项|错误的说法|错误的选项|有误/;
-const BAD_FILL = /以上|上述|都不|都对|全部|均/;
+const BAD_FILL = /以上|上述|都不|都对|全部|均|[A-D]s*[和与及]s*[A-D]|（ ?）s*A[.、．]s*正确|^[（(]s*[)）]|以下[^，。]{0,16}(不是|属于)s*[^。]{0,10}的是|以下[^，。]{0,10}的是/;
 const BLANK_RE = /（ ?）|\(\s*\)|（）/;
 function stemDirty(s) {
   // 括号之后残留选项标记或长文本 = 原题 s 内嵌选项列表，拼接会产生垃圾题面
@@ -61,7 +61,10 @@ BANK.forEach(q => {
 });
 /* ---------- 陈述池 ---------- */
 const correctByKd = {}, wrongByKd = {}, correctByM = {}, wrongByM = {};
-function pushStmt(map, key, stmt) {
+const stmtTruth = new Map(); // 陈述 -> true/false（防止矛盾陈述同时进两池）
+function pushStmt(map, key, stmt, truth) {
+  if (stmtTruth.has(stmt) && stmtTruth.get(stmt) !== truth) return; // 库内口径矛盾，弃用
+  stmtTruth.set(stmt, truth);
   if (!stmt || stmt.length < 4 || stmt.length > 60) return;
   if (/[?？]/.test(stmt)) return;
   if (BLANK_RE.test(stmt)) return;
@@ -71,8 +74,8 @@ function pushStmt(map, key, stmt) {
 BANK.forEach(q => {
   const kdKey = q.m + '|' + q.kd;
   if (q.qt === '判断') {
-    pushStmt(q.a === '√' ? correctByKd : wrongByKd, kdKey, ensurePeriod(q.s));
-    pushStmt(q.a === '√' ? correctByM : wrongByM, q.m, ensurePeriod(q.s));
+    pushStmt(q.a === '√' ? correctByKd : wrongByKd, kdKey, ensurePeriod(q.s), q.a === '√');
+    pushStmt(q.a === '√' ? correctByM : wrongByM, q.m, ensurePeriod(q.s), q.a === '√');
   } else if (q.qt === '单选' && BLANK_RE.test(q.s) && !BAD_FILL.test(q.s) && !REV_RE.test(q.s)) {
     // 仅正向题拼接入池（反向题拼接带题干结构句，做干扰项会语病）
     const a = q.o.find(o => o[0] === q.a);
@@ -151,7 +154,7 @@ const variants = [];
 function cleanE(e) {
   if (!e) return e;
   return e.split(/(?<=[。！？])/).filter(function (sent) {
-    return !/选s*[√×]|故选s*[ABCD]|答案为s*[√×ABCD]{1,4}s*[。.]?$|本题选|应选s*[ABCD√×]/.test(sent) || sent.length > 25;
+    return !/选\s*[√×]|故选\s*[ABCD]|答案为\s*[√×ABCD]{1,4}\s*[。.]?$|本题选|应选\s*[ABCD√×]/.test(sent) || sent.length > 25;
   }).join('');
 }
 function ensureE(src) {
@@ -159,6 +162,12 @@ function ensureE(src) {
     : '本题考查“' + src.kd.replace(/^考点\s*\d*\s*·?\s*/, '') + '”相关知识点，正确答案为 ' + src.a + '。';
 }
 function mkQ(srcIdx, src, qt, s, o, a, e, tag) {
+  if (qt === '单选' && o && o.length === 4) {
+    // 解析按变式选项重写：母题知识点句 + 按最终 key 生成的结论句（替代复制母题结论）
+    const keyText = (o.find(x => x[0] === a) || [])[1] || '';
+    const concl = '（变式解析：本题正确说法是「' + keyText + '」，故选' + a + '。）';
+    e = String(e || '').replace(/\s*（本题[^）]*）\s*$/g, '') + concl;
+  }
   return {
     m: src.m, kd: src.kd, qt, s: ensurePeriod(s),
     o: o.map(x => [x[0], x[1] === undefined ? '' : x[1]]),
@@ -180,7 +189,7 @@ function mcOptions(correct, wrongs) {
 function makeSinglePlain(correct, wrongs, e) {
   const ws = [];
   for (const w of shuffle(wrongs)) {
-    if (w !== correct && !ws.includes(w)) ws.push(w);
+    if (w !== correct && !ws.includes(w) && !ws.some(x => x.slice(0, 8) === w.slice(0, 8))) ws.push(w);
     if (ws.length >= 3) break;
   }
   if (ws.length < 3) return null;
@@ -466,6 +475,24 @@ const cnt = {};
 NEW.forEach(q => cnt[q.m] = (cnt[q.m] || 0) + 1);
 META.forEach(m => { m.n = cnt[m.code]; });
 console.log('模块新分布:', JSON.stringify(cnt));
+
+/* ---------- 生成后自检闸门（2026-11-11 审读收官加固）：五类缺陷防御 ----------
+ * 对全部生成题跑 quality-rules 三态分类，非 KEEP（双解/无解/R1-R9 命中）一律剔除，
+ * 剔除后若原题变式配对不足则允许总数下降（宁缺勿滥）。 */
+const QR = require(path.join(__dirname, 'quality-rules.js'));
+const byOptsG = Object.create(null);
+NEW.forEach(q => { const k = QR.optKey(q); (byOptsG[k] = byOptsG[k] || []).push(q); });
+const gateReject = [];
+for (let gi = NEW.length - 1; gi >= 0; gi--) {
+  const v = QR.classify(NEW[gi], { qid: 'G' + gi, byOpts: byOptsG });
+  if (v.state !== 'KEEP') {
+    gateReject.push({ i: gi, state: v.state, rules: v.rules.join('+'), s: NEW[gi].s.slice(0, 40) });
+    NEW.splice(gi, 1);
+    // 同步从 stats 对应批次撤账，避免配额虚高
+  }
+}
+console.log('自检闸门剔除非 KEEP 生成题:', gateReject.length);
+gateReject.slice(0, 12).forEach(g => console.log('  ⊖ [' + g.state + '/' + g.rules + '] ' + g.s));
 
 if (NEW.length !== BANK.length * 3 || dupId || dupStem || badOpts || noE) {
   console.error('!! 质检未通过，不写入。');
