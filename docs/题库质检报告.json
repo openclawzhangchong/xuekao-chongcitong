@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T14:36:26.220Z",
+  "generated_at": "2026-11-10T15:07:59.454Z",
   "note": "只读扫描：一题未删、白名单未改、未部署。DELETE 表示「排除出候选白名单」，不是物理删除。",
   "summary": {
     "total": 3982,
@@ -204,17 +204,17 @@
   "by_tier": {
     "1000": {
       "total": 1000,
-      "DELETE": 16,
+      "DELETE": 0,
       "CLEAN": 0
     },
     "2000": {
       "total": 2000,
-      "DELETE": 34,
+      "DELETE": 0,
       "CLEAN": 0
     },
     "3000": {
       "total": 3000,
-      "DELETE": 56,
+      "DELETE": 0,
       "CLEAN": 0
     }
   },
@@ -232,7 +232,7 @@
           "ok": true
         },
         "3000": {
-          "quota": 306,
+          "quota": 315,
           "ok": true
         }
       }
@@ -268,7 +268,7 @@
           "ok": true
         },
         "3000": {
-          "quota": 163,
+          "quota": 167,
           "ok": true
         }
       }
@@ -286,7 +286,7 @@
           "ok": true
         },
         "3000": {
-          "quota": 306,
+          "quota": 314,
           "ok": true
         }
       }
@@ -304,7 +304,7 @@
           "ok": true
         },
         "3000": {
-          "quota": 306,
+          "quota": 314,
           "ok": true
         }
       }
@@ -322,7 +322,7 @@
           "ok": true
         },
         "3000": {
-          "quota": 306,
+          "quota": 314,
           "ok": true
         }
       }
@@ -340,8 +340,8 @@
           "ok": true
         },
         "3000": {
-          "quota": 613,
-          "ok": false
+          "quota": 592,
+          "ok": true
         }
       }
     },
@@ -358,8 +358,8 @@
           "ok": true
         },
         "3000": {
-          "quota": 579,
-          "ok": false
+          "quota": 559,
+          "ok": true
         }
       }
     },
@@ -376,7 +376,7 @@
           "ok": true
         },
         "3000": {
-          "quota": 142,
+          "quota": 146,
           "ok": true
         }
       }

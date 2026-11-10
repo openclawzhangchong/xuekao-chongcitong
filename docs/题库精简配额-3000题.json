@@ -5,26 +5,26 @@
     {
       "code": "M1",
       "score": 15,
-      "quota": 315,
-      "actual": 315
+      "quota": 320,
+      "actual": 320
     },
     {
       "code": "M2",
       "score": 15,
-      "quota": 314,
-      "actual": 314
+      "quota": 333,
+      "actual": 333
     },
     {
       "code": "M3",
       "score": 15,
-      "quota": 314,
-      "actual": 314
+      "quota": 333,
+      "actual": 333
     },
     {
       "code": "M4",
       "score": 7,
-      "quota": 146,
-      "actual": 146
+      "quota": 166,
+      "actual": 166
     },
     {
       "code": "M5",
@@ -41,20 +41,20 @@
     {
       "code": "M7",
       "score": 15,
-      "quota": 279,
-      "actual": 279
+      "quota": 295,
+      "actual": 295
     },
     {
       "code": "M8",
       "score": 8,
-      "quota": 167,
-      "actual": 167
+      "quota": 192,
+      "actual": 192
     },
     {
       "code": "M9",
       "score": 15,
-      "quota": 314,
-      "actual": 314
+      "quota": 210,
+      "actual": 210
     }
   ],
   "points": [
@@ -64,15 +64,15 @@
     },
     {
       "id": "M1-02",
-      "quota": 47
+      "quota": 45
     },
     {
       "id": "M1-03",
-      "quota": 36
+      "quota": 35
     },
     {
       "id": "M1-04",
-      "quota": 55
+      "quota": 63
     },
     {
       "id": "M1-05",
@@ -96,7 +96,7 @@
     },
     {
       "id": "M2-01",
-      "quota": 156
+      "quota": 175
     },
     {
       "id": "M2-02",
@@ -120,7 +120,7 @@
     },
     {
       "id": "M3-01",
-      "quota": 94
+      "quota": 102
     },
     {
       "id": "M3-02",
@@ -128,7 +128,7 @@
     },
     {
       "id": "M3-03",
-      "quota": 93
+      "quota": 104
     },
     {
       "id": "M3-04",
@@ -144,7 +144,7 @@
     },
     {
       "id": "M4-01",
-      "quota": 49
+      "quota": 69
     },
     {
       "id": "M4-02",
@@ -248,35 +248,35 @@
     },
     {
       "id": "M7-01",
-      "quota": 75
+      "quota": 78
     },
     {
       "id": "M7-02",
-      "quota": 53
+      "quota": 57
     },
     {
       "id": "M7-03",
-      "quota": 133
+      "quota": 136
     },
     {
       "id": "M7-04",
-      "quota": 18
+      "quota": 24
     },
     {
       "id": "M8-01",
-      "quota": 40
+      "quota": 45
     },
     {
       "id": "M8-02",
-      "quota": 39
+      "quota": 45
     },
     {
       "id": "M8-03",
-      "quota": 49
+      "quota": 57
     },
     {
       "id": "M8-04",
-      "quota": 39
+      "quota": 45
     },
     {
       "id": "M9-01",
@@ -288,7 +288,7 @@
     },
     {
       "id": "M9-03",
-      "quota": 188
+      "quota": 84
     }
   ]
 }

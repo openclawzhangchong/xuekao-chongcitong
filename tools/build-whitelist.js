@@ -46,10 +46,16 @@ const stateCount = { DELETE: 0, CLEAN: 0, KEEP: 0 };
 verdicts.forEach(v => { stateCount[v.state]++; });
 
 const usable = [];
-let noPoint = 0, mislabeled = 0;
+let noPoint = 0, mislabeled = 0, manualExcluded = 0;
 const mislabeledList = [];
+/* 人工审阅排除清单（逐题审阅判废：完全重复/题干含答案事故等），不物理删题 */
+let MANUAL_EXCL = new Set();
+try {
+  JSON.parse(read('docs/人工审阅排除.json')).forEach(x => MANUAL_EXCL.add(x.qid));
+} catch (e) { /* 清单缺失 = 无人工排除 */ }
 BANK.forEach((q, i) => {
   if (verdicts[i].state !== 'KEEP') return;
+  if (MANUAL_EXCL.has(qids[i])) { manualExcluded++; return; }
   const e = cat.kd_label_map[q.m + '|' + q.kd];
   // 86 道跨考点综合卷没有 point_id，不参与配平，只在全库档出现
   if (!e || !e.point_id) { noPoint++; return; }
@@ -202,7 +208,7 @@ function dump(tier, target, Q, byMod, label) {
     source_bank: 'src/data.js（' + BANK.length + ' 题，未删改）',
     pool: {
       rule: 'R1~R8 三态判定，仅 KEEP 入池（规则单一真源 tools/quality-rules.js）',
-      total_bank: BANK.length, KEEP: stateCount.KEEP, CLEAN: stateCount.CLEAN, DELETE: stateCount.DELETE,
+      total_bank: BANK.length, manual_excluded: manualExcluded, KEEP: stateCount.KEEP, CLEAN: stateCount.CLEAN, DELETE: stateCount.DELETE,
       usable_with_point: usable.length, excluded_composite: noPoint,
       excluded_mislabeled: mislabeled, mislabeled_sample: mislabeledList.slice(0, 20)
     },
@@ -237,7 +243,7 @@ write('src/whitelist-data.js',
   "window.XK_DEFAULT_TIER='1000';\n");
 
 console.log('TIERS OK → docs/白名单-{1000,2000,3000}题.json + src/whitelist-data.js');
-console.log('全库', BANK.length, '｜KEEP', stateCount.KEEP, '｜CLEAN', stateCount.CLEAN, '｜DELETE', stateCount.DELETE,
+console.log('人工排除', manualExcluded, '｜全库', BANK.length, '｜KEEP', stateCount.KEEP, '｜CLEAN', stateCount.CLEAN, '｜DELETE', stateCount.DELETE,
   '｜可用且有考点', usable.length, '｜综合卷排除', noPoint, '｜跨模块错挂排除', mislabeled);
 console.log('1000:', idx1000.length, '2000:', idx2000.length, '3000:', idx3000.length);
 console.log('modules 1000', JSON.stringify(m1000));

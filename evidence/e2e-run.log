@@ -1,7 +1,7 @@
 == 全站 E2E ==
    地址 file:///C:/Users/Administrator/Desktop/信息技术基础/学考冲刺通/site/index.html
    视口 1366×768（本地文件）
-  ✓ A1 题库载入 —— BANK=2000，就绪耗时 309ms
+  ✓ A1 题库载入 —— BANK=1000，就绪耗时 666ms
   ✓ A2 首页六张入口卡 —— 6/6
   ✓ A3 底部页签 5 个
   ✓ A4 首页有预估分卡
@@ -26,10 +26,11 @@
   ✓ H2 名单清空生效 —— 剩余 0 人
   ✓ I1 开赛出题
   ✓ I2 左侧全对 10/10
-  ✓ I3 右侧低于左侧 —— R=0
-  ✓ I4 结算弹层出现
+  ⚠ R 侧卡住现场: {"idx":9,"done":false,"locked":false,"btn":"提交本题","state":"running"}
+  ✗ FAIL I3 右侧低于左侧 —— R=null
+  ✗ FAIL I4 结算弹层出现
     📷 evidence\e2e2\05-pk-end.png
-  ✓ I5 排行榜有参赛记录 —— 3 行
+  ✓ I5 排行榜有参赛记录 —— 2 行
     📷 evidence\e2e2\06-pk-leaderboard.png
   ✓ J1 擂台页打开
     📷 evidence\e2e2\07-arena-defending.png
@@ -37,8 +38,8 @@
   ✓ J3 结算页出现且含擂主 —— settle=true
   ✓ J4 结算含未上台名单
     📷 evidence\e2e2\08-arena-settle.png
-  ✓ K1 PK 战绩持久化 —— 1 场
-  ✓ K2 擂台 3 场持久化 —— results=3 擂主=黄凯杰
+  ✗ FAIL K1 PK 战绩持久化 —— 0 场
+  ✓ K2 擂台 3 场持久化 —— results=3 擂主=黄晓伟
   ✓ P1 备课夹清单（勾选顺序 3 题）
   ✓ P2 备课夹按勾选顺序出题
   ✓ P2b 备课夹两侧同序（讲完就打）
@@ -50,7 +51,7 @@
   ✓ N3 前进回 home —— #/home
   ✓ N3b 首页顶栏导航按钮 —— ←
   ✓ N4 favicon 为课字 logo（data-URI PNG） —— data:image/png;base64,
-  ✓ N5 版本信息显示 —— 当前可练 2000 题 / 全库 3982 题 · 版本 v1.1（client-v1.1）· 考纲 150 分制 · 
+  ✓ N5 版本信息显示 —— 当前 基础档 1000 题 / 全库 3982 题 · 版本 v1.2（client-v1.2）· 考纲 150 分制 
   ✓ N6 BGM 默认音量 50%（未设置时） —— null
   ✓ H1 荣誉榜摘要（班级擂王+今日战况） —— 👑 班级擂王：荣誉甲（累计获胜 2 场）
 📅 今日：还没开打 ｜ 🥊 本周擂主：荣誉丙
@@ -69,5 +70,5 @@
   ✓ CL5 点名台大按钮
   ✓ CL6 对战进行中 tab 隐藏（投屏一屏） —— 实际 true
 
-== 结果 == 53 通过 / 0 失败 / 截图 8 张
+== 结果 == 50 通过 / 3 失败 / 截图 8 张
 页面报错 1 条（首条）：console: Failed to load resource: net::ERR_FILE_NOT_FOUND

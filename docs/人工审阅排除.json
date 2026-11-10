@@ -1,0 +1,346 @@
+[
+  {
+    "qid": "M1-ywljnb",
+    "i": 32,
+    "reason": "与 M7-3mpb3l 完全重复（同题干同选项同答案，网络欺诈题归属 M7 考点1 更准），保留 M7 版删除 M1 版",
+    "pair_with": "M7-3mpb3l"
+  },
+  {
+    "qid": "M9-12ufqpo",
+    "i": 441,
+    "reason": "与 M7-4307zm 完全重复（CIA三元组题错挂 M9 考点11），保留 M7 版",
+    "pair_with": "M7-4307zm"
+  },
+  {
+    "qid": "M9-iw5ztc",
+    "i": 442,
+    "reason": "与 M7-k1byji 完全重复（保密性概念题错挂 M9 考点11），保留 M7 版",
+    "pair_with": "M7-k1byji"
+  },
+  {
+    "qid": "M9-1chj8h6",
+    "i": 463,
+    "reason": "与 M8-nc5yuj 完全重复（AIGC 题错挂 M9 考点11），保留 M8 版",
+    "pair_with": "M8-nc5yuj"
+  },
+  {
+    "qid": "M9-1h27z06",
+    "i": 466,
+    "reason": "与 M8-1ikk307 完全重复（CNN 题错挂 M9 考点11），保留 M8 版",
+    "pair_with": "M8-1ikk307"
+  },
+  {
+    "qid": "M9-1y8k459",
+    "i": 2055,
+    "reason": "题干直接包含答案：「正确的是数据清洗在数据采集之前进行」——生成事故，题目作废（学生看题干即知答案）"
+  },
+  {
+    "qid": "M9-nnb3zv",
+    "i": 2056,
+    "reason": "题干直接包含答案：「正确的是大数据处理流程的第一步是数据采集」——生成事故，题目作废"
+  },
+  {
+    "qid": "M9-f8fg9p",
+    "i": 448,
+    "reason": "M9考点11错挂题，M7/M8 已存在同题干题（新qid冲突），M9 版冗余排除",
+    "source": "refile-m9"
+  },
+  {
+    "qid": "M9-1to207c",
+    "i": 450,
+    "reason": "M9考点11错挂题，M7/M8 已存在同题干题（新qid冲突），M9 版冗余排除",
+    "source": "refile-m9"
+  },
+  {
+    "qid": "M9-1y8iira",
+    "i": 454,
+    "reason": "M9考点11错挂题，M7/M8 已存在同题干题（新qid冲突），M9 版冗余排除",
+    "source": "refile-m9"
+  },
+  {
+    "qid": "M9-1yc52jb",
+    "i": 458,
+    "reason": "M9考点11错挂题，M7/M8 已存在同题干题（新qid冲突），M9 版冗余排除",
+    "source": "refile-m9"
+  },
+  {
+    "qid": "M9-tjt5a",
+    "i": 465,
+    "reason": "M9考点11错挂题，M7/M8 已存在同题干题（新qid冲突），M9 版冗余排除",
+    "source": "refile-m9"
+  },
+  {
+    "qid": "M9-bfh9c",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-bnak7h",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-dju7o9",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1e7akiq",
+    "reason": "单选出现两个正确选项（A弱人工智能✓与C Kafka✓均正确），答案不唯一，结构废题",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1t7lfch",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1ub4j0n",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-q6ynrv",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1a0tkze",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-9xhnd",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1ludcy",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-mt0ajj",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1gqk6jh",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1umqxfg",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-whffif",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-b9livn",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-mpiwky",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-wmwo09",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-k4nllk",
+    "reason": "tpl模板题：选项为题干拼接的安全主题复制版，M7考点1-4已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1lv2sbn",
+    "reason": "答案标错：问「正确的是」但a=A（路由器）为错误说法，正确应为D（UTM），且选项为跨主题拼接",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-105beh",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1s9t8ea",
+    "reason": "答案标错：问「正确的是」但a=A（BI）为错误说法，正确应为C（AI），且选项为跨主题拼接",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-r9vmi",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1hfx3y3",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1lwmcu8",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1cdejdo",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-vx47s7",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1bvoqrh",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-vp49c6",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1ac9cqn",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-dsgh6s",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-y48pow",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1wz7ch",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-pej32x",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1nku5tk",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-lfx62r",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-evvxel",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-ixp2au",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1ce2wsc",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1yk75on",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-13ql8nz",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-iwny5g",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-10cbwe6",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1fc6k41",
+    "reason": "tpl模板题：选项为题干拼接的AI主题复制版，M8考点已有同知识正牌题，排除零知识损失",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1poj8qz",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1w3bkoo",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-suh3nl",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-1gwmf4y",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-z9rdcr",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-ud9wd5",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M9-lksejx",
+    "reason": "tpl跨主题拼凑题：题干标大数据考点但选项混杂安全/AI/大数据知识，学生视角错位，知识点在M7/M8已有正牌版",
+    "source": "tpl-audit"
+  },
+  {
+    "qid": "M1-ayalme",
+    "i": 1248,
+    "reason": "题干问\"说法错误的是\"，但A\"互联网的前身是ENIAC\"、C\"前身是Internet\"、D\"前身是WWW\"三项均为错误说法（互联网前身是ARPANET），三个选项都符合题意，单选无法唯一作答，结构报废。",
+    "source": "agent-M1M3"
+  },
+  {
+    "qid": "M1-ahjdvj",
+    "i": 1501,
+    "reason": "题干问\"说法错误的是\"，但四个选项全为真命题，无错误项可选，单选结构报废。",
+    "source": "agent-M1M3"
+  },
+  {
+    "qid": "M1-9et30e",
+    "i": 1502,
+    "reason": "题干问\"说法错误的是\"，但四个选项全为真命题，无错误项可选，单选结构报废。",
+    "source": "agent-M1M3"
+  },
+  {
+    "qid": "M3-1v5g1b",
+    "i": 3755,
+    "reason": "题干问\"说法错误的是\"，但四个选项全为真命题，无错误项可选，单选结构报废。",
+    "source": "agent-M1M3"
+  }
+]

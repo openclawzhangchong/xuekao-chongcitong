@@ -134,8 +134,8 @@ t('月擂主：跨月重放、守擂延续', () => {
 t('本周胜榜与今日战况（按当前时间过滤）', () => {
   const now = Date.now();
   const matches = [
-    { ts: now - 3600e3, winner: 'L', left: { sid: 'A', name: '甲', score: 3 }, right: { sid: 'B', name: '乙', score: 1 } },
-    { ts: now - 7200e3, winner: 'L', left: { sid: 'A', name: '甲', score: 2 }, right: { sid: 'C', name: '丙', score: 0 } },
+    { ts: now - 60e3, winner: 'L', left: { sid: 'A', name: '甲', score: 3 }, right: { sid: 'B', name: '乙', score: 1 } },
+    { ts: now - 120e3, winner: 'L', left: { sid: 'A', name: '甲', score: 2 }, right: { sid: 'C', name: '丙', score: 0 } },
     { ts: now - 40 * 86400e3, winner: 'L', left: { sid: 'OLD', name: '上周', score: 9 }, right: { sid: 'B', name: '乙', score: 0 } }
   ];
   const h = XK.aggregateHonor(matches, {});
