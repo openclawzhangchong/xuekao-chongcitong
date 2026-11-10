@@ -1532,5 +1532,293 @@
     "i": 3905,
     "reason": "三解：「正确的是」中B(处理框用矩形表示)、C(条件判断用菱形)、D(输入输出用平行四边形)均为正确说法，key=C 不唯一",
     "source": "agent-M1M3"
+  },
+  {
+    "qid": "M1-1yon6h5",
+    "i": 161,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M7-ttcpnf",
+    "i": 182,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M7-7rzg9d",
+    "i": 238,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M7-1tqhpuj",
+    "i": 257,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M7-1tepue2",
+    "i": 283,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M9-6pm65i",
+    "i": 495,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-1291v4h",
+    "i": 683,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-1n57x7x",
+    "i": 694,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-1mhztmi",
+    "i": 696,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M5-fmckke",
+    "i": 931,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M4-11tqmui",
+    "i": 1154,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M4-111i3hk",
+    "i": 1181,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M4-1jlfw3y",
+    "i": 1203,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M7-vpmspp",
+    "i": 1696,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M7-16x8173",
+    "i": 1775,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M7-3c3y0a",
+    "i": 1801,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M8-1eyloz5",
+    "i": 1845,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M9-9altwh",
+    "i": 2085,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M9-1yytolv",
+    "i": 2200,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M9-1ykjw4q",
+    "i": 2247,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M9-bo2q5q",
+    "i": 2257,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M3-s2g3s6",
+    "i": 2368,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M3-17v3lbz",
+    "i": 2374,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M3-dp8x1j",
+    "i": 2375,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M3-t0iqjl",
+    "i": 2376,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M3-wxzrn8",
+    "i": 2468,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M3-dg4vyk",
+    "i": 2469,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-xs1e0z",
+    "i": 2517,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-1n1k3ed",
+    "i": 2526,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-119cd3e",
+    "i": 2561,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-eincyx",
+    "i": 2620,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-1grnick",
+    "i": 2625,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-1f0i6g",
+    "i": 2642,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-1tvmqyb",
+    "i": 2643,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-1nnbhsj",
+    "i": 2648,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-12abpco",
+    "i": 2668,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-14wiq3p",
+    "i": 2670,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-1ltbexv",
+    "i": 2675,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-1knr3yj",
+    "i": 2694,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-gzprxn",
+    "i": 2699,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M6-1guo0e1",
+    "i": 3464,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M6-8fbute",
+    "i": 3465,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M4-dcwxe6",
+    "i": 3562,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M4-8wr5bt",
+    "i": 3575,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M4-jysxrx",
+    "i": 3668,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-2p04rq",
+    "i": 3730,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M2-1yqhnbd",
+    "i": 3746,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
+  },
+  {
+    "qid": "M5-1oth9h8",
+    "i": 3838,
+    "reason": "教师裁决：不确定题直接删除（口径冲突/命题歧义，原uncertain归档）",
+    "source": "teacher-verdict"
   }
 ]
