@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>学考冲刺通 · 题库逐题审阅</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--line:#e2e6f0;--txt:#1e2430;--sub:#6b7280;--pri:#6d5bd0;--danger:#dc2626;--warn:#b45309}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:"Microsoft YaHei","PingFang SC",system-ui,-apple-system,sans-serif}
+.toolbar{background:#fff;border-bottom:1px solid var(--line);padding:9px 16px;position:sticky;top:0;z-index:5}
+.tb-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:5px 0}
+.brand{font-weight:800;font-size:15px;margin-right:6px}
+.prog{font-variant-numeric:tabular-nums;font-weight:700;color:var(--pri);background:#f0edff;border-radius:20px;padding:3px 12px;font-size:13px}
+.spacer{flex:1}
+button,select,input{font-family:inherit;font-size:13px}
+button{border:1px solid var(--line);background:#fff;color:var(--txt);border-radius:9px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+button:hover{border-color:var(--pri);color:var(--pri)}
+button.primary{background:var(--pri);color:#fff;border-color:var(--pri);font-weight:700}
+button.primary:hover{opacity:.9;color:#fff}
+button.danger{color:var(--danger);border-color:#f3c4c4}
+button.danger.on{background:var(--danger);color:#fff;border-color:var(--danger)}
+button:disabled{opacity:.45;cursor:not-allowed}
+select,input[type=text]{border:1px solid var(--line);border-radius:9px;padding:6px 9px;background:#fff;color:var(--txt)}
+label.chk{display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;white-space:nowrap}
+.stat{font-size:12px;color:var(--sub);min-height:18px}
+.stat b{color:var(--warn)}
+.paper{max-width:980px;margin:18px auto 90px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 32px 30px;box-shadow:0 4px 24px rgba(30,40,80,.06)}
+.qnum{font-size:16px;font-weight:800;color:var(--pri);letter-spacing:.5px;font-variant-numeric:tabular-nums}
+.qmeta{font-size:13px;color:var(--sub);margin-top:6px;line-height:1.5}
+.flags{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.flag{background:#fff4e5;color:var(--warn);border:1px solid #ffd9a8;border-radius:20px;padding:3px 10px;font-size:12px}
+.stem{font-size:23px;line-height:1.65;font-weight:700;margin:22px 0 20px;word-break:break-word}
+.opt{display:flex;gap:14px;align-items:flex-start;border:2px solid var(--line);border-radius:12px;padding:13px 16px;margin-bottom:11px;background:#fafbff}
+.opt-k{width:34px;height:34px;flex:none;border:2px solid var(--pri);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--pri);font-size:15px}
+.opt-v{font-size:18px;line-height:1.6;padding-top:3px;word-break:break-word;flex:1}
+.answer{margin-top:18px;font-size:17px;background:#f0f7ff;border-left:4px solid var(--pri);padding:12px 16px;border-radius:8px}
+.answer .marked{margin-left:12px;color:var(--danger);font-weight:700;font-size:14px}
+.explain{margin-top:10px;font-size:14px;color:var(--sub);line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:center;z-index:5}
+.footer span{font-size:13px;color:var(--sub);min-width:200px;text-align:center}
+.empty{text-align:center;color:var(--sub);padding:60px 0;font-size:16px}
+.modal{position:fixed;inset:0;background:rgba(20,24,40,.5);z-index:20;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal.hidden{display:none}
+.modal-box{background:#fff;border-radius:16px;padding:22px;width:min(680px,100%);max-height:88vh;overflow:auto}
+.modal-t{font-size:18px;font-weight:800;margin-bottom:8px}
+.modal-box p{font-size:13px;color:var(--sub);line-height:1.6;margin:0 0 10px}
+.modal-box textarea{width:100%;box-sizing:border-box;border:2px solid var(--line);border-radius:10px;padding:10px;font-size:13px;font-family:Consolas,monospace;line-height:1.5}
+.modal-btns{display:flex;gap:8px;margin-top:10px}
+#pasteResult{font-size:13px;margin-top:8px;line-height:1.6;color:var(--pri)}
+.toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);background:#1e2430;color:#fff;padding:9px 18px;border-radius:24px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+.toast.on{opacity:1}
+.kbd{display:inline-block;background:#f1f2f7;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;font-size:11px;color:var(--sub)}
+body.clean .toolbar,body.clean .footer,body.clean .flags,body.clean .explain{display:none}
+body.clean{background:#fff}
+body.clean .paper{box-shadow:none;border:none;margin:0 auto;max-width:1000px;padding:22px 34px 30px;border-radius:0}
+body.clean .stem{font-size:24px}
+@media print{.toolbar,.footer,.flags,.explain{display:none}body{background:#fff}.paper{box-shadow:none;border:none;margin:0}}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="tb-row">
+    <span class="brand">📋 题库逐题审阅</span>
+    <span class="prog" id="prog">—</span>
+    <span class="spacer"></span>
+    <select id="fMod"><option value="">全部模块</option></select>
+    <select id="fQt"><option value="">全部题型</option><option>单选</option><option>多选</option><option>判断</option></select>
+    <label class="chk"><input type="checkbox" id="fSuspect"> 只看可疑题</label>
+    <input type="text" id="fQ" placeholder="qid / 题干关键词" size="16">
+    <button id="btnJump">跳号 J</button>
+  </div>
+  <div class="tb-row">
+    <button id="btnPrev">← 上一题</button>
+    <button id="btnNext">下一题 →</button>
+    <button id="btnMark" class="danger">🗑 标记删除 D</button>
+    <button id="btnClean">🖼 纯净模式 P</button>
+    <button id="btnAns">🙈 隐藏答案 A</button>
+    <span class="spacer"></span>
+    <button id="btnPrompt">📋 复制提示词</button>
+    <button id="btnCopyOne">📄 复制当前题</button>
+    <button id="btnPaste">📥 粘贴 AI 结果</button>
+    <button id="btnExportTxt">⬇ 导出审阅文本</button>
+    <button id="btnExportDel" class="primary">⬇ 导出删除清单</button>
+  </div>
+  <div class="tb-row stat" id="stat"></div>
+  <div class="tb-row stat">快捷键 <span class="kbd">←</span><span class="kbd">→</span> 翻题 · <span class="kbd">D</span> 标记删除 · <span class="kbd">P</span> 纯净截屏 · <span class="kbd">A</span> 答案 · <span class="kbd">J</span> 跳号 ｜ 标记存本机，刷新不丢</div>
+</div>
+
+<div class="paper" id="paper">
+  <div class="qnum" id="qnum"></div>
+  <div class="qmeta" id="qmeta"></div>
+  <div class="flags" id="flags"></div>
+  <div class="stem" id="stem"></div>
+  <div class="opts" id="opts"></div>
+  <div class="answer" id="answer"></div>
+  <div class="explain" id="explain"></div>
+</div>
+
+<div class="footer">
+  <button id="btnPrev2">← 上一题</button>
+  <span id="footInfo"></span>
+  <button id="btnNext2">下一题 →</button>
+</div>
+
+<div class="modal hidden" id="pasteMask">
+  <div class="modal-box">
+    <div class="modal-t">📥 粘贴 AI 审查结果</div>
+    <p>把审查 AI 返回的 JSON 贴进来（单个对象、数组、带 ```json 围栏、或每行一个含 DELETE 的 qid 都支持）。只提取 <b>DELETE</b> 的 qid，合并到本机标记；题库里不存在的 qid 会被忽略。</p>
+    <textarea id="pasteText" rows="12" placeholder='[{"qid":"M8-1g17mx0","verdict":"DELETE","reasons":["..."]}, ...]'></textarea>
+    <div id="pasteResult"></div>
+    <div class="modal-btns">
+      <button class="primary" id="pasteOk">解析并合并</button>
+      <button id="pasteCancel">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = __PAYLOAD__;
+const PROMPT = __PROMPT_JSON__;
+const $ = id => document.getElementById(id);
+const byQid = Object.create(null);
+DATA.items.forEach(q => { byQid[q.qid] = q; });
+const MOD = Object.create(null);
+(DATA.modules || []).forEach(m => { MOD[m.code] = m; });
+const MARK_KEY = 'xkc.review.marked.v1';
+
+let marked = new Set();
+try { marked = new Set(JSON.parse(localStorage.getItem(MARK_KEY) || '[]')); } catch (e) { }
+function saveMark() { try { localStorage.setItem(MARK_KEY, JSON.stringify([...marked])); } catch (e) { } }
+
+const st = { idx: 0, clean: false, showAns: true };
+let V = [];
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove('on'), 2200);
+}
+function modName(code) { return (MOD[code] && MOD[code].name) || code; }
+
+function view() {
+  const m = $('fMod').value, qt = $('fQt').value, sus = $('fSuspect').checked;
+  const q = $('fQ').value.trim().toLowerCase();
+  return DATA.items.filter(x => {
+    if (m && x.m !== m) return false;
+    if (qt && x.qt !== qt) return false;
+    if (sus && !(x.flags && x.flags.length)) return false;
+    if (q) {
+      const hay = (x.qid + ' ' + (x.s || '') + ' ' + (x.kd || '')).toLowerCase();
+      if (hay.indexOf(q) < 0) return false;
+    }
+    return true;
+  });
+}
+function rebuild(keepIdx) {
+  V = view();
+  if (!keepIdx) st.idx = 0;
+  if (st.idx >= V.length) st.idx = Math.max(0, V.length - 1);
+  render();
+}
+function render() {
+  const q = V[st.idx];
+  $('prog').textContent = V.length ? (st.idx + 1) + ' / ' + V.length : '0 / 0';
+  $('stat').innerHTML = '全库 <b>' + DATA.bank + '</b> 题 ｜ 当前筛选 <b>' + V.length + '</b> 题 ｜ 已标记删除 <b>' + marked.size + '</b> 题 ｜ 预检可疑 <b>' + DATA.suspect + '</b> 题 ｜ 生成于 ' + esc(DATA.generated);
+  if (!q) {
+    $('qnum').textContent = '没有符合条件的题目';
+    $('qmeta').textContent = ''; $('flags').innerHTML = ''; $('stem').textContent = '';
+    $('opts').innerHTML = ''; $('answer').textContent = ''; $('explain').textContent = '';
+    $('footInfo').textContent = '换个筛选条件试试';
+    return;
+  }
+  $('qnum').textContent = '#' + String(q.n).padStart(4, '0') + '  /  全库 ' + DATA.bank + ' 题';
+  $('qmeta').textContent = 'qid: ' + q.qid + ' ｜ ' + q.m + ' ' + modName(q.m) + ' ｜ ' + (q.kd || '') + ' ｜ ' + q.qt;
+  $('flags').innerHTML = '';
+  (q.flags || []).forEach(f => {
+    const s = document.createElement('span'); s.className = 'flag'; s.textContent = '⚠ ' + f;
+    $('flags').appendChild(s);
+  });
+  if (marked.has(q.qid)) {
+    const s = document.createElement('span'); s.className = 'flag';
+    s.style.background = '#fee2e2'; s.style.color = '#b91c1c'; s.style.borderColor = '#fecaca';
+    s.textContent = '🗑 已标记删除'; $('flags').appendChild(s);
+  }
+  $('stem').textContent = q.s || '';
+  $('opts').innerHTML = '';
+  (q.o || []).forEach(op => {
+    const row = document.createElement('div'); row.className = 'opt';
+    const k = document.createElement('div'); k.className = 'opt-k'; k.textContent = op[0];
+    const v = document.createElement('div'); v.className = 'opt-v'; v.textContent = op[1];
+    row.appendChild(k); row.appendChild(v); $('opts').appendChild(row);
+  });
+  $('answer').innerHTML = '<b>正确答案：</b> ' + esc(q.a || '') +
+    (marked.has(q.qid) ? '<span class="marked">🗑 已标记删除</span>' : '');
+  $('answer').style.display = st.showAns ? '' : 'none';
+  $('explain').textContent = (q.e ? '解析：' + q.e : '') + (q.t ? '\n易错提醒：' + q.t : '');
+  $('explain').style.display = st.showAns ? '' : 'none';
+  $('btnMark').classList.toggle('on', marked.has(q.qid));
+  $('btnMark').textContent = marked.has(q.qid) ? '✓ 已标记（再点取消）' : '🗑 标记删除 D';
+  $('btnAns').textContent = st.showAns ? '🙈 隐藏答案 A' : '👁 显示答案 A';
+  $('btnClean').textContent = st.clean ? '🖼 退出纯净模式 P' : '🖼 纯净模式 P';
+  $('footInfo').textContent = '筛选内第 ' + (st.idx + 1) + ' / ' + V.length + ' 题 ｜ qid ' + q.qid;
+  $('btnPrev').disabled = $('btnPrev2').disabled = st.idx <= 0;
+  $('btnNext').disabled = $('btnNext2').disabled = st.idx >= V.length - 1;
+}
+function go(d) { const n = st.idx + d; if (n >= 0 && n < V.length) { st.idx = n; render(); } }
+function toggleMark() {
+  const q = V[st.idx]; if (!q) return;
+  if (marked.has(q.qid)) marked.delete(q.qid); else marked.add(q.qid);
+  saveMark(); render();
+  toast(marked.has(q.qid) ? '已标记删除：' + q.qid : '已取消标记：' + q.qid);
+}
+function toggleClean() { st.clean = !st.clean; document.body.classList.toggle('clean', st.clean); render(); }
+function toggleAns() { st.showAns = !st.showAns; render(); }
+function jump() {
+  const s = prompt('跳到题号（1-' + DATA.bank + '）或输入 qid：', '');
+  if (!s) return;
+  const t = s.trim();
+  if (/^\d+$/.test(t)) {
+    const n = Number(t);
+    const at = V.findIndex(x => x.n === n);
+    if (at >= 0) { st.idx = at; render(); }
+    else { $('fQ').value = ''; rebuild(true); const k = V.findIndex(x => x.n === n); if (k >= 0) { st.idx = k; render(); } else toast('该题不在当前筛选内'); }
+  } else {
+    const at = V.findIndex(x => x.qid.toLowerCase() === t.toLowerCase());
+    if (at >= 0) { st.idx = at; render(); }
+    else { $('fQ').value = t; rebuild(false); toast('已按 qid 搜索'); }
+  }
+}
+
+function copyText(t, label) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(() => toast(label + '已复制')).catch(() => fallbackCopy(t, label));
+  } else fallbackCopy(t, label);
+}
+function fallbackCopy(t, label) {
+  const ta = document.createElement('textarea');
+  ta.value = t; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); toast(label + '已复制'); } catch (e) { toast('复制失败，请手动选中'); }
+  ta.remove();
+}
+function download(text, name, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: type || 'text/plain;charset=utf-8' }));
+  a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function questionText(q) {
+  const lines = [
+    '=== 题目 #' + String(q.n).padStart(4, '0') + ' / ' + DATA.bank + ' ===',
+    'qid: ' + q.qid,
+    '模块: ' + q.m + ' ' + modName(q.m) + ' ｜ 考点: ' + (q.kd || '') + ' ｜ 题型: ' + q.qt,
+    '题干: ' + (q.s || '')
+  ];
+  (q.o || []).forEach(op => lines.push(op[0] + '. ' + op[1]));
+  lines.push('正确答案: ' + (q.a || ''));
+  lines.push('解析: ' + (q.e || '（无）'));
+  lines.push('预检: ' + ((q.flags && q.flags.length) ? q.flags.join(' / ') : '无'));
+  return lines.join('\n');
+}
+function exportDelete() {
+  const items = Object.create(null);
+  [...marked].forEach(id => {
+    const q = byQid[id];
+    if (q) items[id] = { s: String(q.s || '').slice(0, 120), m: q.m || '', at: Date.now() };
+  });
+  const out = { v: 1, title: '学考冲刺通 · AI 审题删除清单', count: Object.keys(items).length, items: items };
+  download(JSON.stringify(out, null, 2), '学考冲刺通_删除题目清单_AI审题.json', 'application/json');
+  toast('已导出 ' + out.count + ' 条删除记录，可导入主程序');
+}
+function parseAI(text) {
+  let s = String(text || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+  let ids = [], parsed = false;
+  try {
+    const j = JSON.parse(s);
+    (Array.isArray(j) ? j : [j]).forEach(x => {
+      if (!x || typeof x !== 'object') return;
+      const v = String(x.verdict || x.result || x.action || '').toUpperCase();
+      const id = x.qid || x.id;
+      if (id && (v.indexOf('DELETE') >= 0 || v.indexOf('删除') >= 0 || v === 'DROP')) ids.push(String(id));
+    });
+    parsed = true;
+  } catch (e) {
+    s.split(/\r?\n/).forEach(line => {
+      const t = line.trim().replace(/^,/, '').replace(/,$/, '');
+      if (t.charAt(0) !== '{') return;
+      try {
+        const x = JSON.parse(t), v = String(x.verdict || '').toUpperCase();
+        if (x.qid && (v.indexOf('DELETE') >= 0 || v.indexOf('删除') >= 0)) ids.push(String(x.qid));
+        parsed = true;
+      } catch (e2) { }
+    });
+    if (!parsed) {
+      s.split(/\r?\n/).forEach(line => {
+        if (/DELETE|删除|DROP/i.test(line)) {
+          const m = line.match(/M\d+-[a-z0-9]+/gi);
+          if (m) m.forEach(id => ids.push(id));
+        }
+      });
+    }
+  }
+  ids = [...new Set(ids)];
+  return { ids: ids.filter(id => byQid[id]), unknown: ids.filter(id => !byQid[id]), total: ids.length };
+}
+function mergeAI() {
+  const r = parseAI($('pasteText').value);
+  r.ids.forEach(id => marked.add(id));
+  saveMark();
+  $('pasteResult').textContent = '解析到 ' + r.total + ' 个 DELETE，其中 ' + r.ids.length + ' 个 qid 已合并' +
+    (r.unknown.length ? '；' + r.unknown.length + ' 个 qid 题库里不存在，已忽略' : '') +
+    '。当前共标记 ' + marked.size + ' 题，可点「导出删除清单」。';
+  render();
+  toast('已合并 ' + r.ids.length + ' 题');
+}
+
+// 初始化
+(DATA.modules || []).forEach(m => {
+  const o = document.createElement('option'); o.value = m.code;
+  o.textContent = m.code + ' ' + m.name; $('fMod').appendChild(o);
+});
+['fMod', 'fQt', 'fSuspect'].forEach(id => $(id).addEventListener(id === 'fSuspect' ? 'change' : 'change', () => rebuild(false)));
+let fqTm;
+$('fQ').addEventListener('input', () => { clearTimeout(fqTm); fqTm = setTimeout(() => rebuild(false), 220); });
+[['btnPrev', -1], ['btnPrev2', -1], ['btnNext', 1], ['btnNext2', 1]].forEach(([id, d]) => $(id).onclick = () => go(d));
+$('btnMark').onclick = toggleMark;
+$('btnClean').onclick = toggleClean;
+$('btnAns').onclick = toggleAns;
+$('btnJump').onclick = jump;
+$('btnPrompt').onclick = () => copyText(PROMPT, '审查提示词');
+$('btnCopyOne').onclick = () => { const q = V[st.idx]; if (q) copyText(questionText(q), '当前题文本'); };
+$('btnExportTxt').onclick = () => {
+  const txt = V.map(questionText).join('\n\n');
+  download(txt, '学考冲刺通_审阅文本_' + V.length + '题.txt');
+  toast('已导出当前筛选 ' + V.length + ' 题文本');
+};
+$('btnExportDel').onclick = exportDelete;
+$('btnPaste').onclick = () => { $('pasteMask').classList.remove('hidden'); $('pasteResult').textContent = ''; setTimeout(() => $('pasteText').focus(), 40); };
+$('pasteCancel').onclick = () => $('pasteMask').classList.add('hidden');
+$('pasteOk').onclick = mergeAI;
+$('pasteMask').onclick = e => { if (e.target === $('pasteMask')) $('pasteMask').classList.add('hidden'); };
+document.addEventListener('keydown', e => {
+  const ae = document.activeElement || {}, tag = (ae.tagName || '').toUpperCase();
+  if (!$('pasteMask').classList.contains('hidden')) { if (e.key === 'Escape') $('pasteMask').classList.add('hidden'); return; }
+  if (tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (tag === 'INPUT') {
+    // 搜索框为空时左右键用来翻题；非空时保留光标编辑，字母快捷键一律交给输入框（防打字误触标记删除）
+    const isNav = (e.key === 'ArrowLeft' || e.key === 'ArrowRight');
+    if (!isNav || String(ae.value || '') !== '') return;
+  }
+  const k = e.key;
+  if (k === 'ArrowLeft') { e.preventDefault(); go(-1); }
+  else if (k === 'ArrowRight') { e.preventDefault(); go(1); }
+  else if (k === 'd' || k === 'D') toggleMark();
+  else if (k === 'p' || k === 'P') toggleClean();
+  else if (k === 'a' || k === 'A') toggleAns();
+  else if (k === 'j' || k === 'J') jump();
+  else if (k === 'Home') { st.idx = 0; render(); }
+  else if (k === 'End') { st.idx = V.length - 1; render(); }
+});
+rebuild(false);
+</script>
+</body>
+</html>
