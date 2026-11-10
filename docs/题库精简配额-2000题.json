@@ -5,20 +5,20 @@
     {
       "code": "M1",
       "score": 15,
-      "quota": 200,
-      "actual": 200
+      "quota": 201,
+      "actual": 201
     },
     {
       "code": "M2",
       "score": 15,
-      "quota": 200,
-      "actual": 200
+      "quota": 201,
+      "actual": 201
     },
     {
       "code": "M3",
       "score": 15,
-      "quota": 200,
-      "actual": 200
+      "quota": 201,
+      "actual": 201
     },
     {
       "code": "M4",
@@ -29,38 +29,38 @@
     {
       "code": "M5",
       "score": 30,
-      "quota": 400,
-      "actual": 400
+      "quota": 404,
+      "actual": 404
     },
     {
       "code": "M6",
       "score": 30,
-      "quota": 400,
-      "actual": 400
+      "quota": 402,
+      "actual": 402
     },
     {
       "code": "M7",
       "score": 15,
-      "quota": 200,
-      "actual": 200
+      "quota": 201,
+      "actual": 201
     },
     {
       "code": "M8",
       "score": 8,
-      "quota": 107,
-      "actual": 107
+      "quota": 106,
+      "actual": 106
     },
     {
       "code": "M9",
       "score": 15,
-      "quota": 200,
-      "actual": 200
+      "quota": 191,
+      "actual": 191
     }
   ],
   "points": [
     {
       "id": "M1-01",
-      "quota": 30
+      "quota": 31
     },
     {
       "id": "M1-02",
@@ -104,7 +104,7 @@
     },
     {
       "id": "M2-03",
-      "quota": 51
+      "quota": 52
     },
     {
       "id": "M2-04",
@@ -120,11 +120,11 @@
     },
     {
       "id": "M3-01",
-      "quota": 40
+      "quota": 41
     },
     {
       "id": "M3-02",
-      "quota": 39
+      "quota": 38
     },
     {
       "id": "M3-03",
@@ -132,7 +132,7 @@
     },
     {
       "id": "M3-04",
-      "quota": 31
+      "quota": 32
     },
     {
       "id": "M3-05",
@@ -168,15 +168,15 @@
     },
     {
       "id": "M5-01",
-      "quota": 30
+      "quota": 31
     },
     {
       "id": "M5-02",
-      "quota": 30
+      "quota": 31
     },
     {
       "id": "M5-03",
-      "quota": 45
+      "quota": 46
     },
     {
       "id": "M5-04",
@@ -188,7 +188,7 @@
     },
     {
       "id": "M5-06",
-      "quota": 45
+      "quota": 46
     },
     {
       "id": "M5-07",
@@ -224,7 +224,7 @@
     },
     {
       "id": "M6-03",
-      "quota": 43
+      "quota": 44
     },
     {
       "id": "M6-04",
@@ -244,11 +244,11 @@
     },
     {
       "id": "M6-08",
-      "quota": 75
+      "quota": 76
     },
     {
       "id": "M7-01",
-      "quota": 66
+      "quota": 67
     },
     {
       "id": "M7-02",
@@ -272,7 +272,7 @@
     },
     {
       "id": "M8-03",
-      "quota": 32
+      "quota": 31
     },
     {
       "id": "M8-04",
@@ -280,15 +280,15 @@
     },
     {
       "id": "M9-01",
-      "quota": 74
+      "quota": 78
     },
     {
       "id": "M9-02",
-      "quota": 42
+      "quota": 39
     },
     {
       "id": "M9-03",
-      "quota": 84
+      "quota": 74
     }
   ]
 }

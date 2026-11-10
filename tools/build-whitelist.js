@@ -149,7 +149,16 @@ if (tier3000.length !== 3000) {
 }
 
 function derive(parentSel, target) {
-  const Q = pureQuota(target);
+  /* 模块级容量感知配平：parentSel 里各模块可用题数不足理想配额时，
+   * 缺口由富余模块按分值比例补足（与 3000 档的 quotaCapped 同构）——
+   * 修复 M9 考点池被人工排除掏空后 2000/1000 档取不满的问题 */
+  const modCapP = Object.create(null);
+  MODULES.forEach(m => { modCapP[m.code] = 0; });
+  Object.entries(parentSel).forEach(([pid, list]) => {
+    const modCode = String(pid).split('-')[0];
+    if (modCapP[modCode] !== undefined) modCapP[modCode] += (list || []).length;
+  });
+  const Q = quotaCapped(target, modCapP).q;
   const sel = Object.create(null);
   const tier = [];
   MODULES.forEach(mod => {

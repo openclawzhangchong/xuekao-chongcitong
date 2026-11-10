@@ -11,20 +11,20 @@
     {
       "code": "M2",
       "score": 15,
-      "quota": 333,
-      "actual": 333
+      "quota": 331,
+      "actual": 331
     },
     {
       "code": "M3",
       "score": 15,
-      "quota": 333,
-      "actual": 333
+      "quota": 332,
+      "actual": 332
     },
     {
       "code": "M4",
       "score": 7,
-      "quota": 166,
-      "actual": 166
+      "quota": 177,
+      "actual": 177
     },
     {
       "code": "M5",
@@ -47,14 +47,14 @@
     {
       "code": "M8",
       "score": 8,
-      "quota": 192,
-      "actual": 192
+      "quota": 203,
+      "actual": 203
     },
     {
       "code": "M9",
       "score": 15,
-      "quota": 210,
-      "actual": 210
+      "quota": 191,
+      "actual": 191
     }
   ],
   "points": [
@@ -96,7 +96,7 @@
     },
     {
       "id": "M2-01",
-      "quota": 175
+      "quota": 174
     },
     {
       "id": "M2-02",
@@ -104,7 +104,7 @@
     },
     {
       "id": "M2-03",
-      "quota": 61
+      "quota": 60
     },
     {
       "id": "M2-04",
@@ -124,7 +124,7 @@
     },
     {
       "id": "M3-02",
-      "quota": 39
+      "quota": 38
     },
     {
       "id": "M3-03",
@@ -144,7 +144,7 @@
     },
     {
       "id": "M4-01",
-      "quota": 69
+      "quota": 80
     },
     {
       "id": "M4-02",
@@ -264,31 +264,31 @@
     },
     {
       "id": "M8-01",
-      "quota": 45
+      "quota": 48
     },
     {
       "id": "M8-02",
-      "quota": 45
+      "quota": 48
     },
     {
       "id": "M8-03",
-      "quota": 57
+      "quota": 59
     },
     {
       "id": "M8-04",
-      "quota": 45
+      "quota": 48
     },
     {
       "id": "M9-01",
-      "quota": 84
+      "quota": 78
     },
     {
       "id": "M9-02",
-      "quota": 42
+      "quota": 39
     },
     {
       "id": "M9-03",
-      "quota": 84
+      "quota": 74
     }
   ]
 }

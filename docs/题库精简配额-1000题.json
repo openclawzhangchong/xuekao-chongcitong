@@ -23,14 +23,14 @@
     {
       "code": "M4",
       "score": 7,
-      "quota": 47,
-      "actual": 47
+      "quota": 46,
+      "actual": 46
     },
     {
       "code": "M5",
       "score": 30,
-      "quota": 200,
-      "actual": 200
+      "quota": 201,
+      "actual": 201
     },
     {
       "code": "M6",
@@ -144,7 +144,7 @@
     },
     {
       "id": "M4-01",
-      "quota": 6
+      "quota": 5
     },
     {
       "id": "M4-02",
@@ -180,7 +180,7 @@
     },
     {
       "id": "M5-04",
-      "quota": 18
+      "quota": 19
     },
     {
       "id": "M5-05",

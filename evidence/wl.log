@@ -1,0 +1,16 @@
+C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通\tools\build-whitelist.js:170
+  if (tier.length !== target) throw new Error(label + ' 题数 ' + tier.length + ' != ' + target);
+                              ^
+
+Error: 2000 档 题数 1991 != 2000
+    at validate (C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通\tools\build-whitelist.js:170:37)
+    at Object.<anonymous> (C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通\tools\build-whitelist.js:186:15)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+
+Node.js v24.21.0
