@@ -16,7 +16,7 @@
   var TIER_KEY = 'xkc.bank.tier';
   var RELEASE_KEY = 'xkc.bank.release';
   // 应用版本号：与 GitHub tag client-v1.1 对齐；改发版只改这一处
-  root.XK_APP_VER = 'v1.1';
+  root.XK_APP_VER = 'v1.2';
   root.BANK_ALL = root.BANK || [];
   var TIERS = root.XK_TIER_INDEX || {};
   var DEFAULT_TIER = root.XK_DEFAULT_TIER || '1000';

@@ -952,7 +952,7 @@ body.arena-mode .app{max-width:none}
     <header>
       <div style="flex:1">
         <div class="h-title">🎯 学考冲刺通</div>
-        <div class="h-sub">信息技术基础 · 福建中职学考 150 分制 · v1.1</div>
+        <div class="h-sub">信息技术基础 · 福建中职学考 150 分制 · v1.2</div>
       </div>
       <button class="h-btn" id="navBack" title="后退（Alt+←）">←</button>
       <button class="h-btn" id="navFwd" title="前进（Alt+→）">→</button>
@@ -2506,7 +2506,7 @@ body.arena-mode .app{max-width:none}
 
 </script>
 <script>window.BANK_VER='20261106';</script>
-<script src="data.js?v=202611092302"></script>
+<script src="data.js?v=202611092358"></script>
 <script>
 /* =====================================================================
  * 题量档位闸门（在 data.js 之后、app.js / pk-app.js / arena-app.js 之前执行）
@@ -2526,7 +2526,7 @@ body.arena-mode .app{max-width:none}
   var TIER_KEY = 'xkc.bank.tier';
   var RELEASE_KEY = 'xkc.bank.release';
   // 应用版本号：与 GitHub tag client-v1.1 对齐；改发版只改这一处
-  root.XK_APP_VER = 'v1.1';
+  root.XK_APP_VER = 'v1.2';
   root.BANK_ALL = root.BANK || [];
   var TIERS = root.XK_TIER_INDEX || {};
   var DEFAULT_TIER = root.XK_DEFAULT_TIER || '1000';
@@ -4076,7 +4076,7 @@ body.arena-mode .app{max-width:none}
     // 启动 hash 直达（如门户跳 #/pk）时：前段 routeTo 已切目标面板，
     // 这里不能再 showPanel('home') 覆盖回去；非 home 直达交给构建尾段统一 rehash
     if (!(location.hash && location.hash !== '#/home')) showPanel('home');
-    var ver = window.XK_APP_VER || 'v1.1';
+    var ver = window.XK_APP_VER || 'v1.2';
     var G = window.XK_BANK_GATE;
     var tierLabel = (G && G.labels && G.labels[G.tier()]) ? G.labels[G.tier()] : ('基础档 ' + BANK.length + ' 题');
     $('verTag').textContent = '当前 ' + tierLabel + ' / 全库 ' + (window.BANK_ALL || BANK).length + ' 题 · 版本 ' + ver + '（client-' + ver + '）· 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';

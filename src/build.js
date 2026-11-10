@@ -105,7 +105,7 @@ ${arenaStyle}
     <header>
       <div style="flex:1">
         <div class="h-title">🎯 学考冲刺通</div>
-        <div class="h-sub">信息技术基础 · 福建中职学考 150 分制 · v1.1</div>
+        <div class="h-sub">信息技术基础 · 福建中职学考 150 分制 · v1.2</div>
       </div>
       <button class="h-btn" id="navBack" title="后退（Alt+←）">←</button>
       <button class="h-btn" id="navFwd" title="前进（Alt+→）">→</button>

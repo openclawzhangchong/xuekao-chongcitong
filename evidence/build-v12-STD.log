@@ -1,0 +1,21 @@
+== variant: STD（纯刷题版） ==
+解压内嵌 Python -> stage/python/ ...
+  $ python -I tools/client/ziphelper.py --extract "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通\tools\client\python
+extracted 36 entries -> C:\Users\Administrator\Desktop\��Ϣ��������\ѧ�����ͨ\dist-client\stage\python
+  背景 mp3 -> music/01-PK超燃BGM.mp3
+编译启动器 学考冲刺通.exe ...
+  $ "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe" /nologo /t:winexe /codepage:65001 /out:"C:\\Users\\A
+组装 payload-纯刷题.zip ...
+  $ python -I tools/client/ziphelper.py "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通\dist-client\stage" "C:\Users\
+zipped 48 files -> C:\Users\Administrator\Desktop\��Ϣ��������\ѧ�����ͨ\dist-client\payload-��ˢ��.zip
+编译安装包 学考冲刺通安装包-纯刷题.exe ...
+  $ "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe" /nologo /t:winexe /codepage:65001 /out:"C:\\Users\\A
+  $ python -I tools/client/ziphelper.py "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通\dist-client\学考冲刺通课堂版-纯刷题" "C:
+zipped 48 files -> C:\Users\Administrator\Desktop\��Ϣ��������\ѧ�����ͨ\dist-client\ѧ�����ͨ���ð�-��ˢ��-�ⰲװ.zip
+
+== 产物（variant STD） ==
+  dist-client/学考冲刺通课堂版-纯刷题-免安装.zip  19.8 MB
+  dist-client/学考冲刺通安装包-纯刷题.exe  19.9 MB
+  dist-client/学考冲刺通课堂版-纯刷题/  (文件夹)
+文件数: 48（白名单校验通过：无密钥/无学生数据）
+  Release 上传副本: dist-client/xuekao-classroom-portable.zip + xuekao-classroom-setup.exe

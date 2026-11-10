@@ -1423,7 +1423,7 @@
     // 启动 hash 直达（如门户跳 #/pk）时：前段 routeTo 已切目标面板，
     // 这里不能再 showPanel('home') 覆盖回去；非 home 直达交给构建尾段统一 rehash
     if (!(location.hash && location.hash !== '#/home')) showPanel('home');
-    var ver = window.XK_APP_VER || 'v1.1';
+    var ver = window.XK_APP_VER || 'v1.2';
     var G = window.XK_BANK_GATE;
     var tierLabel = (G && G.labels && G.labels[G.tier()]) ? G.labels[G.tier()] : ('基础档 ' + BANK.length + ' 题');
     $('verTag').textContent = '当前 ' + tierLabel + ' / 全库 ' + (window.BANK_ALL || BANK).length + ' 题 · 版本 ' + ver + '（client-' + ver + '）· 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';

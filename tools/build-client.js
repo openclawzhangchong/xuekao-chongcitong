@@ -54,17 +54,20 @@ function copyDir(src, dest) {
   const bgmIdx = args.indexOf('--bgm');
   const bgmSrc = bgmIdx !== -1 ? args[bgmIdx + 1] : DEFAULT_BGM;
   const vIdx = args.indexOf('--variant');
-  const variant = (vIdx !== -1 ? (args[vIdx + 1] || 'std') : 'std').toUpperCase();
-  if (!['STD', 'A', 'B', 'C'].includes(variant)) throw new Error('--variant 只支持 std/A/B/C');
-  const isIntg = variant !== 'STD';
-  const suffix = isIntg ? '-方案' + variant : '';
-  const portalSrc = path.join(DIST, 'portals', 'portal-' + variant.toLowerCase() + '.html');
+  // 方案A 已选定（2026-11-10）：默认构建 = 门户A + 课件 + 标准命名
+  // --variant A 默认同义；B/C 保留三案能力（-方案B/C 后缀）；std = 纯刷题（-纯刷题 后缀）
+  const rawV = (vIdx !== -1 ? (args[vIdx + 1] || 'A') : 'A').toUpperCase();
+  if (!['STD', 'A', 'B', 'C'].includes(rawV)) throw new Error('--variant 只支持 std/A/B/C');
+  const isIntg = rawV !== 'STD';
+  const suffix = (rawV === 'B' || rawV === 'C') ? '-方案' + rawV : (rawV === 'STD' ? '-纯刷题' : '');
+  const variant = rawV;
+  const portalSrc = path.join(DIST, 'portals', 'portal-' + (isIntg ? rawV.toLowerCase() : 'a') + '.html');
   const cwSrc = path.join(DIST, 'integration', 'courseware');
   if (isIntg) {
     if (!fs.existsSync(portalSrc)) throw new Error('整合版缺少门户页：' + portalSrc);
     if (!fs.existsSync(cwSrc)) throw new Error('整合版缺少课件目录：' + cwSrc);
   }
-  console.log('== variant: ' + variant + (isIntg ? '（整合版：门户+课件）' : '（标准版）') + ' ==');
+  console.log('== variant: ' + variant + (isIntg ? '（整合版：门户A+课件）' : '（纯刷题版）') + ' ==');
 
   // 0. 前端构建（site/ 就绪）
   if (!args.includes('--skip-build')) sh('node src/build.js --split site/index.html');

@@ -16,9 +16,9 @@ function requirePlaywright() {
 const OUT = path.join(__dirname, '..', 'evidence', 'portal-online');
 fs.mkdirSync(OUT, { recursive: true });
 const SITES = [
-  ['A', 'https://onyx-cliff-823a.here.now/'],
-  ['B', 'https://flowing-flame-dcc7.here.now/'],
-  ['C', 'https://golden-tassel-43qq.here.now/'],
+  ['A', 'https://distant-rapids-9a9f.here.now/'],
+  ['B', 'https://keen-bonnet-z3gh.here.now/'],
+  ['C', 'https://frosty-halo-y92q.here.now/'],
 ];
 const RESULTS = [];
 let shotN = 0;
@@ -78,7 +78,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     });
     check('P4 PK 直达真实呈现', st.pkOn && st.homeOff && st.pkMode, 'pkOn=' + st.pkOn + ' homeOff=' + st.homeOff + ' pkMode=' + st.pkMode);
     check('P5 client 模式生效', st.client, 'body.client=' + st.client);
-    check('P6 题库加载（全库 3982 + 运行时白名单）', st.bankAll === 3982 && (st.bank === 2000 || st.bank === 3982), 'BANK=' + st.bank + ' 全库=' + st.bankAll);
+    check('P6 题库加载（全库 3982 + 四档闸门）', st.bankAll === 3982 && ([1000, 2000, 3000].includes(st.bank) || st.bank >= 3982), 'BANK=' + st.bank + ' 全库=' + st.bankAll);
     await page.screenshot({ path: path.join(OUT, String(++shotN).padStart(2, '0') + '-pk-' + V.toLowerCase() + '.png') });
 
     // 4. 排行榜

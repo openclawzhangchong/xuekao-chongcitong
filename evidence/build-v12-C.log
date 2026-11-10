@@ -1,0 +1,22 @@
+== variant: C（整合版：门户A+课件） ==
+  整合版：portal.html + courseware/ 12 个课件页
+解压内嵌 Python -> stage/python/ ...
+  $ python -I tools/client/ziphelper.py --extract "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通\tools\client\python
+extracted 36 entries -> C:\Users\Administrator\Desktop\��Ϣ��������\ѧ�����ͨ\dist-client\stage\python
+  背景 mp3 -> music/01-PK超燃BGM.mp3
+编译启动器 学考冲刺通.exe ...
+  $ "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe" /nologo /t:winexe /codepage:65001 /out:"C:\\Users\\A
+组装 payload-方案C.zip ...
+  $ python -I tools/client/ziphelper.py "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通\dist-client\stage" "C:\Users\
+zipped 61 files -> C:\Users\Administrator\Desktop\��Ϣ��������\ѧ�����ͨ\dist-client\payload-����C.zip
+编译安装包 学考冲刺通安装包-方案C.exe ...
+  $ "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe" /nologo /t:winexe /codepage:65001 /out:"C:\\Users\\A
+  $ python -I tools/client/ziphelper.py "C:\Users\Administrator\Desktop\信息技术基础\学考冲刺通\dist-client\学考冲刺通课堂版-方案C" "C:
+zipped 61 files -> C:\Users\Administrator\Desktop\��Ϣ��������\ѧ�����ͨ\dist-client\ѧ�����ͨ���ð�-����C-�ⰲװ.zip
+
+== 产物（variant C） ==
+  dist-client/学考冲刺通课堂版-方案C-免安装.zip  20.5 MB
+  dist-client/学考冲刺通安装包-方案C.exe  20.5 MB
+  dist-client/学考冲刺通课堂版-方案C/  (文件夹)
+文件数: 61（白名单校验通过：无密钥/无学生数据）
+  Release 上传副本: dist-client/xuekao-classroom-portable-vc.zip + xuekao-classroom-setup-vc.exe

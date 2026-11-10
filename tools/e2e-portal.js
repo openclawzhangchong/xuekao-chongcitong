@@ -60,11 +60,15 @@ function startServer(dir) {
 (async () => {
   const pw = requirePlaywright();
   const browser = await pw.chromium.launch({ channel: 'msedge', headless: true });
-  const variants = ['A', 'B', 'C'];
+  const variants = [
+    ['A', '学考冲刺通课堂版'],            // 默认构建 = 方案A 内容 + 标准名（v1.2 起）
+    ['B', '学考冲刺通课堂版-方案B'],
+    ['C', '学考冲刺通课堂版-方案C'],
+  ];
   let shotN = 0;
 
-  for (const V of variants) {
-    const dir = path.join(DIST, '学考冲刺通课堂版-方案' + V);
+  for (const [V, dirName] of variants) {
+    const dir = path.join(DIST, dirName);
     if (!fs.existsSync(dir)) { check('方案' + V + ' 免安装文件夹存在', false, dir); continue; }
     console.log('\n== 方案' + V + ' ==');
     killPort();

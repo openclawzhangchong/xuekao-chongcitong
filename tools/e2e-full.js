@@ -72,7 +72,8 @@ async function pickLetters(page, rootSel, letters) {
   await page.waitForFunction('window.BANK && window.BANK.length>0', { timeout: 60000 });
   const loadMs = Date.now() - t0;
   const bankN = await page.evaluate(() => window.BANK.length);
-  check('A1 题库载入', bankN >= 2000, 'BANK=' + bankN + '，就绪耗时 ' + loadMs + 'ms');
+  // 四档题量后（1000 默认 ⊂ 2000 ⊂ 3000 ⊂ 全库 3982），运行时 BANK 按档位过滤——各档皆合法
+  check('A1 题库载入', [1000, 2000, 3000].includes(bankN) || bankN >= 3982, 'BANK=' + bankN + '，就绪耗时 ' + loadMs + 'ms');
   const cards = await page.evaluate(() =>
     ['entCardPractice', 'entCardWrong', 'entCardDiag', 'entCardSim', 'entCardPk', 'entCardArena']
       .filter((i) => !document.getElementById(i)));
