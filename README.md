@@ -85,7 +85,7 @@
 >
 > **题库质检工具**：`docs/题目逐题审阅.html`（离线单文件，内嵌全库 3982 题）一题一屏依次展示、带全局编号与 qid，按 `P` 进纯净模式即可逐题截屏给审查 AI；`docs/AI审题提示词.md` 是配套提示词。把 AI 返回的 `DELETE` 结果粘回审阅页，即可导出主程序可直接导入的删除清单（本机隐藏、可恢复）。生成器 `node tools/build-review.js` 可随题库更新重跑；全库三态预检 **DELETE 596 / CLEAN 39 / KEEP 3347**（R1~R9），可勾选「只看可疑题」只筛 DELETE。
 >
-> **判定规则单一真源**在 `tools/quality-rules.js`（R1~R8，三态 `DELETE/CLEAN/KEEP`），质检器与审阅页共用，禁止各自复制正则。只读质检器 `node tools/quality-gate.js` → `docs/题库质检报告.json`（含按生成批次的污染率、各档白名单污染数、模块配额可行性、完整 DELETE qid 清单）。给 AI 的主方案提示词是 `docs/AI质检规则提示词.md`（v2：让 AI **产出可编码规则 + 反例**，而不是逐题给结论）；`docs/AI审题提示词.md`（v1）只用于少量待复核题。
+> **判定规则单一真源**在 `tools/quality-rules.js`（R1~R8，三态 `DELETE/CLEAN/KEEP`），质检器与审阅页共用，禁止各自复制正则。只读质检器 `node tools/quality-gate.js` → `docs/题库质检报告.json`（含按生成批次的污染率、各档白名单污染数、模块配额可行性、完整 DELETE qid 清单）。给 AI 的主方案提示词是 `docs/AI质检规则提示词.md`（v2：让 AI **产出可编码规则 + 反例**，而不是逐题给结论）；`docs/AI审题提示词.md`（v1）只用于少量待复核题。**接下来要做的 5 件事**整理成 `docs/AI下一步任务书.md`（模块专项抽查 / 跨模块事实一致性 / CLEAN 救回 / R9 反例 / 3000 档缺口），可直接复制给执行 AI。
 
 | 首页（预估分 + 打卡） | 班级版教师学情页 |
 |---|---|
