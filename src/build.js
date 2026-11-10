@@ -17,6 +17,7 @@ const data = read('data.js');
 // 默认题量白名单：tools/build-whitelist.js 生成的下标清单 + 运行时闸门（一题不删）
 const whitelistData = read('whitelist-data.js');
 const bankGate = read('bank-gate.js');
+const qover = read('question-override.js');
 const dataWithIndex = data + '\n' + whitelistData;
 const app = read('app.js');
 const praise = read('praise.js');
@@ -66,7 +67,7 @@ if ([...S1].some(i => !S2.has(i)) || [...S2].some(i => !S3.has(i))) throw new Er
   }
 });
 
-[engine, dataWithIndex, bankGate, app, praise, sfx, pkApp, arenaLines, arenaApp].forEach((code, i) => {
+[engine, dataWithIndex, bankGate, qover, app, praise, sfx, pkApp, arenaLines, arenaApp].forEach((code, i) => {
   if (/<\/script/i.test(code)) throw new Error('内嵌脚本含 </script>，会破坏 HTML（脚本#' + i + '）');
 });
 
@@ -384,6 +385,7 @@ ${arenaStyle}
         <span class="qbadge" id="badge">单选</span>
         <span id="qIdx">第 1 / 20 题</span>
         <span class="kd" id="qKd"></span>
+        <button class="mini-btn" id="editQBtn" style="padding:2px 8px;font-size:11px" title="教师修正本题（需密码）">✏️ 修正本题</button>
         <span class="pick-badge hidden" id="pickBadge"></span>
         <span class="diff-badge hidden" id="diffBadge"></span>
       </div>
@@ -432,6 +434,44 @@ ${pkMarkup}
     </div>
   </div>
 
+  <!-- ============ 教师修正题目（密码保护） ============ -->
+  <div class="dlg-mask hidden" id="qeditMask">
+    <div class="dlg" style="max-width:560px;max-height:88vh;overflow-y:auto">
+      <div class="dlg-t">✏️ 修正本题 <span id="qeditQid" style="font-size:11px;font-weight:400;color:#888"></span></div>
+      <div id="qeditGate">
+        <div class="hint" style="margin-bottom:8px">教师专用：输入教师密码后，才能修改本题的题干、选项与正确答案。</div>
+        <input id="qeditPwd" type="password" placeholder="教师密码" autocomplete="off">
+        <div class="dlg-err" id="qeditErr"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn sm" id="qeditUnlock">解锁 →</button>
+          <button class="btn ghost sm" id="qeditCancel">取消</button>
+        </div>
+      </div>
+      <div id="qeditForm" class="hidden">
+        <div class="sec-t" style="font-size:13px;margin:6px 0">题干</div>
+        <textarea id="qeditStem" rows="3" style="width:100%;box-sizing:border-box;padding:8px;border:2px solid var(--line);border-radius:10px;font-size:14px"></textarea>
+        <div class="sec-t" style="font-size:13px;margin:10px 0 6px">选项</div>
+        <div id="qeditOpts"></div>
+        <div class="sec-t" style="font-size:13px;margin:10px 0 6px">正确答案<span class="hint" style="font-weight:400">（多选题可多选）</span></div>
+        <div id="qeditAns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <div class="sec-t" style="font-size:13px;margin:10px 0 6px">解析（可选）</div>
+        <textarea id="qeditE" rows="2" style="width:100%;box-sizing:border-box;padding:8px;border:2px solid var(--line);border-radius:10px;font-size:14px"></textarea>
+        <div class="dlg-err" id="qeditFormErr"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+          <button class="btn sm" id="qeditSave">💾 保存修正</button>
+          <button class="btn warn sm" id="qeditReset">↩ 恢复原题</button>
+          <button class="btn ghost sm" id="qeditClose">关闭</button>
+        </div>
+        <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button class="mini-btn" id="qeditExport" style="padding:4px 9px;font-size:12px">⬆ 导出修正</button>
+          <label class="mini-btn" style="display:inline-block;padding:4px 9px;font-size:12px;cursor:pointer">⬇ 导入修正<input type="file" id="qeditImportFile" accept=".json,application/json" class="hidden"></label>
+          <span class="hint" style="margin:0" id="qeditCount"></span>
+        </div>
+        <div class="hint" style="margin-top:8px">修正只保存在本机，换设备请用「导出 / 导入」。改题干不会改变题目 ID，学生档案不受影响；刷新页面后其它页面（PK / 擂台 / 备课夹）同样生效。</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ============ 点名遮罩 ============ -->
   <div class="draw-mask hidden" id="drawMask">
     <div class="draw-title">随 机 点 名</div>
@@ -457,6 +497,9 @@ ${sfx}
 ${DATA_TAG}
 <script>
 ${bankGate}
+</script>
+<script>
+${qover}
 </script>
 <script>
 ${app}

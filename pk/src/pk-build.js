@@ -18,11 +18,12 @@ const praiseJs = fs.readFileSync(path.join(ROOT, 'src', 'praise.js'), 'utf8');
 const dataJs = fs.readFileSync(path.join(ROOT, 'src', 'data.js'), 'utf8');
 const whitelistData = fs.readFileSync(path.join(ROOT, 'src', 'whitelist-data.js'), 'utf8');
 const bankGateJs = fs.readFileSync(path.join(ROOT, 'src', 'bank-gate.js'), 'utf8');
+const qoverJs = fs.readFileSync(path.join(ROOT, 'src', 'question-override.js'), 'utf8');
 const bankJsWithIndex = dataJs + '\n' + whitelistData;
 const pkAppJs = fs.readFileSync(path.join(PK, 'pk-app.js'), 'utf8');
 
 // 破坏性序列校验
-[bankJsWithIndex, bankGateJs, engineJs, sfxJs, praiseJs, pkAppJs].forEach((code, i) => {
+[bankJsWithIndex, bankGateJs, qoverJs, engineJs, sfxJs, praiseJs, pkAppJs].forEach((code, i) => {
   if (/<\/script/i.test(code)) throw new Error('脚本 #' + i + ' 含 </script>，会破坏 HTML');
 });
 
@@ -34,6 +35,7 @@ let out = tpl
   .replace('${praiseJs}', praiseJs)
   .replace('${bankJs}', bankJsWithIndex)
   .replace('${gateJs}', bankGateJs)
+  .replace('${qoverJs}', qoverJs)
   .replace('${pkAppJs}', pkAppJs);
 
 // 产物守卫：占位符漏替换 = 页面完全没有界面（曾踩过：${pkMarkup} 原样留在 body 里）
@@ -53,7 +55,8 @@ eval(engineJs);
 eval(sfxJs);
 eval(praiseJs);
 eval(bankJsWithIndex);
-eval(bankGateJs); // 无 document 环境下闸门仍应把 window.BANK 压成 2000 题白名单
+eval(bankGateJs); // 无 document 环境下闸门仍应把 window.BANK 压成默认档
+eval(qoverJs);    // 教师修正层：改题干不改 qid，独立版也应用本机修正
 if (!window.XK_TIER_INDEX || ['1000', '2000', '3000'].some(k => window.XK_TIER_INDEX[k].length !== Number(k))) {
   throw new Error('PK 独立版缺少 1000/2000/3000 三档白名单下标');
 }

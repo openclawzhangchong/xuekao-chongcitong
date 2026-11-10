@@ -22,7 +22,10 @@
   }
 
   // 稳定题目 ID：djb2(m|qt|s)，重建题库时题干不变则 ID 不变
+  // 教师修正题干后，question-override.js 会在题目对象上挂 _origQid（原 qid）。
+  // 这里优先返回它，保证改题干不改 qid：学生档案 / 错题本 / 备课夹零断链。
   function qidOf(q) {
+    if (q && q._origQid) return q._origQid;
     var str = (q.m || '') + '|' + (q.qt || '') + '|' + (q.s || '');
     var h = 5381;
     for (var i = 0; i < str.length; i++) h = (((h << 5) + h) ^ str.charCodeAt(i)) >>> 0;

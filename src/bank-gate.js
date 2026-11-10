@@ -63,13 +63,19 @@
     return idx.map(function (i) { return root.BANK_ALL[i]; });
   }
   function apply() { root.BANK = bankOf(tier()); }
-  // 供 PK 远程拉取 / 粘贴题库兜底：拿到本项目全库时压回当前档；教师自定义题库原样保留
+  // 供 PK 远程拉取 / 粘贴题库兜底：拿到本项目全库时压回当前档；教师自定义题库原样保留。
+  // 末尾统一交给 XK_QOVER.applyTo，保证远程题库也带上教师修正（按原 qid 匹配）。
   function guard(arr) {
-    var t = tier();
-    if (t === 'full' || !Array.isArray(arr) || !root.BANK_ALL.length) return arr;
-    if (arr.length !== root.BANK_ALL.length) return arr;
-    if (arr[0] && root.BANK_ALL[0] && arr[0].s === root.BANK_ALL[0].s) return bankOf(t);
-    return arr;
+    if (!Array.isArray(arr)) return arr;
+    var t = tier(), out = arr;
+    if (t !== 'full' && root.BANK_ALL.length && arr.length === root.BANK_ALL.length && arr[0] && root.BANK_ALL[0]) {
+      var same = arr[0].s === root.BANK_ALL[0].s;
+      if (!same && root.XK && root.XK.qidOf) {
+        try { same = root.XK.qidOf(arr[0]) === root.XK.qidOf(root.BANK_ALL[0]); } catch (e) { }
+      }
+      if (same) out = bankOf(t);
+    }
+    return (root.XK_QOVER && root.XK_QOVER.applyTo) ? root.XK_QOVER.applyTo(out) : out;
   }
   function switchTier(v) {
     var t = normalize(v);

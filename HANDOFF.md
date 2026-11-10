@@ -469,6 +469,14 @@ cat README.md
 - **发布**：tag / Release `client-v1.1`（2026-11-09，指向 `9ab6840`）为 Latest，含 4 个客户端资产；旧 `client-v1.0` 保留为历史归档并加取代提示。README 的 `/releases/latest` 会自动指向 v1.1。
 - 客户端 zip / exe 已重建；2026-11-09 晚三处云端均已部署：CF 主站（KV）、D1 备用（zcvoice）、here.now 备用站。线上验证主站 `/api/bank` 默认 2000 / `?full=1` 3982、双站真浏览器 `BANK=2000`、按钮就位；D1 部署成功但国内 `workers.dev` 不可达（已知问题，主站与 here.now 正常）。代码已提交推送，`.workbuddy/` 已加入 `.gitignore`（本地会话数据不入库）。
 
+## 十三、教师修正题目（2026-11-10 晚，接手必读）
+
+- 答题页题号旁「✏️ 修正本题」→ `#qeditMask` 模态框：先输教师密码（只放哈希常量 `PWD_HASH`，不放明文），解锁后改题干 / 选项 / 正确答案（多选可多勾）/ 解析；保存即刷新当前题，可「恢复原题」「导出 / 导入修正」。
+- 核心在 `src/question-override.js`（`window.XK_QOVER`）：按**原 qid** 存 `localStorage['xkc.qoverrides.v1']`，运行时就地合并到 `BANK_ALL` 原对象；`src/engine.js` 的 `qidOf` 优先返回题目上的 `_origQid`，所以**改题干不改 qid**，学生档案 / 错题本 / 备课夹零断链。`src/data.js` 一字未改，题库不需要重建。
+- 脚本顺序（别打乱）：engine → data(+whitelist) → bank-gate → **question-override** → app → pk-app → arena-app；`pk/src/pk-build.js` 与 `template.html` 也接了同一层。`XK_BANK_GATE.guard` 末尾调用 `XK_QOVER.applyTo`，远程拉取的题库同样应用修正。
+- 限制：修正**只存本机**，不同设备 / 不同站点不共享，靠导出导入 JSON 迁移；前端密码只防误触（F12 可绕过），且密码是手机号，建议换成普通口令。若要全班生效，需要另做服务端修正同步接口（带真鉴权），目前没做。
+- 测试：`node tests/question-override.test.js`（14 项）+ 全量 284 项；重建与部署照第十二节流程。
+
 ---
 
 *本文档由 ZCode 于 2026-11-06 生成，基于项目当前真实状态（git commit 1c0d631）。*

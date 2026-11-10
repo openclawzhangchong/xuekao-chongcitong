@@ -1071,6 +1071,145 @@
   };
   $('speakBtn').onclick = speakCurrent;
 
+  /* ---------- 教师修正题目（密码模态框） ---------- */
+  var QE = { q: null, unlocked: false, keys: [] };
+  function qeditOpen() {
+    var QO = window.XK_QOVER;
+    if (!QO || !S.list[S.idx]) return;
+    QE.q = S.list[S.idx]; QE.unlocked = false;
+    $('qeditQid').textContent = QO.qid(QE.q);
+    $('qeditGate').classList.remove('hidden');
+    $('qeditForm').classList.add('hidden');
+    $('qeditPwd').value = '';
+    $('qeditErr').textContent = '';
+    $('qeditMask').classList.remove('hidden');
+    setTimeout(function () { try { $('qeditPwd').focus(); } catch (e) { } }, 40);
+  }
+  function qeditClose() { $('qeditMask').classList.add('hidden'); }
+  function qeditUnlock() {
+    if (!window.XK_QOVER.checkPwd($('qeditPwd').value)) {
+      $('qeditErr').textContent = '密码不正确，请联系授课教师'; return;
+    }
+    QE.unlocked = true;
+    $('qeditGate').classList.add('hidden');
+    $('qeditForm').classList.remove('hidden');
+    qeditRenderForm();
+  }
+  function paintAnsBtn(b, on) {
+    b.style.background = on ? 'var(--pri)' : '#fff';
+    b.style.color = on ? '#fff' : 'var(--pri-d)';
+    b.style.fontWeight = on ? '700' : '400';
+  }
+  function qeditRenderForm() {
+    var q = QE.q, QO = window.XK_QOVER;
+    $('qeditStem').value = q.s;
+    $('qeditE').value = q.e || '';
+    var box = $('qeditOpts'); box.innerHTML = '';
+    QE.keys = q.o.map(function (op) { return op[0]; });
+    q.o.forEach(function (op) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:6px';
+      var k = document.createElement('span');
+      k.style.cssText = 'width:26px;text-align:center;font-weight:700;flex:none';
+      k.textContent = op[0];
+      var inp = document.createElement('input');
+      inp.type = 'text'; inp.value = op[1]; inp.setAttribute('data-key', op[0]);
+      inp.style.cssText = 'flex:1;padding:8px;border:2px solid var(--line);border-radius:9px;font-size:14px';
+      if (q.qt === '判断') { inp.readOnly = true; inp.title = '判断题选项固定为 正确/错误'; }
+      row.appendChild(k); row.appendChild(inp); box.appendChild(row);
+    });
+    var ans = $('qeditAns'); ans.innerHTML = '';
+    var multi = q.qt === '多选';
+    QE.keys.forEach(function (key) {
+      var b = document.createElement('button');
+      b.className = 'mini-btn'; b.style.cssText = 'padding:5px 12px;font-size:13px';
+      b.textContent = key; b.setAttribute('data-ans', key);
+      b.onclick = function () {
+        if (multi) b.classList.toggle('on');
+        else {
+          ans.querySelectorAll('[data-ans]').forEach(function (x) { x.classList.remove('on'); paintAnsBtn(x, false); });
+          b.classList.add('on');
+        }
+        paintAnsBtn(b, b.classList.contains('on'));
+      };
+      var on = String(q.a).indexOf(key) !== -1;
+      if (on) b.classList.add('on');
+      paintAnsBtn(b, on);
+      ans.appendChild(b);
+    });
+    $('qeditFormErr').textContent = '';
+    $('qeditCount').textContent = '本机已有 ' + QO.count() + ' 条修正';
+  }
+  function qeditCollect() {
+    var q = QE.q;
+    var stem = $('qeditStem').value.trim();
+    var o = [];
+    $('qeditOpts').querySelectorAll('input[data-key]').forEach(function (inp) {
+      o.push([inp.getAttribute('data-key'), inp.value.trim()]);
+    });
+    var picked = [];
+    $('qeditAns').querySelectorAll('[data-ans].on').forEach(function (b) { picked.push(b.getAttribute('data-ans')); });
+    var a = picked.sort().join('');
+    if (!stem) return { err: '题干不能为空' };
+    if (!o.length || o.some(function (x) { return !x[1]; })) return { err: '每个选项都不能为空' };
+    if (!a) return { err: '请选择正确答案' };
+    if (q.qt !== '多选' && a.length !== 1) return { err: '单选/判断题只能有一个正确答案' };
+    if (a.split('').some(function (k) { return QE.keys.indexOf(k) === -1; })) return { err: '答案字母不在选项里' };
+    return { patch: { s: stem, o: o, a: a, e: $('qeditE').value } };
+  }
+  function qeditSave() {
+    if (!QE.unlocked) return;
+    var r = qeditCollect();
+    if (r.err) { $('qeditFormErr').textContent = r.err; return; }
+    var QO = window.XK_QOVER;
+    if (!QO.set(QO.qid(QE.q), r.patch)) { $('qeditFormErr').textContent = '本机存储不可用，无法保存'; return; }
+    qeditClose();
+    renderQuestion(); // 就地刷新当前题，不丢答题进度
+    alert('修正已保存到本机。刷新页面后 PK / 擂台 / 备课夹等页面同样生效。');
+  }
+  function qeditReset() {
+    if (!QE.unlocked) return;
+    var QO = window.XK_QOVER, id = QO.qid(QE.q);
+    if (!QO.has(id)) { alert('本题没有本机修正，无需恢复'); return; }
+    if (!confirm('恢复为原始题目？本机保存的这条修正会被删除。')) return;
+    QO.remove(id); qeditClose(); renderQuestion();
+  }
+  function qeditExport() {
+    var blob = new Blob([window.XK_QOVER.exportText()], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '学考冲刺通_题目修正_' + XK.todayStr() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  function qeditImport(ev) {
+    var f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      var r = window.XK_QOVER.importText(fr.result);
+      alert(r.ok ? ('已导入 ' + r.count + ' 条修正，当前本机共 ' + window.XK_QOVER.count() + ' 条')
+        : ('导入失败：' + r.err));
+      $('qeditCount').textContent = '本机已有 ' + window.XK_QOVER.count() + ' 条修正';
+      if (QE.q) qeditRenderForm();
+      renderQuestion();
+    };
+    fr.readAsText(f);
+    ev.target.value = '';
+  }
+  var qeditBtns = {
+    editQBtn: qeditOpen, qeditCancel: qeditClose, qeditClose: qeditClose,
+    qeditUnlock: qeditUnlock, qeditSave: qeditSave, qeditReset: qeditReset,
+    qeditExport: qeditExport
+  };
+  Object.keys(qeditBtns).forEach(function (id) {
+    var b = $(id); if (b) b.onclick = qeditBtns[id];
+  });
+  var qeditImportFile = $('qeditImportFile');
+  if (qeditImportFile) qeditImportFile.onchange = qeditImport;
+  var qeditPwd = $('qeditPwd');
+  if (qeditPwd) qeditPwd.onkeydown = function (ev) { if (ev.key === 'Enter') qeditUnlock(); };
+
   /* ---------- 结束与成绩 ---------- */
   function finishSession() {
     stopSpeak();

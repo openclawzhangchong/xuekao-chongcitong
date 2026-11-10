@@ -952,7 +952,7 @@ body.arena-mode .app{max-width:none}
     <header>
       <div style="flex:1">
         <div class="h-title">🎯 学考冲刺通</div>
-        <div class="h-sub">信息技术基础 · 福建中职学考 150 分制 · v1.1</div>
+        <div class="h-sub">信息技术基础 · 福建中职学考 150 分制 · v1.2</div>
       </div>
       <button class="h-btn" id="navBack" title="后退（Alt+←）">←</button>
       <button class="h-btn" id="navFwd" title="前进（Alt+→）">→</button>
@@ -1231,6 +1231,7 @@ body.arena-mode .app{max-width:none}
         <span class="qbadge" id="badge">单选</span>
         <span id="qIdx">第 1 / 20 题</span>
         <span class="kd" id="qKd"></span>
+        <button class="mini-btn" id="editQBtn" style="padding:2px 8px;font-size:11px" title="教师修正本题（需密码）">✏️ 修正本题</button>
         <span class="pick-badge hidden" id="pickBadge"></span>
         <span class="diff-badge hidden" id="diffBadge"></span>
       </div>
@@ -1611,6 +1612,44 @@ body.arena-mode .app{max-width:none}
     </div>
   </div>
 
+  <!-- ============ 教师修正题目（密码保护） ============ -->
+  <div class="dlg-mask hidden" id="qeditMask">
+    <div class="dlg" style="max-width:560px;max-height:88vh;overflow-y:auto">
+      <div class="dlg-t">✏️ 修正本题 <span id="qeditQid" style="font-size:11px;font-weight:400;color:#888"></span></div>
+      <div id="qeditGate">
+        <div class="hint" style="margin-bottom:8px">教师专用：输入教师密码后，才能修改本题的题干、选项与正确答案。</div>
+        <input id="qeditPwd" type="password" placeholder="教师密码" autocomplete="off">
+        <div class="dlg-err" id="qeditErr"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn sm" id="qeditUnlock">解锁 →</button>
+          <button class="btn ghost sm" id="qeditCancel">取消</button>
+        </div>
+      </div>
+      <div id="qeditForm" class="hidden">
+        <div class="sec-t" style="font-size:13px;margin:6px 0">题干</div>
+        <textarea id="qeditStem" rows="3" style="width:100%;box-sizing:border-box;padding:8px;border:2px solid var(--line);border-radius:10px;font-size:14px"></textarea>
+        <div class="sec-t" style="font-size:13px;margin:10px 0 6px">选项</div>
+        <div id="qeditOpts"></div>
+        <div class="sec-t" style="font-size:13px;margin:10px 0 6px">正确答案<span class="hint" style="font-weight:400">（多选题可多选）</span></div>
+        <div id="qeditAns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <div class="sec-t" style="font-size:13px;margin:10px 0 6px">解析（可选）</div>
+        <textarea id="qeditE" rows="2" style="width:100%;box-sizing:border-box;padding:8px;border:2px solid var(--line);border-radius:10px;font-size:14px"></textarea>
+        <div class="dlg-err" id="qeditFormErr"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+          <button class="btn sm" id="qeditSave">💾 保存修正</button>
+          <button class="btn warn sm" id="qeditReset">↩ 恢复原题</button>
+          <button class="btn ghost sm" id="qeditClose">关闭</button>
+        </div>
+        <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button class="mini-btn" id="qeditExport" style="padding:4px 9px;font-size:12px">⬆ 导出修正</button>
+          <label class="mini-btn" style="display:inline-block;padding:4px 9px;font-size:12px;cursor:pointer">⬇ 导入修正<input type="file" id="qeditImportFile" accept=".json,application/json" class="hidden"></label>
+          <span class="hint" style="margin:0" id="qeditCount"></span>
+        </div>
+        <div class="hint" style="margin-top:8px">修正只保存在本机，换设备请用「导出 / 导入」。改题干不会改变题目 ID，学生档案不受影响；刷新页面后其它页面（PK / 擂台 / 备课夹）同样生效。</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ============ 点名遮罩 ============ -->
   <div class="draw-mask hidden" id="drawMask">
     <div class="draw-title">随 机 点 名</div>
@@ -1649,7 +1688,10 @@ body.arena-mode .app{max-width:none}
   }
 
   // 稳定题目 ID：djb2(m|qt|s)，重建题库时题干不变则 ID 不变
+  // 教师修正题干后，question-override.js 会在题目对象上挂 _origQid（原 qid）。
+  // 这里优先返回它，保证改题干不改 qid：学生档案 / 错题本 / 备课夹零断链。
   function qidOf(q) {
+    if (q && q._origQid) return q._origQid;
     var str = (q.m || '') + '|' + (q.qt || '') + '|' + (q.s || '');
     var h = 5381;
     for (var i = 0; i < str.length; i++) h = (((h << 5) + h) ^ str.charCodeAt(i)) >>> 0;
@@ -2537,7 +2579,7 @@ window.XK_DEFAULT_TIER='1000';
   var TIER_KEY = 'xkc.bank.tier';
   var RELEASE_KEY = 'xkc.bank.release';
   // 应用版本号：与 GitHub tag client-v1.1 对齐；改发版只改这一处
-  root.XK_APP_VER = 'v1.1';
+  root.XK_APP_VER = 'v1.2';
   root.BANK_ALL = root.BANK || [];
   var TIERS = root.XK_TIER_INDEX || {};
   var DEFAULT_TIER = root.XK_DEFAULT_TIER || '1000';
@@ -2584,13 +2626,19 @@ window.XK_DEFAULT_TIER='1000';
     return idx.map(function (i) { return root.BANK_ALL[i]; });
   }
   function apply() { root.BANK = bankOf(tier()); }
-  // 供 PK 远程拉取 / 粘贴题库兜底：拿到本项目全库时压回当前档；教师自定义题库原样保留
+  // 供 PK 远程拉取 / 粘贴题库兜底：拿到本项目全库时压回当前档；教师自定义题库原样保留。
+  // 末尾统一交给 XK_QOVER.applyTo，保证远程题库也带上教师修正（按原 qid 匹配）。
   function guard(arr) {
-    var t = tier();
-    if (t === 'full' || !Array.isArray(arr) || !root.BANK_ALL.length) return arr;
-    if (arr.length !== root.BANK_ALL.length) return arr;
-    if (arr[0] && root.BANK_ALL[0] && arr[0].s === root.BANK_ALL[0].s) return bankOf(t);
-    return arr;
+    if (!Array.isArray(arr)) return arr;
+    var t = tier(), out = arr;
+    if (t !== 'full' && root.BANK_ALL.length && arr.length === root.BANK_ALL.length && arr[0] && root.BANK_ALL[0]) {
+      var same = arr[0].s === root.BANK_ALL[0].s;
+      if (!same && root.XK && root.XK.qidOf) {
+        try { same = root.XK.qidOf(arr[0]) === root.XK.qidOf(root.BANK_ALL[0]); } catch (e) { }
+      }
+      if (same) out = bankOf(t);
+    }
+    return (root.XK_QOVER && root.XK_QOVER.applyTo) ? root.XK_QOVER.applyTo(out) : out;
   }
   function switchTier(v) {
     var t = normalize(v);
@@ -2658,6 +2706,169 @@ window.XK_DEFAULT_TIER='1000';
   if (typeof document !== 'undefined' && document.addEventListener) {
     document.addEventListener('DOMContentLoaded', renderButton);
   }
+})();
+
+</script>
+<script>
+/* =====================================================================
+ * 教师题目修正层（在 bank-gate.js 之后、app.js / pk-app.js / arena-app.js 之前执行）
+ * ---------------------------------------------------------------------
+ * 场景：做题时发现某题题干 / 选项 / 答案有误，老师在答题页点「✏️ 修正」，
+ *       输入教师密码后在模态框里改，保存即生效。
+ * 存储：localStorage['xkc.qoverrides.v1']，按【原 qid】存覆盖字段。
+ *       src/data.js 真源一字不改，构建产物不需要重新生成。
+ * 关键：修正会挂 _origQid（原 qid）；engine.qidOf 优先返回它，
+ *       所以「改题干」不会改变 qid，学生历史作答 / 错题本 / 备课夹零断链。
+ * 作用范围：window.BANK_ALL 里的原对象就地合并覆盖，因此所有档位视图、
+ *       刷题 / 模拟考 / 诊断 / 错题本 / PK / 擂台 / 备课夹同步生效（同一对象引用）。
+ * 限制：修正存本机，不自动同步到其它设备或云端；提供导出 / 导入 JSON 迁移。
+ * 密码：只放哈希常量，不放明文；前端校验只能防误触，不是真正的访问控制。
+ * ===================================================================== */
+(function () {
+  'use strict';
+  var root = window;
+  var STORE_KEY = 'xkc.qoverrides.v1';
+  var PWD_HASH = 998481989;
+  var XK = root.XK;
+  var store = Object.create(null);
+  var orig = Object.create(null);
+  var loaded = false;
+
+  function pwdHash(s) {
+    var h = 2166136261;
+    s = String(s == null ? '' : s);
+    for (var r = 0; r < 64; r++) {
+      for (var i = 0; i < s.length; i++) {
+        h ^= s.charCodeAt(i);
+        h = Math.imul(h, 16777619) >>> 0;
+      }
+    }
+    return h >>> 0;
+  }
+  function checkPwd(s) { return pwdHash(s) === PWD_HASH; }
+  function cloneOpts(o) {
+    return (o || []).map(function (x) { return [String(x[0]), String(x[1] == null ? '' : x[1])]; });
+  }
+  function snapshot(q) {
+    return { s: q.s, o: cloneOpts(q.o), a: q.a, e: q.e, t: q.t };
+  }
+  function sanitize(p) {
+    var out = {};
+    if (!p || typeof p !== 'object') return out;
+    if (typeof p.s === 'string') out.s = p.s;
+    if (Array.isArray(p.o)) {
+      out.o = p.o.filter(function (x) { return Array.isArray(x) && x.length >= 2 && x[0]; })
+        .map(function (x) { return [String(x[0]).slice(0, 4), String(x[1] == null ? '' : x[1])]; });
+    }
+    if (typeof p.a === 'string') out.a = p.a.replace(/[^A-Z√×]/g, '').slice(0, 8);
+    if (typeof p.e === 'string') out.e = p.e;
+    if (typeof p.t === 'string') out.t = p.t;
+    return out;
+  }
+  function load() {
+    store = Object.create(null);
+    try {
+      var raw = root.localStorage && localStorage.getItem(STORE_KEY);
+      var j = raw ? JSON.parse(raw) : null;
+      if (j && j.items && typeof j.items === 'object') {
+        Object.keys(j.items).forEach(function (qid) {
+          var p = sanitize(j.items[qid]);
+          if (Object.keys(p).length) store[qid] = p;
+        });
+      }
+    } catch (e) { store = Object.create(null); }
+    loaded = true;
+    return store;
+  }
+  function save() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({ v: 1, items: store }));
+      return true;
+    } catch (e) { return false; }
+  }
+  function qid(q) { return (q && q._origQid) || XK.qidOf(q); }
+  function applyOne(q) {
+    if (!q) return q;
+    var id = (q && q._origQid) || XK.qidOf(q);
+    if (!orig[id]) orig[id] = snapshot(q);
+    var b = orig[id], p = store[id];
+    // 先恢复原值再套覆盖，保证重复 apply 幂等、可恢复原题
+    q.s = b.s; q.o = cloneOpts(b.o); q.a = b.a; q.e = b.e; q.t = b.t;
+    q._origQid = id;
+    if (p) {
+      if (p.s !== undefined) q.s = p.s;
+      if (p.o !== undefined) q.o = cloneOpts(p.o);
+      if (p.a !== undefined) q.a = p.a;
+      if (p.e !== undefined) q.e = p.e;
+      if (p.t !== undefined) q.t = p.t;
+    }
+    return q;
+  }
+  function applyTo(arr) {
+    if (!Array.isArray(arr)) return arr;
+    if (!loaded) load();
+    (root.BANK_ALL || []).forEach(function (q) {
+      var id = XK.qidOf(q);
+      if (!orig[id]) orig[id] = snapshot(q);
+    });
+    arr.forEach(applyOne);
+    return arr;
+  }
+  // 就地改原对象（不换数组），所有持有引用的模块立即看到修正
+  function refresh() {
+    applyTo(root.BANK_ALL || root.BANK);
+    applyTo(root.BANK);
+    return root.BANK;
+  }
+  function set(id, patch) {
+    if (!id) return false;
+    var p = sanitize(patch);
+    if (!Object.keys(p).length) return false;
+    store[id] = p;
+    var ok = save();
+    refresh();
+    return ok;
+  }
+  function remove(id) {
+    if (!id || !store[id]) return false;
+    delete store[id];
+    var ok = save();
+    refresh();
+    return ok;
+  }
+  function exportText() {
+    return JSON.stringify({ v: 1, title: '学考冲刺通 · 教师题目修正', count: Object.keys(store).length, items: store }, null, 2);
+  }
+  function importText(text) {
+    var j;
+    try { j = JSON.parse(text); } catch (e) { return { ok: false, count: 0, err: '不是合法 JSON' }; }
+    if (!j || !j.items || typeof j.items !== 'object') return { ok: false, count: 0, err: '缺少 items 字段' };
+    var n = 0;
+    Object.keys(j.items).forEach(function (qid) {
+      var p = sanitize(j.items[qid]);
+      if (Object.keys(p).length) { store[qid] = p; n++; }
+    });
+    save();
+    refresh();
+    return { ok: true, count: n, err: '' };
+  }
+
+  root.XK_QOVER = {
+    checkPwd: checkPwd,
+    load: load,
+    save: save,
+    refresh: refresh,
+    applyTo: applyTo,
+    set: set,
+    remove: remove,
+    get: function (id) { return store[id] || null; },
+    has: function (id) { return !!store[id]; },
+    count: function () { return Object.keys(store).length; },
+    qid: qid,
+    exportText: exportText,
+    importText: importText
+  };
+  refresh();
 })();
 
 </script>
@@ -3735,6 +3946,145 @@ window.XK_DEFAULT_TIER='1000';
   };
   $('speakBtn').onclick = speakCurrent;
 
+  /* ---------- 教师修正题目（密码模态框） ---------- */
+  var QE = { q: null, unlocked: false, keys: [] };
+  function qeditOpen() {
+    var QO = window.XK_QOVER;
+    if (!QO || !S.list[S.idx]) return;
+    QE.q = S.list[S.idx]; QE.unlocked = false;
+    $('qeditQid').textContent = QO.qid(QE.q);
+    $('qeditGate').classList.remove('hidden');
+    $('qeditForm').classList.add('hidden');
+    $('qeditPwd').value = '';
+    $('qeditErr').textContent = '';
+    $('qeditMask').classList.remove('hidden');
+    setTimeout(function () { try { $('qeditPwd').focus(); } catch (e) { } }, 40);
+  }
+  function qeditClose() { $('qeditMask').classList.add('hidden'); }
+  function qeditUnlock() {
+    if (!window.XK_QOVER.checkPwd($('qeditPwd').value)) {
+      $('qeditErr').textContent = '密码不正确，请联系授课教师'; return;
+    }
+    QE.unlocked = true;
+    $('qeditGate').classList.add('hidden');
+    $('qeditForm').classList.remove('hidden');
+    qeditRenderForm();
+  }
+  function paintAnsBtn(b, on) {
+    b.style.background = on ? 'var(--pri)' : '#fff';
+    b.style.color = on ? '#fff' : 'var(--pri-d)';
+    b.style.fontWeight = on ? '700' : '400';
+  }
+  function qeditRenderForm() {
+    var q = QE.q, QO = window.XK_QOVER;
+    $('qeditStem').value = q.s;
+    $('qeditE').value = q.e || '';
+    var box = $('qeditOpts'); box.innerHTML = '';
+    QE.keys = q.o.map(function (op) { return op[0]; });
+    q.o.forEach(function (op) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:6px';
+      var k = document.createElement('span');
+      k.style.cssText = 'width:26px;text-align:center;font-weight:700;flex:none';
+      k.textContent = op[0];
+      var inp = document.createElement('input');
+      inp.type = 'text'; inp.value = op[1]; inp.setAttribute('data-key', op[0]);
+      inp.style.cssText = 'flex:1;padding:8px;border:2px solid var(--line);border-radius:9px;font-size:14px';
+      if (q.qt === '判断') { inp.readOnly = true; inp.title = '判断题选项固定为 正确/错误'; }
+      row.appendChild(k); row.appendChild(inp); box.appendChild(row);
+    });
+    var ans = $('qeditAns'); ans.innerHTML = '';
+    var multi = q.qt === '多选';
+    QE.keys.forEach(function (key) {
+      var b = document.createElement('button');
+      b.className = 'mini-btn'; b.style.cssText = 'padding:5px 12px;font-size:13px';
+      b.textContent = key; b.setAttribute('data-ans', key);
+      b.onclick = function () {
+        if (multi) b.classList.toggle('on');
+        else {
+          ans.querySelectorAll('[data-ans]').forEach(function (x) { x.classList.remove('on'); paintAnsBtn(x, false); });
+          b.classList.add('on');
+        }
+        paintAnsBtn(b, b.classList.contains('on'));
+      };
+      var on = String(q.a).indexOf(key) !== -1;
+      if (on) b.classList.add('on');
+      paintAnsBtn(b, on);
+      ans.appendChild(b);
+    });
+    $('qeditFormErr').textContent = '';
+    $('qeditCount').textContent = '本机已有 ' + QO.count() + ' 条修正';
+  }
+  function qeditCollect() {
+    var q = QE.q;
+    var stem = $('qeditStem').value.trim();
+    var o = [];
+    $('qeditOpts').querySelectorAll('input[data-key]').forEach(function (inp) {
+      o.push([inp.getAttribute('data-key'), inp.value.trim()]);
+    });
+    var picked = [];
+    $('qeditAns').querySelectorAll('[data-ans].on').forEach(function (b) { picked.push(b.getAttribute('data-ans')); });
+    var a = picked.sort().join('');
+    if (!stem) return { err: '题干不能为空' };
+    if (!o.length || o.some(function (x) { return !x[1]; })) return { err: '每个选项都不能为空' };
+    if (!a) return { err: '请选择正确答案' };
+    if (q.qt !== '多选' && a.length !== 1) return { err: '单选/判断题只能有一个正确答案' };
+    if (a.split('').some(function (k) { return QE.keys.indexOf(k) === -1; })) return { err: '答案字母不在选项里' };
+    return { patch: { s: stem, o: o, a: a, e: $('qeditE').value } };
+  }
+  function qeditSave() {
+    if (!QE.unlocked) return;
+    var r = qeditCollect();
+    if (r.err) { $('qeditFormErr').textContent = r.err; return; }
+    var QO = window.XK_QOVER;
+    if (!QO.set(QO.qid(QE.q), r.patch)) { $('qeditFormErr').textContent = '本机存储不可用，无法保存'; return; }
+    qeditClose();
+    renderQuestion(); // 就地刷新当前题，不丢答题进度
+    alert('修正已保存到本机。刷新页面后 PK / 擂台 / 备课夹等页面同样生效。');
+  }
+  function qeditReset() {
+    if (!QE.unlocked) return;
+    var QO = window.XK_QOVER, id = QO.qid(QE.q);
+    if (!QO.has(id)) { alert('本题没有本机修正，无需恢复'); return; }
+    if (!confirm('恢复为原始题目？本机保存的这条修正会被删除。')) return;
+    QO.remove(id); qeditClose(); renderQuestion();
+  }
+  function qeditExport() {
+    var blob = new Blob([window.XK_QOVER.exportText()], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '学考冲刺通_题目修正_' + XK.todayStr() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  function qeditImport(ev) {
+    var f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      var r = window.XK_QOVER.importText(fr.result);
+      alert(r.ok ? ('已导入 ' + r.count + ' 条修正，当前本机共 ' + window.XK_QOVER.count() + ' 条')
+        : ('导入失败：' + r.err));
+      $('qeditCount').textContent = '本机已有 ' + window.XK_QOVER.count() + ' 条修正';
+      if (QE.q) qeditRenderForm();
+      renderQuestion();
+    };
+    fr.readAsText(f);
+    ev.target.value = '';
+  }
+  var qeditBtns = {
+    editQBtn: qeditOpen, qeditCancel: qeditClose, qeditClose: qeditClose,
+    qeditUnlock: qeditUnlock, qeditSave: qeditSave, qeditReset: qeditReset,
+    qeditExport: qeditExport
+  };
+  Object.keys(qeditBtns).forEach(function (id) {
+    var b = $(id); if (b) b.onclick = qeditBtns[id];
+  });
+  var qeditImportFile = $('qeditImportFile');
+  if (qeditImportFile) qeditImportFile.onchange = qeditImport;
+  var qeditPwd = $('qeditPwd');
+  if (qeditPwd) qeditPwd.onkeydown = function (ev) { if (ev.key === 'Enter') qeditUnlock(); };
+
   /* ---------- 结束与成绩 ---------- */
   function finishSession() {
     stopSpeak();
@@ -4087,7 +4437,7 @@ window.XK_DEFAULT_TIER='1000';
     // 启动 hash 直达（如门户跳 #/pk）时：前段 routeTo 已切目标面板，
     // 这里不能再 showPanel('home') 覆盖回去；非 home 直达交给构建尾段统一 rehash
     if (!(location.hash && location.hash !== '#/home')) showPanel('home');
-    var ver = window.XK_APP_VER || 'v1.1';
+    var ver = window.XK_APP_VER || 'v1.2';
     var G = window.XK_BANK_GATE;
     var tierLabel = (G && G.labels && G.labels[G.tier()]) ? G.labels[G.tier()] : ('基础档 ' + BANK.length + ' 题');
     $('verTag').textContent = '当前 ' + tierLabel + ' / 全库 ' + (window.BANK_ALL || BANK).length + ' 题 · 版本 ' + ver + '（client-' + ver + '）· 考纲 150 分制 · 表扬语库 ' + XKP.praiseCount() + ' 条';

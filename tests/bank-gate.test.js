@@ -197,7 +197,7 @@ t('单文件 / 拆分版 / 独立 PK 产物都内嵌闸门与档位按钮', () =
   });
   assert.ok((one.match(/data-bank-tier="1000"/g) || []).length >= 2, '首页与 PK 设置都要有档位按钮');
 });
-t('按钮仍在学习档案下方、顶栏无按钮、页面显示 v1.1', () => {
+t('按钮仍在学习档案下方、顶栏无按钮、页面显示版本号', () => {
   const s = read('dist/学考冲刺通.html');
   const home = s.indexOf('<div id="home"');
   const headerEnd = s.indexOf('</header>', home);
@@ -205,7 +205,7 @@ t('按钮仍在学习档案下方、顶栏无按钮、页面显示 v1.1', () => 
   const learn = s.indexOf('学习档案（只存本机，不上传）');
   const btn = s.indexOf('data-bank-tier="1000"');
   assert.ok(learn >= 0 && btn > learn, '按钮必须在学习档案下面');
-  assert.ok(/XK_APP_VER\s*=\s*'v1\.1'/.test(s) && /150 分制 · v1\.1/.test(s));
+  assert.ok(/XK_APP_VER\s*=\s*'v\d+\.\d+'/.test(s) && /150 分制 · v\d+\.\d+/.test(s));
   const m = read('pk/src/pk-markup.html');
   const cfg = m.indexOf('id="cfgMask"');
   assert.ok(!/data-bank-tier/.test(m.slice(0, cfg)), 'PK 顶栏不许有档位按钮');
