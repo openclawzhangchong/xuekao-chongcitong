@@ -20,8 +20,19 @@ const RULES = {
   R5: '答案字符不在选项字母集合里',
   R6: '单选/判断题却有多个答案',
   R7: 'src 属于正式资料来源（仅降低复核优先级，不豁免结构规则）',
-  R8: '四选项共享同一「下列…的是X」前缀，剥离后与库内已有题重复（删除零损失）'
+  R8: '四选项共享同一「下列…的是X」前缀，剥离后与库内已有题重复（删除零损失）',
+  R9: '解析给出的结论答案（因此/故/所以/答案/应选 X）与 a 字段矛盾，数据不可信'
 };
+
+/* 从解析里提取 AI 给出的结论答案：「因此选X」「故选X」「答案是X」「应选X」等。
+ * 只认这些明确措辞，避免把「不选B」「选A则…」误当成结论。 */
+function saidAnswer(e) {
+  const s = String(e || '');
+  const re = /(?:因此|故|所以)\s*(?:应|答案是|正确答案是)?\s*选\s*([A-D])|答案\s*(?:应|是|为)?\s*选?\s*([A-D])|应\s*选\s*([A-D])|正确答案\s*(?:是|为)\s*([A-D])/g;
+  let m, last = null;
+  while ((m = re.exec(s))) last = (m[1] || m[2] || m[3] || m[4] || '').toUpperCase();
+  return last;
+}
 
 function optText(q) { return (q.o || []).map(x => String(x[1] == null ? '' : x[1]).trim()); }
 function optKey(q) { return optText(q).slice().sort().join('|'); }
@@ -50,6 +61,11 @@ function classify(q, ctx) {
       new Set(os.map(s => s.replace(/^\s*[A-D][\.、．]\s*/, ''))).size !== os.length) hits.push('R4');
   if (ans.length && ans.some(k => keys.indexOf(k) < 0)) hits.push('R5');
   if ((q.qt === '单选' || q.qt === '判断') && ans.length > 1) hits.push('R6');
+  // R9：解析明确写「因此选X」但 a 不是 X —— 解析与答案自相矛盾，数据整体不可信
+  if (q.qt === '单选') {
+    const said = saidAnswer(q.e);
+    if (said && String(q.a || '').toUpperCase() !== said) hits.push('R9');
+  }
 
   const cliche = os.some(s => CLICHE.test(s));
   const clean = cliche ? cleanable(q) : null;
@@ -70,4 +86,4 @@ function classify(q, ctx) {
 
 function isTrusted(q) { return TRUSTED.test(String(q.src || '')); }
 
-module.exports = { classify, cleanable, optText, optKey, isTrusted, RULES };
+module.exports = { classify, cleanable, optText, optKey, isTrusted, saidAnswer, RULES };

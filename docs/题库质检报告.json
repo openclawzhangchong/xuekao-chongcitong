@@ -1,20 +1,21 @@
 {
-  "generated_at": "2026-11-10T14:21:17.316Z",
+  "generated_at": "2026-11-10T14:36:26.220Z",
   "note": "只读扫描：一题未删、白名单未改、未部署。DELETE 表示「排除出候选白名单」，不是物理删除。",
   "summary": {
     "total": 3982,
-    "DELETE": 537,
+    "DELETE": 596,
     "CLEAN": 39,
-    "KEEP": 3406,
-    "clean_pool": 3445,
+    "KEEP": 3347,
+    "clean_pool": 3386,
     "cleanable_duplicate": 29,
-    "delete_rate": 13.5
+    "delete_rate": 15
   },
   "by_rule": {
     "R3": 39,
     "R8": 29,
     "R2": 492,
-    "R1": 58
+    "R1": 58,
+    "R9": 86
   },
   "by_source": {
     "📘 复习手册·例题 + 习题册_终版": {
@@ -187,9 +188,9 @@
     },
     "gen": {
       "total": 2476,
-      "DELETE": 465,
+      "DELETE": 524,
       "CLEAN": 1,
-      "KEEP": 2010,
+      "KEEP": 1951,
       "trusted": false
     },
     "gen4": {
@@ -203,18 +204,18 @@
   "by_tier": {
     "1000": {
       "total": 1000,
-      "DELETE": 142,
-      "CLEAN": 16
+      "DELETE": 16,
+      "CLEAN": 0
     },
     "2000": {
       "total": 2000,
-      "DELETE": 282,
-      "CLEAN": 26
+      "DELETE": 34,
+      "CLEAN": 0
     },
     "3000": {
       "total": 3000,
-      "DELETE": 424,
-      "CLEAN": 35
+      "DELETE": 56,
+      "CLEAN": 0
     }
   },
   "feasibility": {
@@ -231,7 +232,7 @@
           "ok": true
         },
         "3000": {
-          "quota": 300,
+          "quota": 306,
           "ok": true
         }
       }
@@ -249,14 +250,14 @@
           "ok": true
         },
         "3000": {
-          "quota": 300,
+          "quota": 279,
           "ok": true
         }
       }
     },
     "M8": {
       "total": 348,
-      "clean": 314,
+      "clean": 312,
       "by_tier": {
         "1000": {
           "quota": 53,
@@ -267,14 +268,14 @@
           "ok": true
         },
         "3000": {
-          "quota": 160,
+          "quota": 163,
           "ok": true
         }
       }
     },
     "M9": {
       "total": 382,
-      "clean": 330,
+      "clean": 324,
       "by_tier": {
         "1000": {
           "quota": 100,
@@ -285,13 +286,31 @@
           "ok": true
         },
         "3000": {
-          "quota": 300,
+          "quota": 306,
           "ok": true
         }
       }
     },
     "M3": {
       "total": 362,
+      "clean": 331,
+      "by_tier": {
+        "1000": {
+          "quota": 100,
+          "ok": true
+        },
+        "2000": {
+          "quota": 200,
+          "ok": true
+        },
+        "3000": {
+          "quota": 306,
+          "ok": true
+        }
+      }
+    },
+    "M2": {
+      "total": 337,
       "clean": 333,
       "by_tier": {
         "1000": {
@@ -303,32 +322,14 @@
           "ok": true
         },
         "3000": {
-          "quota": 300,
-          "ok": true
-        }
-      }
-    },
-    "M2": {
-      "total": 337,
-      "clean": 337,
-      "by_tier": {
-        "1000": {
-          "quota": 100,
-          "ok": true
-        },
-        "2000": {
-          "quota": 200,
-          "ok": true
-        },
-        "3000": {
-          "quota": 300,
+          "quota": 306,
           "ok": true
         }
       }
     },
     "M5": {
       "total": 769,
-      "clean": 626,
+      "clean": 604,
       "by_tier": {
         "1000": {
           "quota": 200,
@@ -339,14 +340,14 @@
           "ok": true
         },
         "3000": {
-          "quota": 600,
-          "ok": true
+          "quota": 613,
+          "ok": false
         }
       }
     },
     "M6": {
       "total": 640,
-      "clean": 585,
+      "clean": 565,
       "by_tier": {
         "1000": {
           "quota": 200,
@@ -357,14 +358,14 @@
           "ok": true
         },
         "3000": {
-          "quota": 600,
+          "quota": 579,
           "ok": false
         }
       }
     },
     "M4": {
       "total": 217,
-      "clean": 204,
+      "clean": 201,
       "by_tier": {
         "1000": {
           "quota": 47,
@@ -375,7 +376,7 @@
           "ok": true
         },
         "3000": {
-          "quota": 140,
+          "quota": 142,
           "ok": true
         }
       }
@@ -732,11 +733,13 @@
     "M7-23087r",
     "M7-1iutp6h",
     "M7-18ddv82",
+    "M8-gyt4n3",
     "M8-lh4kck",
     "M8-4rgg4p",
     "M8-ellrju",
     "M8-c92i84",
     "M8-sasu2n",
+    "M8-450bew",
     "M8-v6nsj7",
     "M8-1vxhpkd",
     "M8-afxmvq",
@@ -774,8 +777,10 @@
     "M9-1815jzh",
     "M9-lofeqe",
     "M9-kxg4hw",
+    "M9-171zzmc",
     "M9-tzafri",
     "M9-z6dj91",
+    "M9-1sjjqux",
     "M9-13ohb22",
     "M9-15xii0x",
     "M9-11o0wpf",
@@ -790,10 +795,12 @@
     "M9-1iu68w1",
     "M9-1szjb5k",
     "M9-bamair",
+    "M9-1mkwb50",
     "M9-a1zev2",
     "M9-1al969x",
     "M9-1myvpgm",
     "M9-1s3ganc",
+    "M9-z29ns1",
     "M9-td2rxa",
     "M9-12aawx1",
     "M9-cyivhn",
@@ -803,6 +810,8 @@
     "M9-1np9wyo",
     "M9-1vbemnu",
     "M9-162ev5",
+    "M9-lnz2h1",
+    "M9-1drbz3e",
     "M9-1wge9ta",
     "M9-rk7cqf",
     "M3-lsy3sf",
@@ -829,7 +838,13 @@
     "M3-h30fku",
     "M3-1jb42mi",
     "M3-wxzrn8",
+    "M3-68o82g",
+    "M3-1q1jim1",
     "M3-1jh4m1v",
+    "M2-vhymc7",
+    "M2-1jvsv06",
+    "M2-1grnick",
+    "M2-1o22z4l",
     "M5-qhp5hl",
     "M5-1hkekas",
     "M5-1acfa04",
@@ -862,6 +877,9 @@
     "M5-1gpoa5q",
     "M5-h380ig",
     "M5-gdz4e6",
+    "M5-t2y92p",
+    "M5-18f9hv4",
+    "M5-qrjbkp",
     "M5-1irx04",
     "M5-3qlldh",
     "M5-14tm9hq",
@@ -883,6 +901,7 @@
     "M5-z4xz6m",
     "M5-18uzn8w",
     "M5-g5t18r",
+    "M5-1qu65tk",
     "M5-ssjrfs",
     "M5-14hz1hv",
     "M5-wwriaa",
@@ -897,18 +916,34 @@
     "M5-zxxr12",
     "M5-1bl4ezx",
     "M5-1ut4zdm",
+    "M5-8unwm9",
     "M5-136vx1b",
     "M5-kerwx9",
     "M5-go2a61",
     "M5-12lty6z",
+    "M5-1dfbnyt",
+    "M5-1qjxz4p",
     "M5-kk40p0",
     "M5-36znun",
+    "M5-1tf1s72",
     "M5-1bquwi",
     "M5-17xjiz5",
+    "M5-1ulhir",
+    "M5-1m704f1",
     "M5-1q9h7p1",
+    "M5-16apgf3",
+    "M5-2uii8u",
+    "M5-1ajw7ul",
     "M5-19cmu6y",
+    "M5-1jujsqh",
     "M5-12c0mg3",
+    "M5-qrd5i0",
+    "M5-11mlipj",
     "M5-5rquwd",
+    "M5-14de324",
+    "M5-1f71y8t",
+    "M5-1mgq4e",
+    "M5-n9plnj",
     "M5-18pkmjo",
     "M5-1urb0q2",
     "M5-1aueys",
@@ -916,10 +951,12 @@
     "M5-1ju1jtg",
     "M5-8jkgid",
     "M5-18u22jx",
+    "M5-t7uf58",
     "M5-1xzyftn",
     "M5-1gdbq5c",
     "M5-1b96fy6",
     "M5-1d23cg5",
+    "M5-1dxrhg0",
     "M5-1gwk5ac",
     "M5-1bt6j3z",
     "M5-1l7bbdj",
@@ -977,13 +1014,23 @@
     "M6-1tk677g",
     "M6-1tks6x8",
     "M6-1brl5m8",
+    "M6-1ih5otb",
+    "M6-r6tm1f",
+    "M6-xnnc1p",
+    "M6-15eyi7l",
+    "M6-19sj8no",
+    "M6-1833x8o",
     "M6-mrnyz6",
     "M6-13iuasp",
+    "M6-v1eazp",
     "M6-14tyvjx",
+    "M6-1lcilhi",
+    "M6-b4mpgi",
     "M6-1juqcb",
     "M6-6uokbk",
     "M6-bfn8n5",
     "M6-6k997s",
+    "M6-nbv57h",
     "M6-bth7v2",
     "M6-1dtaxh1",
     "M6-dhqyzl",
@@ -992,12 +1039,22 @@
     "M6-3g9x8p",
     "M6-hp8xx5",
     "M6-1ledsua",
+    "M6-uyjin0",
     "M6-10f1r7k",
+    "M6-1gb2anz",
     "M6-8ddd52",
     "M6-105kiov",
     "M6-eq2nok",
     "M6-163hw6d",
+    "M6-1ldt1r5",
+    "M6-13onlab",
+    "M6-1t9pm9l",
+    "M6-v4ks76",
+    "M6-1guo0e1",
+    "M6-1wx0389",
     "M6-ek8tqr",
+    "M6-166emj5",
+    "M6-7le97u",
     "M4-bifohq",
     "M4-efby6d",
     "M4-1xjz7zz",
@@ -1011,6 +1068,9 @@
     "M4-er8tuk",
     "M4-13kjn53",
     "M4-15uzv9r",
+    "M4-7yck9o",
+    "M4-1uzuh00",
+    "M4-1ljf54l",
     "M1-l28h2v",
     "M1-1nd1b11",
     "M1-kvonoh",
