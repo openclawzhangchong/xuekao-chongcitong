@@ -1,0 +1,1087 @@
+{
+  "generated_at": "2026-11-10T14:21:17.316Z",
+  "note": "只读扫描：一题未删、白名单未改、未部署。DELETE 表示「排除出候选白名单」，不是物理删除。",
+  "summary": {
+    "total": 3982,
+    "DELETE": 537,
+    "CLEAN": 39,
+    "KEEP": 3406,
+    "clean_pool": 3445,
+    "cleanable_duplicate": 29,
+    "delete_rate": 13.5
+  },
+  "by_rule": {
+    "R3": 39,
+    "R8": 29,
+    "R2": 492,
+    "R1": 58
+  },
+  "by_source": {
+    "📘 复习手册·例题 + 习题册_终版": {
+      "total": 1,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 1,
+      "trusted": true
+    },
+    "📘 复习手册·例题": {
+      "total": 29,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 29,
+      "trusted": true
+    },
+    "📘 复习手册·同步练习": {
+      "total": 44,
+      "DELETE": 0,
+      "CLEAN": 9,
+      "KEEP": 35,
+      "trusted": false
+    },
+    "📘 信息技术习题册": {
+      "total": 20,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 20,
+      "trusted": true
+    },
+    "📄 综合模拟卷": {
+      "total": 7,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 7,
+      "trusted": true
+    },
+    "🎯 2026·福州抽测": {
+      "total": 4,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 4,
+      "trusted": true
+    },
+    "📄 综合模拟卷 + 习题册_终版": {
+      "total": 1,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 1,
+      "trusted": true
+    },
+    "📘 复习手册·章节测试卷": {
+      "total": 27,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 27,
+      "trusted": true
+    },
+    "📘 复习手册·章节测试卷 + 习题册_终版": {
+      "total": 1,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 1,
+      "trusted": true
+    },
+    "习题册_终版": {
+      "total": 528,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 528,
+      "trusted": true
+    },
+    "📖 2026·福州抽测": {
+      "total": 47,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 47,
+      "trusted": true
+    },
+    "📖 综合模拟卷": {
+      "total": 45,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 45,
+      "trusted": true
+    },
+    "📖 考点补充": {
+      "total": 11,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 11,
+      "trusted": false
+    },
+    "课堂例题": {
+      "total": 333,
+      "DELETE": 0,
+      "CLEAN": 29,
+      "KEEP": 304,
+      "trusted": false
+    },
+    "📖 2026·福州抽测 + 习题册_终版": {
+      "total": 3,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 3,
+      "trusted": true
+    },
+    "抽测": {
+      "total": 10,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 10,
+      "trusted": false
+    },
+    "习题册": {
+      "total": 83,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 83,
+      "trusted": true
+    },
+    "抽测 + 习题册_终版": {
+      "total": 1,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 1,
+      "trusted": true
+    },
+    "补充": {
+      "total": 13,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 13,
+      "trusted": false
+    },
+    "自编": {
+      "total": 7,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 7,
+      "trusted": false
+    },
+    "📖 考点补充 + 习题册_终版": {
+      "total": 1,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 1,
+      "trusted": true
+    },
+    "课堂例题 + 习题册_终版": {
+      "total": 3,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 3,
+      "trusted": true
+    },
+    "📖 综合模拟卷 + 习题册_终版": {
+      "total": 1,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 1,
+      "trusted": true
+    },
+    "模拟卷": {
+      "total": 1,
+      "DELETE": 0,
+      "CLEAN": 0,
+      "KEEP": 1,
+      "trusted": false
+    },
+    "gen": {
+      "total": 2476,
+      "DELETE": 465,
+      "CLEAN": 1,
+      "KEEP": 2010,
+      "trusted": false
+    },
+    "gen4": {
+      "total": 285,
+      "DELETE": 72,
+      "CLEAN": 0,
+      "KEEP": 213,
+      "trusted": false
+    }
+  },
+  "by_tier": {
+    "1000": {
+      "total": 1000,
+      "DELETE": 142,
+      "CLEAN": 16
+    },
+    "2000": {
+      "total": 2000,
+      "DELETE": 282,
+      "CLEAN": 26
+    },
+    "3000": {
+      "total": 3000,
+      "DELETE": 424,
+      "CLEAN": 35
+    }
+  },
+  "feasibility": {
+    "M1": {
+      "total": 542,
+      "clean": 416,
+      "by_tier": {
+        "1000": {
+          "quota": 100,
+          "ok": true
+        },
+        "2000": {
+          "quota": 200,
+          "ok": true
+        },
+        "3000": {
+          "quota": 300,
+          "ok": true
+        }
+      }
+    },
+    "M7": {
+      "total": 385,
+      "clean": 300,
+      "by_tier": {
+        "1000": {
+          "quota": 100,
+          "ok": true
+        },
+        "2000": {
+          "quota": 200,
+          "ok": true
+        },
+        "3000": {
+          "quota": 300,
+          "ok": true
+        }
+      }
+    },
+    "M8": {
+      "total": 348,
+      "clean": 314,
+      "by_tier": {
+        "1000": {
+          "quota": 53,
+          "ok": true
+        },
+        "2000": {
+          "quota": 107,
+          "ok": true
+        },
+        "3000": {
+          "quota": 160,
+          "ok": true
+        }
+      }
+    },
+    "M9": {
+      "total": 382,
+      "clean": 330,
+      "by_tier": {
+        "1000": {
+          "quota": 100,
+          "ok": true
+        },
+        "2000": {
+          "quota": 200,
+          "ok": true
+        },
+        "3000": {
+          "quota": 300,
+          "ok": true
+        }
+      }
+    },
+    "M3": {
+      "total": 362,
+      "clean": 333,
+      "by_tier": {
+        "1000": {
+          "quota": 100,
+          "ok": true
+        },
+        "2000": {
+          "quota": 200,
+          "ok": true
+        },
+        "3000": {
+          "quota": 300,
+          "ok": true
+        }
+      }
+    },
+    "M2": {
+      "total": 337,
+      "clean": 337,
+      "by_tier": {
+        "1000": {
+          "quota": 100,
+          "ok": true
+        },
+        "2000": {
+          "quota": 200,
+          "ok": true
+        },
+        "3000": {
+          "quota": 300,
+          "ok": true
+        }
+      }
+    },
+    "M5": {
+      "total": 769,
+      "clean": 626,
+      "by_tier": {
+        "1000": {
+          "quota": 200,
+          "ok": true
+        },
+        "2000": {
+          "quota": 400,
+          "ok": true
+        },
+        "3000": {
+          "quota": 600,
+          "ok": true
+        }
+      }
+    },
+    "M6": {
+      "total": 640,
+      "clean": 585,
+      "by_tier": {
+        "1000": {
+          "quota": 200,
+          "ok": true
+        },
+        "2000": {
+          "quota": 400,
+          "ok": true
+        },
+        "3000": {
+          "quota": 600,
+          "ok": false
+        }
+      }
+    },
+    "M4": {
+      "total": 217,
+      "clean": 204,
+      "by_tier": {
+        "1000": {
+          "quota": 47,
+          "ok": true
+        },
+        "2000": {
+          "quota": 93,
+          "ok": true
+        },
+        "3000": {
+          "quota": 140,
+          "ok": true
+        }
+      }
+    }
+  },
+  "samples": {
+    "DELETE": [
+      {
+        "qid": "M1-c1tqlm",
+        "rules": [
+          "R8"
+        ],
+        "reason": "清洗后与库内已有正常题选项完全相同，删除零知识点损失",
+        "stem": "【信息技术的概念及典型应用】（一）下列说法正确的是（ ）。",
+        "options": [
+          "下列技术中，属于信息技术核心的是计算机技术。",
+          "下列技术中，属于信息技术核心的是控制技术。",
+          "下列技术中，属于信息技术核心的是通信技术。",
+          "下列技术中，属于信息技术核心的是传感技术。"
+        ],
+        "answer": "A",
+        "src": "gen:fwdJudge:1"
+      },
+      {
+        "qid": "M1-s1h3ip",
+        "rules": [
+          "R2"
+        ],
+        "reason": "结构性损坏",
+        "stem": "【信息技术的概念及典型应用】（一）下列说法错误的是（ ）。",
+        "options": [
+          "信息技术主要包括计算机技术、通信技术、传感技术和控制技术。",
+          "信息技术主要用于以上都是。",
+          "下列技术中，属于信息技术核心的是计算机技术。",
+          "下列技术中，属于信息技术核心的是传感技术。"
+        ],
+        "answer": "D",
+        "src": "gen:fwdJudge:1"
+      },
+      {
+        "qid": "M1-1xqc9gm",
+        "rules": [
+          "R2"
+        ],
+        "reason": "结构性损坏",
+        "stem": "【信息技术的概念及典型应用】（二）下列说法正确的是（ ）。",
+        "options": [
+          "下列技术中，相当于人的\"感觉器官\"的是通信技术。",
+          "信息技术主要包括计算机技术、通信技术、传感技术和控制技术。",
+          "信息技术主要包括计算机技术、通信技术、传感技术和纳米技术。",
+          "信息技术的核心是传感技术。"
+        ],
+        "answer": "B",
+        "src": "gen:fallback:3"
+      },
+      {
+        "qid": "M1-9p40m5",
+        "rules": [
+          "R2"
+        ],
+        "reason": "结构性损坏",
+        "stem": "【信息技术的概念及典型应用】（二）下列说法错误的是（ ）。",
+        "options": [
+          "信息技术主要用于获取信息。",
+          "信息技术主要包括计算机技术、通信技术、传感技术和控制技术。",
+          "下列技术中，属于信息技术核心的是计算机技术。",
+          "信息技术的英文缩写是IT。"
+        ],
+        "answer": "A",
+        "src": "gen:fallback:3"
+      }
+    ],
+    "CLEAN": [
+      {
+        "qid": "M1-1oet3jz",
+        "rules": [
+          "R3"
+        ],
+        "reason": "题干含批次/难度标签，仅洗标签、不删题",
+        "stem": "【拔高】下列关于信息技术的说法，错误的是（ ）。",
+        "options": [
+          "信息技术的发展对社会发展既有积极影响，也有消极影响",
+          "计算机技术是信息技术的核心组成部分",
+          "通信技术负责信息的传递",
+          "信息技术就是计算机技术，只包括计算机技术"
+        ],
+        "answer": "D",
+        "src": "📘 复习手册·同步练习"
+      },
+      {
+        "qid": "M1-ul25t1",
+        "rules": [
+          "R3"
+        ],
+        "reason": "题干含批次/难度标签，仅洗标签、不删题",
+        "stem": "【拔高】下列事件按时间先后顺序排列正确的是（ ）。①第一台计算机诞生 ②ARPANET建立 ③电话发明 ④万维网(WWW)出现",
+        "options": [
+          "①②③④",
+          "③①②④",
+          "③②①④",
+          "①③②④"
+        ],
+        "answer": "B",
+        "src": "📘 复习手册·同步练习"
+      },
+      {
+        "qid": "M1-1pmwsuy",
+        "rules": [
+          "R3"
+        ],
+        "reason": "题干含批次/难度标签，仅洗标签、不删题",
+        "stem": "【拔高】下列行为中，不构成违法的是（ ）。",
+        "options": [
+          "制作传播计算机病毒",
+          "非法侵入他人计算机系统",
+          "学习网络安全知识",
+          "窃取他人网络账号密码"
+        ],
+        "answer": "C",
+        "src": "📘 复习手册·同步练习"
+      },
+      {
+        "qid": "M1-2wjc6b",
+        "rules": [
+          "R3"
+        ],
+        "reason": "题干含批次/难度标签，仅洗标签、不删题",
+        "stem": "【拔高】下列关于计算机采用二进制原因的说法，错误的是（ ）。",
+        "options": [
+          "物理上容易实现",
+          "运算规则简单",
+          "适合人类阅读",
+          "适合逻辑运算"
+        ],
+        "answer": "C",
+        "src": "📘 复习手册·同步练习"
+      }
+    ],
+    "KEEP": [
+      {
+        "qid": "M1-1377umi",
+        "rules": [],
+        "reason": "",
+        "stem": "信息技术的英文缩写是（ ）。",
+        "options": [
+          "IT",
+          "CT",
+          "BT",
+          "AI"
+        ],
+        "answer": "A",
+        "src": "📘 复习手册·例题 + 习题册_终版"
+      },
+      {
+        "qid": "M1-r65enp",
+        "rules": [],
+        "reason": "",
+        "stem": "下列技术中，属于信息技术核心的是（ ）。",
+        "options": [
+          "传感技术",
+          "通信技术",
+          "计算机技术",
+          "控制技术"
+        ],
+        "answer": "C",
+        "src": "📘 复习手册·例题"
+      }
+    ]
+  },
+  "delete_qids": [
+    "M1-c1tqlm",
+    "M1-s1h3ip",
+    "M1-1xqc9gm",
+    "M1-9p40m5",
+    "M1-19pd83n",
+    "M1-f6ruyg",
+    "M1-1ls8qj5",
+    "M1-p9xnum",
+    "M1-1xzxblx",
+    "M1-176jmxz",
+    "M1-1doj07w",
+    "M1-5rl22a",
+    "M1-lkuvq9",
+    "M1-1pc56e2",
+    "M1-1en71cn",
+    "M1-pjiuy4",
+    "M1-1mmwbsg",
+    "M1-1upbi8b",
+    "M1-ui2ezo",
+    "M1-y5van3",
+    "M1-144r3eo",
+    "M1-1xzrm63",
+    "M1-1vmfnbn",
+    "M1-11g61uw",
+    "M1-1e8nvci",
+    "M1-10658cp",
+    "M1-3y00ou",
+    "M1-1av5mkl",
+    "M1-2rdyao",
+    "M1-jeuqq1",
+    "M1-1a901de",
+    "M1-14h24x2",
+    "M1-10iuizh",
+    "M1-6g9htr",
+    "M1-1rnq05g",
+    "M1-1y8sl2x",
+    "M1-sn7f3e",
+    "M1-mj1jwi",
+    "M1-orj8vo",
+    "M1-1vifk2e",
+    "M1-1dzll17",
+    "M1-8goylh",
+    "M1-m8cihq",
+    "M1-mravcn",
+    "M1-d87n9o",
+    "M1-17zj89v",
+    "M1-1w19ki",
+    "M1-p14kes",
+    "M1-eb56o1",
+    "M1-vl71nb",
+    "M1-18o8oqx",
+    "M1-kzpfkf",
+    "M1-d2eija",
+    "M1-1mewwu0",
+    "M1-14vk39s",
+    "M1-ot16ee",
+    "M1-1ceg856",
+    "M1-iwyot7",
+    "M1-z8yttv",
+    "M1-z9n0w8",
+    "M1-e0zeer",
+    "M1-wibqk5",
+    "M1-9asa6m",
+    "M1-u18fwi",
+    "M1-ibo515",
+    "M1-k533e",
+    "M1-mkcon5",
+    "M1-15vmhq6",
+    "M1-gc6333",
+    "M1-surbt1",
+    "M1-187sm4z",
+    "M1-11u97tw",
+    "M1-u5s60m",
+    "M1-gkbckk",
+    "M1-1kqsc3x",
+    "M1-5llh57",
+    "M1-mjb2vz",
+    "M1-1pg3h3m",
+    "M1-t3kxto",
+    "M1-d2jp4g",
+    "M1-12mfqzt",
+    "M1-7arrtg",
+    "M1-xkdeh3",
+    "M1-13n5ehu",
+    "M1-hdyibi",
+    "M1-1mxs1m7",
+    "M1-um40mm",
+    "M1-1cnn9rj",
+    "M1-ywmg7o",
+    "M1-1te2izc",
+    "M1-dhsy4d",
+    "M1-2gq1qe",
+    "M1-wpxkfj",
+    "M1-figx8b",
+    "M1-1oo5kf6",
+    "M1-2204r0",
+    "M1-1420vlj",
+    "M1-v0vld0",
+    "M1-1nt1r8f",
+    "M1-6ic2g9",
+    "M1-6qaub9",
+    "M1-c4pw6s",
+    "M1-vhzuaf",
+    "M1-9et30e",
+    "M1-1gtmmvx",
+    "M1-1933iau",
+    "M1-1e4aq9i",
+    "M1-ynynnk",
+    "M1-8l25x7",
+    "M1-y1a8cl",
+    "M1-18yzg8m",
+    "M1-1th0rhu",
+    "M7-golhee",
+    "M7-1gorheo",
+    "M7-1de7w5d",
+    "M7-2xhjbi",
+    "M7-1rkc5m7",
+    "M7-1ucj4pg",
+    "M7-8jqzrs",
+    "M7-1c0r8tf",
+    "M7-2vcj0v",
+    "M7-jtyg39",
+    "M7-at4rf2",
+    "M7-87xade",
+    "M7-1rgx1jw",
+    "M7-74ft9j",
+    "M7-1uksq5x",
+    "M7-jdy3tt",
+    "M7-11stz2y",
+    "M7-1szjx4z",
+    "M7-71mgra",
+    "M7-1dwjv71",
+    "M7-1b14thq",
+    "M7-1t7bq6y",
+    "M7-fu1nug",
+    "M7-124a48z",
+    "M7-uavued",
+    "M7-1bdrnmn",
+    "M7-pfcbqc",
+    "M7-r5efkj",
+    "M7-12txjs8",
+    "M7-p87z0t",
+    "M7-1fw9yw4",
+    "M7-1van2fz",
+    "M7-x5h65s",
+    "M7-1gk6z2q",
+    "M7-imoh61",
+    "M7-1pc4ecf",
+    "M7-subsbo",
+    "M7-1i0qfr9",
+    "M7-19dhtft",
+    "M7-x1mbak",
+    "M7-1a08n7p",
+    "M7-59sny6",
+    "M7-vbzcy9",
+    "M7-2j9jcj",
+    "M7-y6tv2g",
+    "M7-xntxw4",
+    "M7-1ucnrej",
+    "M7-1cwsadc",
+    "M7-1ccp5jt",
+    "M7-lm7f4y",
+    "M7-1ya1f3r",
+    "M7-17obsf8",
+    "M7-xs6jj",
+    "M7-1cuhnl5",
+    "M7-1pt49w2",
+    "M7-bxuges",
+    "M7-nd73ho",
+    "M7-1n56pb6",
+    "M7-1hlnbt",
+    "M7-frgvah",
+    "M7-hcex1p",
+    "M7-1oe6b5i",
+    "M7-ynunq1",
+    "M7-9cqfcw",
+    "M7-870z4",
+    "M7-1gknoa8",
+    "M7-apvour",
+    "M7-1tjxjrq",
+    "M7-y8ehpo",
+    "M7-rzfanc",
+    "M7-uzxouj",
+    "M7-23087r",
+    "M7-1iutp6h",
+    "M7-18ddv82",
+    "M8-lh4kck",
+    "M8-4rgg4p",
+    "M8-ellrju",
+    "M8-c92i84",
+    "M8-sasu2n",
+    "M8-v6nsj7",
+    "M8-1vxhpkd",
+    "M8-afxmvq",
+    "M8-12nrev8",
+    "M8-1x3mpt7",
+    "M8-1ke3013",
+    "M8-11c3c2k",
+    "M8-x379yv",
+    "M8-1seqsgc",
+    "M8-1adwase",
+    "M8-1uufugt",
+    "M8-yt1nt2",
+    "M8-llggsf",
+    "M8-1g17mx0",
+    "M8-dntxzd",
+    "M8-mlgbsi",
+    "M8-1xuziiw",
+    "M8-1x5jgov",
+    "M8-la6zk4",
+    "M8-14c1e8q",
+    "M8-1orag81",
+    "M8-evo0c3",
+    "M8-tu7au4",
+    "M8-s8bpz9",
+    "M8-i6cgyz",
+    "M8-18n5uwu",
+    "M8-n8xurn",
+    "M9-h4pmt7",
+    "M9-q522ev",
+    "M9-fhxhsf",
+    "M9-1s7r1h",
+    "M9-1se8p3y",
+    "M9-1pagsqn",
+    "M9-1yvgcc3",
+    "M9-1815jzh",
+    "M9-lofeqe",
+    "M9-kxg4hw",
+    "M9-tzafri",
+    "M9-z6dj91",
+    "M9-13ohb22",
+    "M9-15xii0x",
+    "M9-11o0wpf",
+    "M9-1lylico",
+    "M9-1weu2i",
+    "M9-3hs1m6",
+    "M9-88w3px",
+    "M9-zebbpo",
+    "M9-2w5wi2",
+    "M9-18dgx30",
+    "M9-1ei7z6o",
+    "M9-1iu68w1",
+    "M9-1szjb5k",
+    "M9-bamair",
+    "M9-a1zev2",
+    "M9-1al969x",
+    "M9-1myvpgm",
+    "M9-1s3ganc",
+    "M9-td2rxa",
+    "M9-12aawx1",
+    "M9-cyivhn",
+    "M9-2cj4y2",
+    "M9-n2895u",
+    "M9-37449n",
+    "M9-1np9wyo",
+    "M9-1vbemnu",
+    "M9-162ev5",
+    "M9-1wge9ta",
+    "M9-rk7cqf",
+    "M3-lsy3sf",
+    "M3-1qqt4d1",
+    "M3-185x30i",
+    "M3-jjdi0p",
+    "M3-s2u01k",
+    "M3-1ysoq4x",
+    "M3-1poe37n",
+    "M3-1j0kn8s",
+    "M3-11q8ryy",
+    "M3-ecde1z",
+    "M3-oj4slv",
+    "M3-1ik9qqz",
+    "M3-1vdzwbz",
+    "M3-jmzkn5",
+    "M3-1tdv65e",
+    "M3-akhc4",
+    "M3-6bao87",
+    "M3-1jsvolc",
+    "M3-okqm3r",
+    "M3-14p97k5",
+    "M3-118kc89",
+    "M3-h30fku",
+    "M3-1jb42mi",
+    "M3-wxzrn8",
+    "M3-1jh4m1v",
+    "M5-qhp5hl",
+    "M5-1hkekas",
+    "M5-1acfa04",
+    "M5-1i2n5pb",
+    "M5-hnoljy",
+    "M5-vwt5ex",
+    "M5-tcuxid",
+    "M5-1voz3wy",
+    "M5-cvoaq8",
+    "M5-n1fua9",
+    "M5-cqerhm",
+    "M5-14e77lt",
+    "M5-o9khip",
+    "M5-zf74sq",
+    "M5-v78rp9",
+    "M5-ph8x02",
+    "M5-11xw0uj",
+    "M5-f9p3c7",
+    "M5-10wdcpy",
+    "M5-yl57sk",
+    "M5-19hoaq7",
+    "M5-17wjc3u",
+    "M5-gtxlni",
+    "M5-1314l9t",
+    "M5-1dtuzbn",
+    "M5-7jpqjs",
+    "M5-1k09n25",
+    "M5-1w14bnq",
+    "M5-t2oa6t",
+    "M5-1gpoa5q",
+    "M5-h380ig",
+    "M5-gdz4e6",
+    "M5-1irx04",
+    "M5-3qlldh",
+    "M5-14tm9hq",
+    "M5-1kzr6xa",
+    "M5-awufkx",
+    "M5-ywj0ya",
+    "M5-cd67vt",
+    "M5-v7u754",
+    "M5-cnz8yb",
+    "M5-xfm97j",
+    "M5-5x0wpw",
+    "M5-189qnqy",
+    "M5-bjnm81",
+    "M5-ybc5k8",
+    "M5-ihxgwj",
+    "M5-ozzimf",
+    "M5-1yb42bg",
+    "M5-splk11",
+    "M5-z4xz6m",
+    "M5-18uzn8w",
+    "M5-g5t18r",
+    "M5-ssjrfs",
+    "M5-14hz1hv",
+    "M5-wwriaa",
+    "M5-ybxcny",
+    "M5-aivl2z",
+    "M5-qsi9d5",
+    "M5-nrv6v4",
+    "M5-1i8fuiu",
+    "M5-gy0e1r",
+    "M5-1h6i4hd",
+    "M5-1r5okzw",
+    "M5-zxxr12",
+    "M5-1bl4ezx",
+    "M5-1ut4zdm",
+    "M5-136vx1b",
+    "M5-kerwx9",
+    "M5-go2a61",
+    "M5-12lty6z",
+    "M5-kk40p0",
+    "M5-36znun",
+    "M5-1bquwi",
+    "M5-17xjiz5",
+    "M5-1q9h7p1",
+    "M5-19cmu6y",
+    "M5-12c0mg3",
+    "M5-5rquwd",
+    "M5-18pkmjo",
+    "M5-1urb0q2",
+    "M5-1aueys",
+    "M5-1lkjikq",
+    "M5-1ju1jtg",
+    "M5-8jkgid",
+    "M5-18u22jx",
+    "M5-1xzyftn",
+    "M5-1gdbq5c",
+    "M5-1b96fy6",
+    "M5-1d23cg5",
+    "M5-1gwk5ac",
+    "M5-1bt6j3z",
+    "M5-1l7bbdj",
+    "M5-v1cy2r",
+    "M5-8qr6ew",
+    "M5-1cj7fsf",
+    "M5-1sojk7o",
+    "M5-8s9hvd",
+    "M5-1eaeydf",
+    "M5-1kpubck",
+    "M5-r6m87j",
+    "M5-1tijneh",
+    "M5-3c994y",
+    "M5-l10hou",
+    "M5-1jkgf2o",
+    "M5-ndvb1n",
+    "M5-16mb24e",
+    "M5-1it39wn",
+    "M5-1a2fw5",
+    "M5-4mvecz",
+    "M5-1fxkewm",
+    "M5-1lwunsn",
+    "M5-lf53g9",
+    "M5-1pksvbq",
+    "M5-z6wslr",
+    "M5-cx8y1t",
+    "M5-hn708f",
+    "M5-17uoocw",
+    "M5-13xegnl",
+    "M5-1p5ri1a",
+    "M5-17jhpvm",
+    "M5-ciz095",
+    "M5-1xmrve5",
+    "M5-1jq4mep",
+    "M6-1jox4k9",
+    "M6-1eroai6",
+    "M6-1b73445",
+    "M6-1yhp2nu",
+    "M6-1gmq883",
+    "M6-1mlx6e0",
+    "M6-92mz0t",
+    "M6-1xql3dq",
+    "M6-1lwbvjo",
+    "M6-1hul83z",
+    "M6-cp5liu",
+    "M6-1jhfuwc",
+    "M6-1fx47kb",
+    "M6-hgixyo",
+    "M6-1cboxyi",
+    "M6-1f26o0h",
+    "M6-13x6ei1",
+    "M6-152x9l3",
+    "M6-1ss8spy",
+    "M6-pcls2b",
+    "M6-1tk677g",
+    "M6-1tks6x8",
+    "M6-1brl5m8",
+    "M6-mrnyz6",
+    "M6-13iuasp",
+    "M6-14tyvjx",
+    "M6-1juqcb",
+    "M6-6uokbk",
+    "M6-bfn8n5",
+    "M6-6k997s",
+    "M6-bth7v2",
+    "M6-1dtaxh1",
+    "M6-dhqyzl",
+    "M6-btxyq",
+    "M6-1sw0744",
+    "M6-3g9x8p",
+    "M6-hp8xx5",
+    "M6-1ledsua",
+    "M6-10f1r7k",
+    "M6-8ddd52",
+    "M6-105kiov",
+    "M6-eq2nok",
+    "M6-163hw6d",
+    "M6-ek8tqr",
+    "M4-bifohq",
+    "M4-efby6d",
+    "M4-1xjz7zz",
+    "M4-1e900uu",
+    "M4-14jncml",
+    "M4-15svlfo",
+    "M4-larmej",
+    "M4-dosyvk",
+    "M4-i1kkzt",
+    "M4-1noizle",
+    "M4-er8tuk",
+    "M4-13kjn53",
+    "M4-15uzv9r",
+    "M1-l28h2v",
+    "M1-1nd1b11",
+    "M1-kvonoh",
+    "M1-q4wcy2",
+    "M1-qabh6",
+    "M1-a92imd",
+    "M1-l1nxep",
+    "M1-fl83km",
+    "M1-18pav8g",
+    "M1-3bhvsu",
+    "M1-lyuva5",
+    "M1-10eazwe",
+    "M1-1mlfaqs",
+    "M1-jyh157",
+    "M3-1v5g1b",
+    "M3-nm2vzy",
+    "M3-1wu8s1d",
+    "M3-f9x53v",
+    "M5-1jmu5pm",
+    "M5-qjqxh7",
+    "M5-1jyodio",
+    "M5-68qdcl",
+    "M5-1dpetdx",
+    "M5-l47gh5",
+    "M5-wnwnda",
+    "M5-briyp5",
+    "M5-1uhrk76",
+    "M5-tmfqcl",
+    "M5-1e5f926",
+    "M5-16wwqgq",
+    "M5-s87s7d",
+    "M5-1vmykxz",
+    "M5-4wbap",
+    "M5-4s45wv",
+    "M5-lxrl1e",
+    "M5-10vn4lg",
+    "M5-1dcesg8",
+    "M6-15ciuyh",
+    "M6-1xg4dp1",
+    "M6-1l1vdh3",
+    "M6-1nw16lw",
+    "M6-4vzg65",
+    "M6-hgwgn1",
+    "M6-1nb9i2w",
+    "M6-1wacsgs",
+    "M6-dvgcg9",
+    "M6-bbv420",
+    "M6-5l5lxd",
+    "M7-1vughhw",
+    "M7-dd3wqm",
+    "M7-1mgwaee",
+    "M7-1b7xvlh",
+    "M7-rrab6s",
+    "M7-1nlfrfr",
+    "M7-f0o1ot",
+    "M7-wt3pna",
+    "M7-1k41i0c",
+    "M7-1d84cwf",
+    "M7-1hgdr0n",
+    "M8-1vxmry7",
+    "M8-lwzlh4",
+    "M9-1uh3y5i",
+    "M9-p5yy6i",
+    "M9-dbuh6j",
+    "M9-8edc2c",
+    "M9-1s3xp24",
+    "M9-lyw14c",
+    "M9-qiah5",
+    "M9-1njy7xn",
+    "M9-a91be6",
+    "M9-1k1zptw",
+    "M9-4dmbni"
+  ]
+}

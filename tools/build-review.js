@@ -17,43 +17,40 @@ eval(fs.readFileSync(path.join(ROOT, 'src', 'engine.js'), 'utf8'));
 eval(fs.readFileSync(path.join(ROOT, 'src', 'data.js'), 'utf8'));
 const BANK = window.BANK, XK = window.XK, META = window.BANK_META;
 
-/* 预检：只做「文本形态」类硬伤，答案对错、知识性错误交给审查 AI 判断。
- * 刻意不放宽到「选项短」「有 {}」等正常题也常见的特征，避免误报淹没真问题。 */
-function flagsOf(q) {
-  const f = [];
-  const os = (q.o || []).map(x => String(x[1] == null ? '' : x[1]));
-  const all = (q.s || '') + '\n' + os.join('\n');
-  if (/【(拔高|基础|提升|拓展|变式|易错|强化|进阶|生成)】/.test(all)) f.push('批次/难度标签');
-  if (os.some(s => /下列|下列说法|以下说法|以下哪|错误的是|正确的是|不正确的是/.test(s))) f.push('题干套话混入选项');
-  if (os.some(s => /^\s*[A-D][\.、．]\s/.test(s) && !/^[A-Z]:\\/.test(s))) f.push('选项自带字母序号');
-  const norm = os.map(s => s.replace(/^\s*[A-D][\.、．]\s*/, '').trim());
-  if (norm.length > 1 && new Set(norm).size < norm.length) f.push('选项重复');
-  if (os.some(s => /TODO|XX{2,}|下列\?|下列\？/.test(s))) f.push('占位符残留');
-  const keys = (q.o || []).map(x => String(x[0]));
-  const ans = String(q.a || '').split('');
-  if (ans.length && ans.some(k => keys.indexOf(k) < 0)) f.push('答案不在选项中');
-  if ((q.qt === '单选' || q.qt === '判断') && ans.length > 1) f.push('单选题多个答案');
-  if (q.qt !== '判断' && os.length > 0 && os.length < 3) f.push('选项数异常');
-  return f;
+// 判定规则单一真源（与 quality-gate.js 共用），避免审阅页与闸门结论打架
+const { classify, optKey, RULES } = require('./quality-rules');
+const qids = BANK.map(XK.qidOf);
+const byOpts = Object.create(null);
+BANK.forEach(q => { const k = optKey(q); (byOpts[k] = byOpts[k] || []).push(XK.qidOf(q)); });
+const verdicts = BANK.map((q, i) => classify(q, { qid: qids[i], byOpts: byOpts }));
+
+function flagsOf(i) {
+  const v = verdicts[i];
+  if (v.state === 'KEEP') return [];
+  return v.rules.map(r => v.state + ' · ' + r + ' · ' + RULES[r]);
 }
 
 const items = BANK.map((q, i) => ({
   n: i + 1,
-  qid: XK.qidOf(q),
+  qid: qids[i],
   m: q.m, kd: q.kd || '', qt: q.qt, s: q.s || '',
   o: (q.o || []).map(x => [String(x[0]), String(x[1] == null ? '' : x[1])]),
   a: q.a || '', e: q.e || '', t: q.t || '',
-  flags: flagsOf(q)
+  flags: flagsOf(i), verdict: verdicts[i].state, reason: verdicts[i].reason
 }));
 
 const flagCounts = {};
-items.forEach(x => (x.flags || []).forEach(f => { flagCounts[f] = (flagCounts[f] || 0) + 1; }));
-const suspect = items.filter(x => x.flags && x.flags.length).length;
+items.forEach(x => (x.flags || []).forEach(f => { flagCounts[f.split(' · ')[1]] = (flagCounts[f.split(' · ')[1]] || 0) + 1; }));
+const states = { DELETE: 0, CLEAN: 0, KEEP: 0 };
+verdicts.forEach(v => { states[v.state]++; });
+const suspect = states.DELETE;   // 「只看可疑题」只筛 DELETE，CLEAN 不该被当成要删的题
 
 const payload = {
   generated: new Date().toLocaleString('zh-CN', { hour12: false }),
   bank: BANK.length,
   suspect: suspect,
+  states: states,
+  rules: RULES,
   modules: META.map(m => ({ code: m.code, name: m.name, disp: m.disp, score: m.score })),
   items: items
 };
@@ -83,6 +80,7 @@ const out = path.join(ROOT, 'docs', '题目逐题审阅.html');
 fs.writeFileSync(out, html, 'utf8');
 console.log('BUILD OK →', out);
 console.log('大小:', (fs.statSync(out).size / 1024 / 1024).toFixed(2), 'MB | 题目', BANK.length,
-  '题 | 预检可疑', suspect, '题 (' + (suspect / BANK.length * 100).toFixed(1) + '%)');
-console.log('预检分布:', JSON.stringify(flagCounts));
+  '题 | DELETE', states.DELETE, '｜CLEAN', states.CLEAN, '｜KEEP', states.KEEP,
+  '｜只看可疑题', suspect, '题 (' + (suspect / BANK.length * 100).toFixed(1) + '%)');
+console.log('规则命中:', JSON.stringify(flagCounts));
 console.log('提示词字数:', promptText.length, '｜题库真源未改动');

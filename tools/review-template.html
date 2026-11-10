@@ -149,7 +149,7 @@ function view() {
   return DATA.items.filter(x => {
     if (m && x.m !== m) return false;
     if (qt && x.qt !== qt) return false;
-    if (sus && !(x.flags && x.flags.length)) return false;
+    if (sus && x.verdict !== 'DELETE') return false;
     if (q) {
       const hay = (x.qid + ' ' + (x.s || '') + ' ' + (x.kd || '')).toLowerCase();
       if (hay.indexOf(q) < 0) return false;
@@ -166,7 +166,7 @@ function rebuild(keepIdx) {
 function render() {
   const q = V[st.idx];
   $('prog').textContent = V.length ? (st.idx + 1) + ' / ' + V.length : '0 / 0';
-  $('stat').innerHTML = '全库 <b>' + DATA.bank + '</b> 题 ｜ 当前筛选 <b>' + V.length + '</b> 题 ｜ 已标记删除 <b>' + marked.size + '</b> 题 ｜ 预检可疑 <b>' + DATA.suspect + '</b> 题 ｜ 生成于 ' + esc(DATA.generated);
+  $('stat').innerHTML = '全库 <b>' + DATA.bank + '</b> 题 ｜ 三态预检 DELETE <b>' + (DATA.states ? DATA.states.DELETE : DATA.suspect) + '</b> / CLEAN <b>' + (DATA.states ? DATA.states.CLEAN : 0) + '</b> / KEEP <b>' + (DATA.states ? DATA.states.KEEP : 0) + '</b> ｜ 当前筛选 <b>' + V.length + '</b> 题 ｜ 已标记 <b>' + marked.size + '</b> 题 ｜ 生成于 ' + esc(DATA.generated);
   if (!q) {
     $('qnum').textContent = '没有符合条件的题目';
     $('qmeta').textContent = ''; $('flags').innerHTML = ''; $('stem').textContent = '';
@@ -178,7 +178,11 @@ function render() {
   $('qmeta').textContent = 'qid: ' + q.qid + ' ｜ ' + q.m + ' ' + modName(q.m) + ' ｜ ' + (q.kd || '') + ' ｜ ' + q.qt;
   $('flags').innerHTML = '';
   (q.flags || []).forEach(f => {
-    const s = document.createElement('span'); s.className = 'flag'; s.textContent = '⚠ ' + f;
+    const s = document.createElement('span'); s.className = 'flag';
+    const del = f.indexOf('DELETE') === 0;
+    if (del) { s.style.background = '#fee2e2'; s.style.color = '#b91c1c'; s.style.borderColor = '#fecaca'; }
+    else { s.style.background = '#e1f5ee'; s.style.color = '#0f6e56'; s.style.borderColor = '#9fe1cb'; }
+    s.textContent = (del ? '🗑 ' : '🧹 ') + f;
     $('flags').appendChild(s);
   });
   if (marked.has(q.qid)) {
