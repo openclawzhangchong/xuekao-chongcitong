@@ -118,7 +118,7 @@ Object.keys(renames).forEach(oldQid => {
 });
 
 const out = '// 学考冲刺通题库 ' + BANK.length + ' 题（M9考点11错挂题改挂 M7/M8：moved=' + moved + '）\n'
-  + 'window.BANK_VER=\'20261110\';\n'
+  + 'window.BANK_VER=\'' + (window.BANK_VER || '20261111') + '\';\n'
   + 'window.BANK_META=' + JSON.stringify(META) + ';\n'
   + 'window.BANK=' + JSON.stringify(BANK) + ';\n'
   + 'window.XK_QID_MIGRATE=' + JSON.stringify(mergedMap) + ';\n';

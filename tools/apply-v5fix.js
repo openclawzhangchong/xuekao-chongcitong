@@ -94,7 +94,7 @@ Object.keys(sRenames).forEach((oldQid) => {
 });
 
 const out = '// 学考冲刺通题库 ' + BANK.length + ' 题（v5 全库验证修正：' + fname + ' applied=' + applied + '）\n'
-  + 'window.BANK_VER=\'20261106\';\n'
+  + 'window.BANK_VER=\'' + (window.BANK_VER || '20261111') + '\';\n'
   + 'window.BANK_META=' + JSON.stringify(META) + ';\n'
   + 'window.BANK=' + JSON.stringify(BANK) + ';\n'
   + 'window.XK_QID_MIGRATE=' + JSON.stringify(mergedMap) + ';\n';

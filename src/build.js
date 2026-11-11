@@ -91,9 +91,10 @@ const splitMode = process.argv.includes('--split');
 const outArg = process.argv.slice(2).find(a => !a.startsWith('--'));
 const out = outArg || path.join(SRC, '..', 'dist', '学考冲刺通.html');
 const BUILD_STAMP = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 12);
-  const SPLIT_HEAD = '<' + 'script>window.BANK_VER=\'20261106\';<' + '/script>\n' +
+const BANK_VER_VAL = (data.match(/window\.BANK_VER='([^']+)'/) || [])[1] || '20261111';
+  const SPLIT_HEAD = '<' + 'script>window.BANK_VER=\'' + BANK_VER_VAL + '\';<' + '/script>\n' +
   '<' + 'script src="data.js?v=' + BUILD_STAMP + '"><' + '/script>';
-const bankVerJson = splitMode ? JSON.stringify('20261106') : '';
+const bankVerJson = splitMode ? JSON.stringify(BANK_VER_VAL) : '';
 const metaJson = splitMode ? JSON.stringify(window.BANK_META) : '';
 const DATA_TAG = splitMode
   ? SPLIT_HEAD
