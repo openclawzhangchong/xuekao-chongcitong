@@ -7,10 +7,10 @@
     "rule": "R1~R8 三态判定，仅 KEEP 入池（规则单一真源 tools/quality-rules.js）",
     "total_bank": 3982,
     "manual_excluded": 223,
-    "KEEP": 3331,
+    "KEEP": 3334,
     "CLEAN": 38,
-    "DELETE": 613,
-    "usable_with_point": 3011,
+    "DELETE": 610,
+    "usable_with_point": 3014,
     "excluded_composite": 83,
     "excluded_mislabeled": 14,
     "mislabeled_sample": [
@@ -6341,13 +6341,13 @@
       "stem": "【数据通信基本概念】下列说法错误的是（ ）。"
     },
     {
-      "index": 2711,
-      "qid": "M5-45a5zd",
+      "index": 2709,
+      "qid": "M5-1acfa04",
       "point_id": "M5-04",
       "module": "M5",
       "kd": "考点 4 · TCP/IP模型与IP地址",
       "qt": "单选",
-      "stem": "【TCP/IP模型与IP地址】（一）下列关于 IPv6 的说法，正确的是（ ）。"
+      "stem": "【TCP/IP模型与IP地址】下列说法正确的是（ ）。"
     },
     {
       "index": 2713,
@@ -6432,12 +6432,12 @@
     },
     {
       "index": 2733,
-      "qid": "M5-wx8kn2",
+      "qid": "M5-f54ste",
       "point_id": "M5-07",
       "module": "M5",
       "kd": "考点 7 · 域名与域名系统DNS",
       "qt": "单选",
-      "stem": "下列各选项中，不属于“关于域名与 URL 的说法正确”的是（ ）。"
+      "stem": "下列关于域名与 URL 的说法，错误的是（ ）"
     },
     {
       "index": 2736,
@@ -6989,15 +6989,6 @@
       "stem": "【5-6 网络设备类型与功能】（一）下列说法正确的是（ ）。"
     },
     {
-      "index": 3039,
-      "qid": "M5-1gqbblk",
-      "point_id": "M5-08",
-      "module": "M5",
-      "kd": "5-8 交换机应用",
-      "qt": "单选",
-      "stem": "【5-8 交换机应用】下列说法正确的是（ ）。"
-    },
-    {
       "index": 3041,
       "qid": "M5-q4jez6",
       "point_id": "M5-09",
@@ -7005,6 +6996,15 @@
       "kd": "5-9 路由器应用",
       "qt": "单选",
       "stem": "【5-9 路由器应用】（一）下列说法正确的是（ ）。"
+    },
+    {
+      "index": 3050,
+      "qid": "M5-l10hou",
+      "point_id": "M5-08",
+      "module": "M5",
+      "kd": "5-8 交换机应用",
+      "qt": "单选",
+      "stem": "【5-8 交换机应用】（二）下列说法错误的是（ ）。"
     },
     {
       "index": 3058,
