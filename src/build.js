@@ -95,6 +95,27 @@ const BANK_VER_VAL = (data.match(/window\.BANK_VER='([^']+)'/) || [])[1] || '202
   const SPLIT_HEAD = '<' + 'script>window.BANK_VER=\'' + BANK_VER_VAL + '\';<' + '/script>\n' +
   '<' + 'script src="data.js?v=' + BUILD_STAMP + '"><' + '/script>';
 const bankVerJson = splitMode ? JSON.stringify(BANK_VER_VAL) : '';
+/* 考点目录 → 备课夹考点勾选数据（XK_POINTS 按模块列考点 / XK_KD_CANON kd原文→考点id） */
+const catRaw = JSON.parse(fs.readFileSync(path.join(SRC, '..', 'docs', '考点目录.json'), 'utf8'));
+const pointsByMod = {};
+const kdCanonMap = {};
+Object.keys(catRaw.kd_label_map || {}).forEach(function (k) {
+  const v = catRaw.kd_label_map[k] || {};
+  const pid = v.point_id; if (!pid) return;
+  const mod = pid.split('-')[0];
+  const label = k.split('|').slice(1).join('|').trim();
+  if (!pointsByMod[mod]) pointsByMod[mod] = {};
+  if (!pointsByMod[mod][pid]) pointsByMod[mod][pid] = { id: pid, label: label, aliases: [] };
+  pointsByMod[mod][pid].aliases.push(label);
+  if (label.length > pointsByMod[mod][pid].label.length) pointsByMod[mod][pid].label = label;
+  kdCanonMap[k] = pid;
+});
+Object.keys(pointsByMod).forEach(function (m) {
+  pointsByMod[m] = Object.keys(pointsByMod[m]).map(function (pid) { return pointsByMod[m][pid]; })
+    .sort(function (a, b) { return a.id < b.id ? -1 : 1; });
+});
+const POINT_DATA = '<' + 'script>window.XK_POINTS=' + JSON.stringify(pointsByMod) + ';window.XK_KD_CANON=' + JSON.stringify(kdCanonMap) + ';<'
+ + '/script>';
 const metaJson = splitMode ? JSON.stringify(window.BANK_META) : '';
 const DATA_TAG = splitMode
   ? SPLIT_HEAD
@@ -193,6 +214,10 @@ ${arenaStyle}
         <div class="sec-t"><span class="dot"></span>📋 备课夹（课前挑题 → PK/擂台按勾选顺序出）</div>
         <div class="prep-bar">
           <select class="j-prepMod prep-sel" class="prep-sel"></select>
+          <div class="prep-kdwrap">
+            <button class="mini-btn j-prepKdBtn" type="button">🎯 考点</button>
+            <div class="j-prepKdPanel prep-kdpanel hidden"></div>
+          </div>
           <select class="j-prepQt prep-sel">
             <option value="">全部题型</option><option>单选</option><option>判断</option><option>多选</option>
           </select>
@@ -333,6 +358,10 @@ ${arenaStyle}
       <div class="card">
         <div class="prep-bar">
           <select class="j-prepMod prep-sel"></select>
+          <div class="prep-kdwrap">
+            <button class="mini-btn j-prepKdBtn" type="button">🎯 考点</button>
+            <div class="j-prepKdPanel prep-kdpanel hidden"></div>
+          </div>
           <select class="j-prepQt prep-sel">
             <option value="">全部题型</option><option>单选</option><option>判断</option><option>多选</option>
           </select>
@@ -551,6 +580,7 @@ ${DATA_TAG}
 <script>
 ${bankGate}
 </script>
+${POINT_DATA}
 <script>
 ${qover}
 </script>

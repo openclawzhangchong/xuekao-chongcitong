@@ -456,6 +456,24 @@
   /* ---------- 备课夹（课前挑题 → PK/擂台按勾选顺序出） ---------- */
   var PREP_KEY = 'xkc.prep.v1', prepPage = 0;
   var prepFilter = { m: '', qt: '', kw: '' };
+  /* 考点勾选（章节→考点两层筛选）：{ 模块码: [考点id...] }，localStorage 持久 */
+  var PREP_KD_KEY = 'xkc.prep.kds.v1', prepKdPanelOpen = false;
+  function prepKdSelOf(mod) {
+    if (!mod) return [];
+    var all = {};
+    try { all = JSON.parse(localStorage.getItem(PREP_KD_KEY) || '{}') || {}; } catch (e) { }
+    return Array.isArray(all[mod]) ? all[mod] : [];
+  }
+  function prepKdSave(mod, arr) {
+    var all = {};
+    try { all = JSON.parse(localStorage.getItem(PREP_KD_KEY) || '{}') || {}; } catch (e) { }
+    if (arr && arr.length) all[mod] = arr; else delete all[mod];
+    try { localStorage.setItem(PREP_KD_KEY, JSON.stringify(all)); } catch (e) { }
+  }
+  function kdCanon(q) {
+    var P = window.XK_KD_CANON || {};
+    return P[q.m + '|' + q.kd] || (q.m + '|' + q.kd);
+  }
   function prepIds() { try { var v = JSON.parse(localStorage.getItem(PREP_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
   function prepSave(ids) {
     try { localStorage.setItem(PREP_KEY, JSON.stringify(ids)); } catch (e) { }
@@ -468,11 +486,40 @@
   }
   function prepFiltered() {
     var mod = prepFilter.m, qt = prepFilter.qt, kw = prepFilter.kw;
+    var selKd = mod ? prepKdSelOf(mod) : [];
     return BANK.filter(function (q) {
       if (mod && q.m !== mod) return false;
+      if (mod && selKd.length && selKd.indexOf(kdCanon(q)) === -1) return false;
       if (qt && q.qt !== qt) return false;
       if (kw && String(q.s).toLowerCase().indexOf(kw) === -1) return false;
       return true;
+    });
+  }
+  function renderPrepKdPanel() {
+    var mod = prepFilter.m;
+    var sel = prepKdSelOf(mod);
+    var pts = (mod && window.XK_POINTS && window.XK_POINTS[mod]) || [];
+    var btnText = !mod ? '🎯 考点(先选章节)' : (sel.length ? '🎯 考点·已选' + sel.length + '/' + pts.length : '🎯 考点·全部' + (pts.length ? ' ' + pts.length : ''));
+    // 各考点题数（帮老师判断体量）
+    var cnt = {};
+    if (mod) BANK.forEach(function (q) { if (q.m === mod) { var c = kdCanon(q); cnt[c] = (cnt[c] || 0) + 1; } });
+    var html = '';
+    if (!mod) html = '<div class="kd-empty">先选择章节，再勾选该章节下的考点</div>';
+    else if (!pts.length) html = '<div class="kd-empty">该章节暂无考点数据</div>';
+    else {
+      html += '<div class="kd-ops"><button class="mini-btn j-kdAll" type="button">✓ 全选</button><button class="mini-btn j-kdNone" type="button">清空</button></div>';
+      pts.forEach(function (p) {
+        var on = sel.indexOf(p.id) !== -1;
+        html += '<label class="kd-row"><input type="checkbox" data-kd="' + esc(p.id) + '"' + (on ? ' checked' : '') + '><span class="kd-l">' + esc(p.label) + '</span><span class="kd-n">' + (cnt[p.id] || 0) + '题</span></label>';
+      });
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepKdPanel'), function (p) {
+      p.innerHTML = html;
+      p.classList.toggle('hidden', !prepKdPanelOpen);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepKdBtn'), function (b) {
+      b.textContent = btnText;
+      b.classList.toggle('on', sel.length > 0);
     });
   }
   function renderPrepMgr() {
@@ -487,7 +534,9 @@
         });
         modSel.value = prepFilter.m;
       }
+      modSel.value = prepFilter.m;
     });
+    renderPrepKdPanel();
     var ids = prepIds(), chosen = new Set(ids);
     var list = prepFiltered();
     var PER = 30, pages = Math.max(1, Math.ceil(list.length / PER));
@@ -773,6 +822,54 @@
         if (!prepIds().length) { renderPrepMgr(); return; }
         if (confirm('清空备课夹？（不影响题库与成绩）')) { prepSave([]); renderPrepMgr(); }
       };
+    });
+    // 考点勾选（事件委托：备课夹有两处渲染实例）
+    document.addEventListener('click', function (ev) {
+      var kdBtn = ev.target.closest ? ev.target.closest('.j-prepKdBtn') : null;
+      var kdPanel = ev.target.closest ? ev.target.closest('.j-prepKdPanel') : null;
+      var kdRow = ev.target.closest ? ev.target.closest('.kd-row') : null;
+      var mod = prepFilter.m;
+      if (kdBtn) {
+        prepKdPanelOpen = !prepKdPanelOpen;
+        renderPrepMgr();
+        return;
+      }
+      if (kdPanel) {
+        if (ev.target.closest('.j-kdAll')) {
+          var pts = (window.XK_POINTS && window.XK_POINTS[mod]) || [];
+          prepKdSave(mod, pts.map(function (p) { return p.id; }));
+          renderPrepMgr();
+          return;
+        }
+        if (ev.target.closest('.j-kdNone')) {
+          prepKdSave(mod, []);
+          renderPrepMgr();
+          return;
+        }
+        var cb = ev.target.closest('input[type=checkbox][data-kd]');
+        if (cb) {
+          var cur = prepKdSelOf(mod);
+          var id = cb.getAttribute('data-kd');
+          var at = cur.indexOf(id);
+          if (at === -1) cur.push(id); else cur.splice(at, 1);
+          prepKdSave(mod, cur);
+          renderPrepMgr();
+          return;
+        }
+        if (kdRow) {
+          // 点行文字 = 单选该考点（勾上它、清掉其他），再自动收面板
+          var lab = kdRow.querySelector('.kd-l');
+          var cb2 = kdRow.querySelector('input[type=checkbox][data-kd]');
+          if (lab && cb2 && ev.target === lab) {
+            prepKdSave(mod, [cb2.getAttribute('data-kd')]);
+            prepKdPanelOpen = false;
+            renderPrepMgr();
+          }
+          return;
+        }
+        return; // 面板内其他点击不收起
+      }
+      if (prepKdPanelOpen) { prepKdPanelOpen = false; renderPrepMgr(); } // 点面板外收起
     });
     on('clsDrawBtn', 'onclick', function () { runDraw(); });
     on('qrBtn', 'onclick', function () { $('qrMask').classList.remove('hidden'); });

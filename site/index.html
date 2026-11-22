@@ -481,6 +481,16 @@ body.big .stat .v{font-size:26px}
 /* 备课夹（课前挑题） */
 .prep-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
 .prep-sel{padding:7px 9px;border:2px solid var(--line);border-radius:9px;background:var(--bg);color:var(--txt);font-size:14px;max-width:180px}
+.prep-kdwrap{position:relative;display:inline-block}
+.prep-kdwrap .mini-btn.on{border-color:var(--pri);background:var(--pri-ll);color:var(--pri-d);font-weight:700}
+.prep-kdpanel{position:absolute;top:calc(100% + 6px);left:0;z-index:40;background:var(--card);border:2px solid var(--pri);border-radius:12px;box-shadow:0 12px 32px rgba(30,27,75,.22);padding:10px;min-width:340px;max-width:430px;max-height:320px;overflow:auto}
+.kd-ops{display:flex;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.kd-row{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:13px;user-select:none}
+.kd-row:hover{background:var(--pri-ll)}
+.kd-row input{accent-color:var(--pri);flex:0 0 auto}
+.kd-l{flex:1;color:var(--txt);line-height:1.45}
+.kd-n{font-size:11px;color:var(--mut);white-space:nowrap}
+.kd-empty{padding:16px 10px;font-size:13px;color:var(--mut);text-align:center}
 .prep-kw{flex:1;min-width:120px;padding:7px 10px;border:2px solid var(--line);border-radius:9px;background:var(--bg);color:var(--txt);font-size:14px}
 .prep-list{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin:6px 0}
 .prep-item{display:flex;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px}
@@ -1022,6 +1032,10 @@ body.arena-mode .app{max-width:none}
         <div class="sec-t"><span class="dot"></span>📋 备课夹（课前挑题 → PK/擂台按勾选顺序出）</div>
         <div class="prep-bar">
           <select class="j-prepMod prep-sel" class="prep-sel"></select>
+          <div class="prep-kdwrap">
+            <button class="mini-btn j-prepKdBtn" type="button">🎯 考点</button>
+            <div class="j-prepKdPanel prep-kdpanel hidden"></div>
+          </div>
           <select class="j-prepQt prep-sel">
             <option value="">全部题型</option><option>单选</option><option>判断</option><option>多选</option>
           </select>
@@ -1162,6 +1176,10 @@ body.arena-mode .app{max-width:none}
       <div class="card">
         <div class="prep-bar">
           <select class="j-prepMod prep-sel"></select>
+          <div class="prep-kdwrap">
+            <button class="mini-btn j-prepKdBtn" type="button">🎯 考点</button>
+            <div class="j-prepKdPanel prep-kdpanel hidden"></div>
+          </div>
           <select class="j-prepQt prep-sel">
             <option value="">全部题型</option><option>单选</option><option>判断</option><option>多选</option>
           </select>
@@ -2584,7 +2602,7 @@ body.arena-mode .app{max-width:none}
 
 </script>
 <script>window.BANK_VER='20261111';</script>
-<script src="data.js?v=202611110302"></script>
+<script src="data.js?v=202611220959"></script>
 <script>
 /* =====================================================================
  * 题量档位闸门（在 data.js 之后、app.js / pk-app.js / arena-app.js 之前执行）
@@ -2753,6 +2771,7 @@ body.arena-mode .app{max-width:none}
 })();
 
 </script>
+<script>window.XK_POINTS={"M1":[{"id":"M1-01","label":"考点 1 · 信息技术的概念及典型应用","aliases":["考点 1 · 信息技术的概念及典型应用","1-1 信息技术的概念与社会应用"]},{"id":"M1-02","label":"考点 2 · 信息技术的发展历程和发展趋势","aliases":["考点 2 · 信息技术的发展历程和发展趋势","1-2 信息技术的发展历程与趋势"]},{"id":"M1-03","label":"考点 3 · 信息社会的特征和文化、道德、法律常识","aliases":["考点 3 · 信息社会的特征和文化、道德、法律常识","1-3 信息社会的特征与影响"]},{"id":"M1-04","label":"考点 4 · 计算机系统组成与进制转换","aliases":["考点 4 · 计算机系统组成与进制转换","1-4 计算机系统组成与进制转换"]},{"id":"M1-05","label":"考点 5 · ASCII码及常用编码","aliases":["考点 5 · ASCII码及常用编码"]},{"id":"M1-06","label":"考点 6 · 数据的存储单位","aliases":["考点 6 · 数据的存储单位","1-6 数据存储单位与换算"]},{"id":"M1-07","label":"考点 7 · 操作系统的基本概念与常用快捷键","aliases":["考点 7 · 操作系统的基本概念与常用快捷键","1-7 操作系统基本概念与快捷键"]},{"id":"M1-08","label":"考点 8 · 文件和文件夹的概念与常用文件类型","aliases":["考点 8 · 文件和文件夹的概念与常用文件类型"]},{"id":"M1-09","label":"考点 9 · 资源管理器与文件管理操作","aliases":["考点 9 · 资源管理器与文件管理操作"]}],"M7":[{"id":"M7-01","label":"考点 1 · 信息安全意识与网络欺诈识别","aliases":["考点 1 · 信息安全意识与网络欺诈识别","考点 1 · 信息安全意识与常见网络欺诈","7-1 信息安全意识"]},{"id":"M7-02","label":"考点 2 · 信息安全基本概念与等级保护","aliases":["考点 2 · 信息安全基本概念与等级保护","考点 2 · 信息安全基本概念","7-2 信息安全基本概念"]},{"id":"M7-03","label":"考点 3 · 信息安全技术与常见威胁防御","aliases":["考点 3 · 安全威胁与防御技术","考点 3 · 信息安全技术与常见威胁防御","7-3 信息安全技术与防御"]},{"id":"M7-04","label":"考点 4 · 网络安全设备与部署","aliases":["考点 4 · 网络安全设备与部署","考点 4 · 常用网络安全设备"]}],"M8":[{"id":"M8-01","label":"考点 5 · 人工智能的定义","aliases":["考点 5 · 人工智能的定义","8-1 人工智能定义"]},{"id":"M8-02","label":"考点 6 · 人工智能发展历程与行业应用","aliases":["考点 6 · 人工智能发展历程与行业应用","考点 6 · 人工智能发展历程与典型应用","8-2 人工智能发展历程与应用"]},{"id":"M8-03","label":"考点 7 · 人工智能关键技术","aliases":["考点 7 · 人工智能关键技术","8-3 人工智能关键技术"]},{"id":"M8-04","label":"考点 8 · 人工智能开发工具和框架","aliases":["考点 8 · AI开发工具与框架","考点 8 · 人工智能开发工具和框架","8-4 人工智能开发工具与框架"]}],"M9":[{"id":"M9-01","label":"考点 9 · 大数据基本概念、结构类型和核心特征","aliases":["考点 9 · 大数据概念、结构与核心特征","考点 9 · 大数据基本概念、结构类型和核心特征","9-1 大数据基本概念"]},{"id":"M9-02","label":"考点 10 · 大数据时代背景、应用场景和发展趋势","aliases":["考点 10 · 大数据时代背景、场景与理念","考点 10 · 大数据时代背景、应用场景和发展趋势","9-2 大数据的时代背景与应用"]},{"id":"M9-03","label":"考点 11 · 大数据处理核心技术","aliases":["考点 11 · 大数据核心技术","考点 11 · 大数据处理核心技术","9-3 大数据处理核心技术"]}],"M3":[{"id":"M3-01","label":"考点 1 · 工作簿、工作表与单元格","aliases":["考点 1 · 工作簿、工作表与单元格","3-1 工作簿/工作表/单元格操作"]},{"id":"M3-02","label":"考点 2 · 单元格引用与运算符","aliases":["考点 2 · 单元格引用与运算符","3-2 单元格引用与运算符"]},{"id":"M3-03","label":"考点 3 · 公式与常用函数","aliases":["考点 3 · 公式与常用函数","3-3 公式与常用函数"]},{"id":"M3-04","label":"考点 4 · 图表制作","aliases":["考点 4 · 图表制作","3-4 图表制作"]},{"id":"M3-05","label":"考点 5 · 筛选、排序与分类汇总","aliases":["考点 5 · 筛选、排序与分类汇总","3-5 数据筛选排序与分类汇总"]},{"id":"M3-06","label":"考点 6 · 数据透视表","aliases":["考点 6 · 数据透视表"]}],"M2":[{"id":"M2-01","label":"考点 1 · 文本编辑与段落格式","aliases":["考点 1 · 文本编辑与段落格式","2-1 文本编辑与段落格式"]},{"id":"M2-02","label":"考点 2 · 图片、图形与文本框","aliases":["考点 2 · 图片、图形与文本框","2-2 图片与图形对象操作"]},{"id":"M2-03","label":"考点 3 · 文档表格的插入与编辑","aliases":["考点 3 · 文档表格的插入与编辑","2-3 文档表格操作"]},{"id":"M2-04","label":"考点 4 · 页面设置与页眉页脚","aliases":["考点 4 · 页面设置与页眉页脚","2-4 页面设置与页眉页脚"]},{"id":"M2-05","label":"考点 5 · 样式与目录","aliases":["考点 5 · 样式与目录"]},{"id":"M2-06","label":"考点 6 · 打印预览与打印","aliases":["考点 6 · 打印预览与打印"]}],"M5":[{"id":"M5-01","label":"考点 1 · 网络的基础概念、功能及应用","aliases":["考点 1 · 网络基础概念、功能与分类","考点 1 · 网络的基础概念、功能及应用","5-1 网络基础概念"]},{"id":"M5-02","label":"考点 2 · 数据通信系统的基本概念","aliases":["考点 2 · 数据通信基本概念","考点 2 · 数据通信系统的基本概念","5-2 数据通信基本概念"]},{"id":"M5-03","label":"考点 3 · 协议的概念及常用网络协议","aliases":["考点 3 · 网络协议与常用协议","考点 3 · 协议的概念及常用网络协议","5-3 常用网络协议"]},{"id":"M5-04","label":"考点 4 · TCP/IP模型与IP地址","aliases":["考点 4 · TCP/IP模型与IP地址"]},{"id":"M5-05","label":"考点 5 · 子网、子网掩码与VLAN","aliases":["考点 5 · 子网掩码与VLAN划分","考点 5 · 子网、子网掩码与VLAN","5-5 子网与子网掩码"]},{"id":"M5-06","label":"考点 6 · 常见网络设备的类型和功能","aliases":["考点 6 · 常见网络设备类型与功能","考点 6 · 常见网络设备的类型和功能","5-6 网络设备类型与功能"]},{"id":"M5-07","label":"考点 7 · 域名与域名系统DNS","aliases":["考点 7 · 域名与域名系统DNS","考点 7 · 域名与域名系统","5-7 域名系统"]},{"id":"M5-08","label":"考点 8 · 交换机的功能及基本应用","aliases":["考点 8 · 交换机的功能与应用","考点 8 · 交换机的功能及基本应用","5-8 交换机应用"]},{"id":"M5-09","label":"考点 9 · 路由器的功能及基本应用","aliases":["考点 9 · 路由器的功能与应用","考点 9 · 路由器的功能及基本应用","5-9 路由器应用"]},{"id":"M5-10","label":"考点 10 · 局域网常用的拓扑结构","aliases":["考点 10 · 局域网常用拓扑结构","考点 10 · 局域网常用的拓扑结构","5-10 局域网拓扑结构"]},{"id":"M5-11","label":"考点 11 · 常用网络命令的使用","aliases":["考点 11 · 常用网络命令","考点 11 · 常用网络命令的使用","5-11 常用网络命令"]},{"id":"M5-12","label":"考点 12 · 借助网络工具多人协作完成任务","aliases":["考点 12 · 网络协作工具","考点 12 · 借助网络工具多人协作完成任务","5-12 网络协作工具"]}],"M6":[{"id":"M6-01","label":"考点 1 · 程序设计的基本概念","aliases":["考点 1 · 程序设计基本概念","考点 1 · 程序设计的基本概念","6-1 程序设计基本概念"]},{"id":"M6-02","label":"考点 2 · 程序框图","aliases":["考点 2 · 程序框图","6-2 程序框图"]},{"id":"M6-03","label":"考点 3 · 程序设计语言的分类与发展历程","aliases":["考点 3 · 程序设计语言的分类与发展","考点 3 · 程序设计语言的分类与发展历程","6-3 程序设计语言分类与发展"]},{"id":"M6-04","label":"考点 4 · Python程序设计语言的特点","aliases":["考点 4 · Python语言特点","考点 4 · Python程序设计语言的特点","6-4 Python语言特点"]},{"id":"M6-05","label":"考点 5 · Python编程工具（IDLE）的安装与使用","aliases":["考点 5 · Python编程工具IDLE","考点 5 · Python编程工具（IDLE）的安装与使用"]},{"id":"M6-06","label":"考点 6 · Python基本语法、数据类型与流程控制","aliases":["考点 6 · 基本语法、数据类型与流程控制","考点 6 · Python基本语法、数据类型与流程控制","6-6 Python基本语法与数据类型","6-7 Python流程控制"]},{"id":"M6-07","label":"考点 7 · math模块与turtle模块","aliases":["考点 7 · math与turtle模块","考点 7 · math模块与turtle模块","6-8 Python常用模块"]},{"id":"M6-08","label":"考点 8 · 常用算法的实现","aliases":["考点 8 · 常用算法实现","考点 8 · 常用算法的实现"]}],"M4":[{"id":"M4-01","label":"考点 1 · 演示文稿基本概念","aliases":["考点 1 · 演示文稿基本概念","4-1 演示文稿基本概念"]},{"id":"M4-02","label":"考点 2 · 幻灯片基本操作","aliases":["考点 2 · 幻灯片基本操作"]},{"id":"M4-03","label":"考点 3 · 幻灯片对象插入","aliases":["考点 3 · 幻灯片对象插入","4-3 幻灯片对象插入"]},{"id":"M4-04","label":"考点 4 · 幻灯片母版","aliases":["考点 4 · 幻灯片母版","4-4 幻灯片母版"]},{"id":"M4-05","label":"考点 5 · 动画、超链接与切换","aliases":["考点 5 · 动画、超链接与切换","4-5 动画与超链接"]},{"id":"M4-06","label":"考点 6 · 放映方式","aliases":["考点 6 · 放映方式"]}]};window.XK_KD_CANON={"M1|考点 1 · 信息技术的概念及典型应用":"M1-01","M1|考点 2 · 信息技术的发展历程和发展趋势":"M1-02","M1|考点 3 · 信息社会的特征和文化、道德、法律常识":"M1-03","M1|考点 4 · 计算机系统组成与进制转换":"M1-04","M1|考点 5 · ASCII码及常用编码":"M1-05","M1|考点 6 · 数据的存储单位":"M1-06","M1|考点 7 · 操作系统的基本概念与常用快捷键":"M1-07","M1|考点 8 · 文件和文件夹的概念与常用文件类型":"M1-08","M1|考点 9 · 资源管理器与文件管理操作":"M1-09","M1|1-1 信息技术的概念与社会应用":"M1-01","M1|1-3 信息社会的特征与影响":"M1-03","M1|1-2 信息技术的发展历程与趋势":"M1-02","M1|1-4 计算机系统组成与进制转换":"M1-04","M1|1-6 数据存储单位与换算":"M1-06","M1|1-7 操作系统基本概念与快捷键":"M1-07","M7|考点 1 · 信息安全意识与网络欺诈识别":"M7-01","M7|考点 2 · 信息安全基本概念与等级保护":"M7-02","M7|考点 3 · 安全威胁与防御技术":"M7-03","M7|考点 4 · 网络安全设备与部署":"M7-04","M7|考点 5 · 人工智能的定义":"M8-01","M7|考点 1 · 信息安全意识与常见网络欺诈":"M7-01","M7|考点 2 · 信息安全基本概念":"M7-02","M7|考点 3 · 信息安全技术与常见威胁防御":"M7-03","M7|考点 4 · 常用网络安全设备":"M7-04","M7|7-2 信息安全基本概念":"M7-02","M7|7-3 信息安全技术与防御":"M7-03","M7|7-1 信息安全意识":"M7-01","M8|考点 6 · 人工智能发展历程与行业应用":"M8-02","M8|考点 7 · 人工智能关键技术":"M8-03","M8|考点 8 · AI开发工具与框架":"M8-04","M8|考点 6 · 人工智能发展历程与典型应用":"M8-02","M8|考点 8 · 人工智能开发工具和框架":"M8-04","M8|8-1 人工智能定义":"M8-01","M8|8-3 人工智能关键技术":"M8-03","M8|8-2 人工智能发展历程与应用":"M8-02","M8|8-4 人工智能开发工具与框架":"M8-04","M9|考点 9 · 大数据概念、结构与核心特征":"M9-01","M9|考点 10 · 大数据时代背景、场景与理念":"M9-02","M9|考点 11 · 大数据核心技术":"M9-03","M9|考点 9 · 大数据基本概念、结构类型和核心特征":"M9-01","M9|考点 10 · 大数据时代背景、应用场景和发展趋势":"M9-02","M9|考点 11 · 大数据处理核心技术":"M9-03","M9|9-1 大数据基本概念":"M9-01","M9|9-3 大数据处理核心技术":"M9-03","M9|9-2 大数据的时代背景与应用":"M9-02","M3|考点 1 · 工作簿、工作表与单元格":"M3-01","M3|考点 2 · 单元格引用与运算符":"M3-02","M3|考点 3 · 公式与常用函数":"M3-03","M3|考点 4 · 图表制作":"M3-04","M3|考点 5 · 筛选、排序与分类汇总":"M3-05","M3|考点 6 · 数据透视表":"M3-06","M3|3-1 工作簿/工作表/单元格操作":"M3-01","M3|3-4 图表制作":"M3-04","M3|3-5 数据筛选排序与分类汇总":"M3-05","M3|3-3 公式与常用函数":"M3-03","M3|3-2 单元格引用与运算符":"M3-02","M2|考点 1 · 文本编辑与段落格式":"M2-01","M2|考点 2 · 图片、图形与文本框":"M2-02","M2|考点 3 · 文档表格的插入与编辑":"M2-03","M2|考点 4 · 页面设置与页眉页脚":"M2-04","M2|考点 5 · 样式与目录":"M2-05","M2|考点 6 · 打印预览与打印":"M2-06","M2|2-2 图片与图形对象操作":"M2-02","M2|2-1 文本编辑与段落格式":"M2-01","M2|2-4 页面设置与页眉页脚":"M2-04","M2|2-3 文档表格操作":"M2-03","M5|考点 1 · 网络基础概念、功能与分类":"M5-01","M5|考点 2 · 数据通信基本概念":"M5-02","M5|考点 3 · 网络协议与常用协议":"M5-03","M5|考点 4 · TCP/IP模型与IP地址":"M5-04","M5|考点 5 · 子网掩码与VLAN划分":"M5-05","M5|考点 6 · 常见网络设备类型与功能":"M5-06","M5|考点 7 · 域名与域名系统DNS":"M5-07","M5|考点 8 · 交换机的功能与应用":"M5-08","M5|考点 9 · 路由器的功能与应用":"M5-09","M5|考点 10 · 局域网常用拓扑结构":"M5-10","M5|考点 11 · 常用网络命令":"M5-11","M5|考点 12 · 网络协作工具":"M5-12","M5|考点 1 · 网络的基础概念、功能及应用":"M5-01","M5|考点 2 · 数据通信系统的基本概念":"M5-02","M5|考点 3 · 协议的概念及常用网络协议":"M5-03","M5|考点 5 · 子网、子网掩码与VLAN":"M5-05","M5|考点 6 · 常见网络设备的类型和功能":"M5-06","M5|考点 7 · 域名与域名系统":"M5-07","M5|考点 8 · 交换机的功能及基本应用":"M5-08","M5|考点 9 · 路由器的功能及基本应用":"M5-09","M5|考点 10 · 局域网常用的拓扑结构":"M5-10","M5|考点 11 · 常用网络命令的使用":"M5-11","M5|考点 12 · 借助网络工具多人协作完成任务":"M5-12","M5|5-2 数据通信基本概念":"M5-02","M5|5-1 网络基础概念":"M5-01","M5|5-9 路由器应用":"M5-09","M5|5-3 常用网络协议":"M5-03","M5|5-5 子网与子网掩码":"M5-05","M5|5-6 网络设备类型与功能":"M5-06","M5|5-8 交换机应用":"M5-08","M5|5-11 常用网络命令":"M5-11","M5|5-7 域名系统":"M5-07","M5|5-12 网络协作工具":"M5-12","M5|5-10 局域网拓扑结构":"M5-10","M6|考点 1 · 程序设计基本概念":"M6-01","M6|考点 2 · 程序框图":"M6-02","M6|考点 3 · 程序设计语言的分类与发展":"M6-03","M6|考点 4 · Python语言特点":"M6-04","M6|考点 5 · Python编程工具IDLE":"M6-05","M6|考点 6 · 基本语法、数据类型与流程控制":"M6-06","M6|考点 7 · math与turtle模块":"M6-07","M6|考点 8 · 常用算法实现":"M6-08","M6|考点 1 · 程序设计的基本概念":"M6-01","M6|考点 3 · 程序设计语言的分类与发展历程":"M6-03","M6|考点 4 · Python程序设计语言的特点":"M6-04","M6|考点 5 · Python编程工具（IDLE）的安装与使用":"M6-05","M6|考点 6 · Python基本语法、数据类型与流程控制":"M6-06","M6|考点 7 · math模块与turtle模块":"M6-07","M6|考点 8 · 常用算法的实现":"M6-08","M6|6-3 程序设计语言分类与发展":"M6-03","M6|6-1 程序设计基本概念":"M6-01","M6|6-6 Python基本语法与数据类型":"M6-06","M6|6-4 Python语言特点":"M6-04","M6|6-7 Python流程控制":"M6-06","M6|6-8 Python常用模块":"M6-07","M6|6-2 程序框图":"M6-02","M4|考点 1 · 演示文稿基本概念":"M4-01","M4|考点 2 · 幻灯片基本操作":"M4-02","M4|考点 3 · 幻灯片对象插入":"M4-03","M4|考点 4 · 幻灯片母版":"M4-04","M4|考点 5 · 动画、超链接与切换":"M4-05","M4|考点 6 · 放映方式":"M4-06","M4|4-1 演示文稿基本概念":"M4-01","M4|4-5 动画与超链接":"M4-05","M4|4-3 幻灯片对象插入":"M4-03","M4|4-4 幻灯片母版":"M4-04"};</script>
 <script>
 /* =====================================================================
  * 教师题目修正与删除层（在 bank-gate.js 之后、app.js / pk-app.js / arena-app.js 之前执行）
@@ -3502,6 +3521,24 @@ body.arena-mode .app{max-width:none}
   /* ---------- 备课夹（课前挑题 → PK/擂台按勾选顺序出） ---------- */
   var PREP_KEY = 'xkc.prep.v1', prepPage = 0;
   var prepFilter = { m: '', qt: '', kw: '' };
+  /* 考点勾选（章节→考点两层筛选）：{ 模块码: [考点id...] }，localStorage 持久 */
+  var PREP_KD_KEY = 'xkc.prep.kds.v1', prepKdPanelOpen = false;
+  function prepKdSelOf(mod) {
+    if (!mod) return [];
+    var all = {};
+    try { all = JSON.parse(localStorage.getItem(PREP_KD_KEY) || '{}') || {}; } catch (e) { }
+    return Array.isArray(all[mod]) ? all[mod] : [];
+  }
+  function prepKdSave(mod, arr) {
+    var all = {};
+    try { all = JSON.parse(localStorage.getItem(PREP_KD_KEY) || '{}') || {}; } catch (e) { }
+    if (arr && arr.length) all[mod] = arr; else delete all[mod];
+    try { localStorage.setItem(PREP_KD_KEY, JSON.stringify(all)); } catch (e) { }
+  }
+  function kdCanon(q) {
+    var P = window.XK_KD_CANON || {};
+    return P[q.m + '|' + q.kd] || (q.m + '|' + q.kd);
+  }
   function prepIds() { try { var v = JSON.parse(localStorage.getItem(PREP_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
   function prepSave(ids) {
     try { localStorage.setItem(PREP_KEY, JSON.stringify(ids)); } catch (e) { }
@@ -3514,11 +3551,40 @@ body.arena-mode .app{max-width:none}
   }
   function prepFiltered() {
     var mod = prepFilter.m, qt = prepFilter.qt, kw = prepFilter.kw;
+    var selKd = mod ? prepKdSelOf(mod) : [];
     return BANK.filter(function (q) {
       if (mod && q.m !== mod) return false;
+      if (mod && selKd.length && selKd.indexOf(kdCanon(q)) === -1) return false;
       if (qt && q.qt !== qt) return false;
       if (kw && String(q.s).toLowerCase().indexOf(kw) === -1) return false;
       return true;
+    });
+  }
+  function renderPrepKdPanel() {
+    var mod = prepFilter.m;
+    var sel = prepKdSelOf(mod);
+    var pts = (mod && window.XK_POINTS && window.XK_POINTS[mod]) || [];
+    var btnText = !mod ? '🎯 考点(先选章节)' : (sel.length ? '🎯 考点·已选' + sel.length + '/' + pts.length : '🎯 考点·全部' + (pts.length ? ' ' + pts.length : ''));
+    // 各考点题数（帮老师判断体量）
+    var cnt = {};
+    if (mod) BANK.forEach(function (q) { if (q.m === mod) { var c = kdCanon(q); cnt[c] = (cnt[c] || 0) + 1; } });
+    var html = '';
+    if (!mod) html = '<div class="kd-empty">先选择章节，再勾选该章节下的考点</div>';
+    else if (!pts.length) html = '<div class="kd-empty">该章节暂无考点数据</div>';
+    else {
+      html += '<div class="kd-ops"><button class="mini-btn j-kdAll" type="button">✓ 全选</button><button class="mini-btn j-kdNone" type="button">清空</button></div>';
+      pts.forEach(function (p) {
+        var on = sel.indexOf(p.id) !== -1;
+        html += '<label class="kd-row"><input type="checkbox" data-kd="' + esc(p.id) + '"' + (on ? ' checked' : '') + '><span class="kd-l">' + esc(p.label) + '</span><span class="kd-n">' + (cnt[p.id] || 0) + '题</span></label>';
+      });
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepKdPanel'), function (p) {
+      p.innerHTML = html;
+      p.classList.toggle('hidden', !prepKdPanelOpen);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.j-prepKdBtn'), function (b) {
+      b.textContent = btnText;
+      b.classList.toggle('on', sel.length > 0);
     });
   }
   function renderPrepMgr() {
@@ -3533,7 +3599,9 @@ body.arena-mode .app{max-width:none}
         });
         modSel.value = prepFilter.m;
       }
+      modSel.value = prepFilter.m;
     });
+    renderPrepKdPanel();
     var ids = prepIds(), chosen = new Set(ids);
     var list = prepFiltered();
     var PER = 30, pages = Math.max(1, Math.ceil(list.length / PER));
@@ -3819,6 +3887,54 @@ body.arena-mode .app{max-width:none}
         if (!prepIds().length) { renderPrepMgr(); return; }
         if (confirm('清空备课夹？（不影响题库与成绩）')) { prepSave([]); renderPrepMgr(); }
       };
+    });
+    // 考点勾选（事件委托：备课夹有两处渲染实例）
+    document.addEventListener('click', function (ev) {
+      var kdBtn = ev.target.closest ? ev.target.closest('.j-prepKdBtn') : null;
+      var kdPanel = ev.target.closest ? ev.target.closest('.j-prepKdPanel') : null;
+      var kdRow = ev.target.closest ? ev.target.closest('.kd-row') : null;
+      var mod = prepFilter.m;
+      if (kdBtn) {
+        prepKdPanelOpen = !prepKdPanelOpen;
+        renderPrepMgr();
+        return;
+      }
+      if (kdPanel) {
+        if (ev.target.closest('.j-kdAll')) {
+          var pts = (window.XK_POINTS && window.XK_POINTS[mod]) || [];
+          prepKdSave(mod, pts.map(function (p) { return p.id; }));
+          renderPrepMgr();
+          return;
+        }
+        if (ev.target.closest('.j-kdNone')) {
+          prepKdSave(mod, []);
+          renderPrepMgr();
+          return;
+        }
+        var cb = ev.target.closest('input[type=checkbox][data-kd]');
+        if (cb) {
+          var cur = prepKdSelOf(mod);
+          var id = cb.getAttribute('data-kd');
+          var at = cur.indexOf(id);
+          if (at === -1) cur.push(id); else cur.splice(at, 1);
+          prepKdSave(mod, cur);
+          renderPrepMgr();
+          return;
+        }
+        if (kdRow) {
+          // 点行文字 = 单选该考点（勾上它、清掉其他），再自动收面板
+          var lab = kdRow.querySelector('.kd-l');
+          var cb2 = kdRow.querySelector('input[type=checkbox][data-kd]');
+          if (lab && cb2 && ev.target === lab) {
+            prepKdSave(mod, [cb2.getAttribute('data-kd')]);
+            prepKdPanelOpen = false;
+            renderPrepMgr();
+          }
+          return;
+        }
+        return; // 面板内其他点击不收起
+      }
+      if (prepKdPanelOpen) { prepKdPanelOpen = false; renderPrepMgr(); } // 点面板外收起
     });
     on('clsDrawBtn', 'onclick', function () { runDraw(); });
     on('qrBtn', 'onclick', function () { $('qrMask').classList.remove('hidden'); });
