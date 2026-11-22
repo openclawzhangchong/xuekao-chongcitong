@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>教师工作台 · 驾驶舱（原型）</title>
+<style>
+:root{
+  --nav-bg:#1E2430; --nav-bg2:#161B25; --nav-tx:#AEB7C6; --nav-on:#fff;
+  --bg:#F4F6FB; --card:#fff; --line:#E4E8F2; --tx:#1E2430; --mut:#7A8399;
+  --pri:#6D5BD0; --pri-d:#5348A8; --pri-l:#EEEBFA;
+  --blue:#2E6FD8; --blue-l:#EAF1FD;
+  --org:#D97B29; --org-l:#FDF2E7;
+  --grn:#22995C; --grn-l:#E9F7EF;
+  --red:#D85454; --gold:#D4A017;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+
+/* ===== 布局 ===== */
+.app{display:grid;grid-template-columns:200px 1fr;min-height:100vh}
+.side{background:linear-gradient(180deg,var(--nav-bg) 0%,var(--nav-bg2) 100%);color:var(--nav-tx);padding:18px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.side .brand{display:flex;align-items:center;gap:10px;padding:6px 10px 18px}
+.side .brand .lg{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--pri),var(--pri-d));display:flex;align-items:center;justify-content:center;font-size:20px}
+.side .brand b{color:#fff;font-size:15px;display:block}
+.side .brand span{font-size:11px;color:var(--nav-tx)}
+.side a.nav{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;text-decoration:none;color:var(--nav-tx);font-size:14px;transition:background .15s}
+.side a.nav .ic{font-size:18px;width:22px;text-align:center}
+.side a.nav:hover{background:rgba(255,255,255,.07)}
+.side a.nav.on{background:var(--pri);color:#fff;font-weight:700}
+.side .sp{flex:1}
+.side .foot{font-size:11px;color:#5A6478;padding:10px;text-align:center}
+
+.main{padding:22px 26px 40px}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;bottom:0;left:0;right:0;height:auto;flex-direction:row;padding:6px 4px;justify-content:space-around;z-index:50}
+  .side .brand,.side .sp,.side .foot,.side .nav span{display:none}
+  .side a.nav{flex-direction:column;gap:2px;font-size:10px;padding:7px 10px}
+  .side a.nav .ic{font-size:20px;width:auto}
+  .main{padding:16px 14px 90px}
+}
+
+/* ===== 驾驶舱 ===== */
+.hello{background:linear-gradient(120deg,var(--pri-d),var(--pri) 60%,#8B7BE0);border-radius:18px;color:#fff;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;box-shadow:0 8px 24px rgba(83,72,168,.25)}
+.hello h1{font-size:22px;font-weight:700}
+.hello .dt{font-size:13px;opacity:.85;margin-top:5px}
+.hello .right{text-align:right;font-size:13px;opacity:.9}
+.hello .right b{font-size:16px}
+
+h2.sec{font-size:16px;color:var(--tx);margin:26px 0 12px;display:flex;align-items:center;gap:8px}
+h2.sec::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--pri)}
+
+.sys{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media (max-width:860px){.sys{grid-template-columns:1fr}}
+.sys a.sc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;text-decoration:none;color:var(--tx);display:block;position:relative;overflow:hidden;transition:transform .16s,box-shadow .16s,border-color .16s;cursor:pointer}
+.sys a.sc:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(30,36,48,.10);border-color:var(--pri)}
+.sys .sc .top{display:flex;align-items:center;gap:12px}
+.sys .sc .ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex:0 0 auto}
+.sys .sc h3{font-size:17px}
+.sys .sc .dom{font-size:11px;color:var(--mut);margin-top:2px}
+.sys .sc p{font-size:12.5px;color:var(--mut);margin-top:10px;line-height:1.6}
+.sys .sc .go{position:absolute;top:18px;right:18px;font-size:12px;color:var(--mut)}
+.sys .sc:hover .go{color:var(--pri)}
+.sys .sc.c-up .ic{background:var(--pri-l)} .sys .sc.c-up h3 b{color:var(--pri)}
+.sys .sc.c-zt .ic{background:var(--blue-l)} .sys .sc.c-zt{border-top:3px solid var(--blue)}
+.sys .sc.c-pj .ic{background:var(--org-l)} .sys .sc.c-pj{border-top:3px solid var(--org)}
+.sys .sc.c-dm .ic{background:var(--grn-l)} .sys .sc.c-dm{border-top:3px solid var(--grn)}
+.sys .sc .live{display:inline-block;font-size:10.5px;background:var(--grn-l);color:var(--grn);border-radius:999px;padding:2px 8px;margin-left:8px;vertical-align:2px}
+
+.loop{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+.loop .steps{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin-top:14px}
+.loop .st{flex:1;min-width:150px;text-align:center;position:relative;padding:10px 8px}
+.loop .st .no{width:30px;height:30px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px}
+.loop .st b{font-size:13.5px;display:block}
+.loop .st span{font-size:11.5px;color:var(--mut);display:block;margin-top:4px;line-height:1.5}
+.loop .st:not(:last-child)::after{content:"→";position:absolute;right:-10px;top:18px;color:#B9C0CF;font-size:18px}
+.loop .st1 .no{background:var(--blue)} .loop .st2 .no{background:var(--gold)} .loop .st3 .no{background:var(--org)} .loop .st4 .no{background:var(--grn)}
+
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tools a{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px;text-decoration:none;color:var(--tx);display:flex;align-items:center;gap:9px;font-size:13.5px;transition:all .15s}
+.tools a:hover{border-color:var(--pri);color:var(--pri-d);transform:translateY(-2px)}
+.tools a .ic{font-size:18px}
+
+.dash2{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}
+@media (max-width:860px){.dash2{grid-template-columns:1fr}}
+.cardp{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.cardp h4{font-size:14px;margin-bottom:12px;color:var(--tx)}
+.tl{list-style:none}
+.tl li{display:flex;gap:10px;padding:7px 0;font-size:12.5px;color:var(--mut);border-bottom:1px dashed var(--line)}
+.tl li:last-child{border-bottom:none}
+.tl .tm{white-space:nowrap;color:var(--pri);font-weight:700}
+.muted{color:var(--mut)}
+
+/* ===== iframe 模式 ===== */
+.frame-wrap{display:none;background:var(--bg);position:fixed;inset:0 0 0 200px;z-index:20}
+@media (max-width:860px){.frame-wrap{inset:0 0 58px 0}}
+.frame-top{background:var(--nav-bg);color:#fff;display:flex;align-items:center;gap:14px;padding:10px 16px}
+.frame-top .bk{background:rgba(255,255,255,.12);border:none;color:#fff;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+.frame-top .bk:hover{background:rgba(255,255,255,.22)}
+.frame-top b{font-size:14px}
+.frame-top .ext{margin-left:auto;font-size:12px;color:#AEB7C6;text-decoration:none}
+.frame-top .ext:hover{color:#fff}
+.frame-top iframe{width:220px;height:44px;border:none;border-radius:8px;background:#fff;border:1px solid rgba(255,255,255,.15)}
+.frame-box{height:calc(100vh - 58px);width:100%}
+.frame-box iframe{width:100%;height:100%;border:none;background:#fff}
+.app.inframe .frame-wrap{display:block}
+.app.inframe .dash{display:none}
+
+/* ===== 鉴权门 ===== */
+.gate{position:fixed;inset:0;background:linear-gradient(160deg,#1E2430,#2A3242);z-index:99;display:flex;align-items:center;justify-content:center}
+.gate .box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:36px 40px;width:min(380px,90vw);backdrop-filter:blur(6px)}
+.gate .lg{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--pri),var(--pri-d));display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px}
+.gate h1{color:#fff;font-size:19px;text-align:center}
+.gate p{color:#8FA0B8;font-size:12.5px;text-align:center;margin:8px 0 20px}
+.gate input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:15px;text-align:center;letter-spacing:3px;outline:none}
+.gate input:focus{border-color:var(--pri)}
+.gate button{width:100%;margin-top:14px;padding:12px;border:none;border-radius:10px;background:var(--pri);color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+.gate button:hover{background:var(--pri-d)}
+.gate .hint{color:#5A6B84;font-size:11px;margin-top:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<!-- 鉴权门（演示：口令 zc1234） -->
+<div class="gate" id="gate">
+  <div class="box">
+    <div class="lg">🧑‍🏫</div>
+    <h1>教师工作台 · 驾驶舱</h1>
+    <p>上课 · 周测 · 判卷 · 点名，一站直达</p>
+    <input id="gatePw" type="password" placeholder="教师口令" autocomplete="off">
+    <button id="gateGo">进入工作台</button>
+    <div class="hint">原型演示口令：zc1234 ｜ 正式版将接入统一教师密钥</div>
+  </div>
+</div>
+
+<div class="app" id="app">
+  <!-- 侧栏 -->
+  <aside class="side">
+    <div class="brand"><div class="lg">🧑‍🏫</div><div><b>教师工作台</b><span>jiuyeke.cn</span></div></div>
+    <a class="nav on" data-go="dash" href="#dash"><span class="ic">🛰️</span>驾驶舱<span></span></a>
+    <a class="nav" data-go="xuekao" href="#xuekao"><span class="ic">🚀</span>上课系统</a>
+    <a class="nav" data-go="zhouce" href="#zhouce"><span class="ic">📝</span>周测组卷</a>
+    <a class="nav" data-go="panjuan" href="#panjuan"><span class="ic">📸</span>AI 判卷</a>
+    <a class="nav" data-go="dianming" href="#dianming"><span class="ic">🎲</span>课堂点名</a>
+    <a class="nav" data-go="xuekao" href="#xuekao-prep"><span class="ic">📋</span>备课夹</a>
+    <div class="sp"></div>
+    <a class="nav" href="https://nav.jiuyeke.cn" target="_blank"><span class="ic">🧭</span>导航站</a>
+    <a class="nav" href="https://biji.jiuyeke.cn" target="_blank"><span class="ic">📒</span>速记库</a>
+    <div class="foot">v0.1 原型<br>jiuyeke.cn</div>
+  </aside>
+
+  <!-- 主区 -->
+  <main class="main" id="main">
+    <!-- 驾驶舱 -->
+    <div class="dash" id="dash">
+      <div class="hello">
+        <div>
+          <h1 id="hiText">老师好 👋</h1>
+          <div class="dt" id="dtText"></div>
+        </div>
+        <div class="right">今日课节：<b>待接入课表</b><br>教学闭环 4 步，一键直达 ↓</div>
+      </div>
+
+      <h2 class="sec">四大系统</h2>
+      <div class="sys">
+        <a class="sc c-up" data-go="xuekao" href="#xuekao">
+          <div class="top"><div class="ic">🚀</div><div><h3>上课系统 <span class="live">● 在用</span></h3><div class="dom">xuekao.jiuyeke.cn</div></div></div>
+          <p>3982 题刷题 · 模拟考 · 双人 PK · 擂台赛 · 备课夹考点勾选 · 排行榜，课堂主阵地。</p>
+          <span class="go">进入 →</span>
+        </a>
+        <a class="sc c-zt" data-go="zhouce" href="#zhouce">
+          <div class="top"><div class="ic">📝</div><div><h3>周测组卷 <span class="live">● 在用</span></h3><div class="dom">zhouce.jiuyeke.cn</div></div></div>
+          <p>按考点/难度在线组卷 · 一键生成试卷与答案 · 答题卡打印 · PDF 导出 · 班级存档。</p>
+          <span class="go">进入 →</span>
+        </a>
+        <a class="sc c-pj" data-go="panjuan" href="#panjuan">
+          <div class="top"><div class="ic">📸</div><div><h3>智策 AI 判卷 <span class="live">● 在用</span></h3><div class="dom">panjuan.jiuyeke.cn</div></div></div>
+          <p>拍照判分 · 标准卡生成 · 答题卡 PDF · CSV/Excel 成绩导出，客观题秒判。</p>
+          <span class="go">进入 →</span>
+        </a>
+        <a class="sc c-dm" data-go="dianming" href="#dianming">
+          <div class="top"><div class="ic">🎲</div><div><h3>课堂点名 <span class="live">● 在用</span></h3><div class="dom">dianming.jiuyeke.cn</div></div></div>
+          <p>多班级管理 · 随机点名 · 点名历史记录，与学考冲刺通点名台互补。</p>
+          <span class="go">进入 →</span>
+        </a>
+      </div>
+
+      <h2 class="sec">教学闭环 · 四步串联</h2>
+      <div class="loop">
+        <div class="steps">
+          <div class="st st1"><div class="no">1</div><b>周测组卷</b><span>按本周考点出卷<br>答题卡直接打印</span></div>
+          <div class="st st2"><div class="no">2</div><b>课堂作答</b><span>答题卡下发<br>或课堂投屏讲练</span></div>
+          <div class="st st3"><div class="no">3</div><b>AI 判卷</b><span>拍照上传<br>客观题秒出分</span></div>
+          <div class="st st4"><div class="no">4</div><b>成绩回流</b><span>CSV 进学考冲刺通<br>错题本自动归集（规划）</span></div>
+        </div>
+      </div>
+
+      <div class="dash2" style="margin-top:14px">
+        <div class="cardp">
+          <h4>⚡ 快捷工具</h4>
+          <div class="tools">
+            <a href="#xuekao-prep" data-go="xuekao">📋 备课夹</a>
+            <a href="#xuekao-wrong" data-go="xuekao">📕 错题本</a>
+            <a href="#zhouce-card" data-go="zhouce">🖨 答题卡打印</a>
+            <a href="#xuekao-diag" data-go="xuekao">📡 考点雷达</a>
+            <a href="https://nav.jiuyeke.cn" target="_blank">🧭 常用导航</a>
+            <a href="https://jiaoyan.jiuyeke.cn" target="_blank">🏫 教研平台</a>
+          </div>
+          <h4 style="margin-top:18px">💡 规划中（下一版）</h4>
+          <div class="tools">
+            <a href="javascript:void(0)" title="规划中">🔗 成绩一键回流错题本</a>
+            <a href="javascript:void(0)" title="规划中">📊 班级学情聚合看板</a>
+            <a href="javascript:void(0)" title="规划中">🗓 课表联动问候</a>
+          </div>
+        </div>
+        <div class="cardp">
+          <h4>🕘 最近动态（接入后实时）</h4>
+          <ul class="tl">
+            <li><span class="tm">示意</span>周测《第六章 Python》已生成，答题卡已导出</li>
+            <li><span class="tm">示意</span>AI 判卷完成 42 份，平均分 86.5</li>
+            <li><span class="tm">示意</span>课堂 PK：甲 vs 乙，甲获胜</li>
+            <li><span class="tm">示意</span>点名：3 班完成一轮，剩余 12 人</li>
+            <li><span class="tm">示意</span>备课夹新增 5 题（考点：程序框图）</li>
+          </ul>
+          <div class="muted" style="font-size:11.5px;margin-top:10px">学考冲刺通云端数据可实时聚合；判卷/周测/点名数据在本机，接入需各系统加上报接口（下一版）。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- iframe 容器 -->
+    <div class="frame-wrap" id="frameWrap">
+      <div class="frame-top">
+        <button class="bk" id="bkBtn">← 返回驾驶舱</button>
+        <b id="frameTitle"></b>
+        
+        <a class="ext" id="frameExt" target="_blank">↗ 新窗口打开</a>
+      </div>
+      <div class="frame-box"><iframe id="frameMain" title="系统"></iframe></div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  var SYS = {
+    xuekao:  { name:'上课系统',  url:'https://xuekao.jiuyeke.cn/',  crumb:'https://xuekao.jiuyeke.cn/#/prep' },
+    zhouce:  { name:'周测组卷',  url:'https://zhouce.jiuyeke.cn/',  crumb:'https://zhouce.jiuyeke.cn/' },
+    panjuan: { name:'智策 AI 判卷', url:'https://panjuan.jiuyeke.cn/', crumb:'https://panjuan.jiuyeke.cn/' },
+    dianming:{ name:'课堂点名',  url:'https://dianming.jiuyeke.cn/', crumb:'https://dianming.jiuyeke.cn/' }
+  };
+  var app = document.getElementById('app');
+  var hash = (location.hash || '').replace('#','');
+
+  /* 鉴权门（演示口令） */
+  var gate = document.getElementById('gate');
+  function openGate(){ gate.style.display = 'flex'; }
+  function closeGate(){ gate.style.display = 'none'; }
+  document.getElementById('gateGo').onclick = function(){
+    if(document.getElementById('gatePw').value === 'zc1234'){ closeGate(); } else { alert('口令不对（演示口令 zc1234）'); }
+  };
+  document.getElementById('gatePw').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('gateGo').click(); });
+  if(sessionStorage.getItem('wb.gate')==='1') closeGate();
+  document.getElementById('gateGo').addEventListener('click', function(){ if(document.getElementById('gatePw').value==='zc1234') sessionStorage.setItem('wb.gate','1'); });
+
+  /* 问候 */
+  function greet(){
+    var d = new Date(), h = d.getHours();
+    var hello = h<8?'早上好':(h<12?'上午好':(h<14?'中午好':(h<18?'下午好':'晚上好')));
+    document.getElementById('hiText').textContent = hello + '，张老师 👋';
+    var week=['日','一','二','三','四','五','六'][d.getDay()];
+    document.getElementById('dtText').textContent = d.getFullYear()+' 年 '+(d.getMonth()+1)+' 月 '+d.getDate()+' 日 · 星期'+week+' · 福建中职《信息技术基础》学考';
+  }
+  greet();
+
+  /* 导航/iframe */
+  function setNav(key){
+    document.querySelectorAll('.side a.nav[data-go]').forEach(function(a){
+      a.classList.toggle('on', a.getAttribute('data-go')===key);
+    });
+  }
+  function openFrame(key, sub){
+    var s = SYS[key]; if(!s) return;
+    document.getElementById('frameTitle').textContent = s.name;
+    document.getElementById('frameMain').src = sub || s.url;
+    document.getElementById('frameCrumb').src = s.crumb;
+    document.getElementById('frameExt').href = sub || s.url;
+    app.classList.add('inframe');
+    setNav(key);
+  }
+  function goDash(){
+    app.classList.remove('inframe');
+    setNav('dash');
+    history.replaceState(null,'','#dash');
+  }
+  function route(){
+    var h = (location.hash||'').replace('#','');
+    if(!h || h==='dash'){ goDash(); return; }
+    if(h==='xuekao'){ openFrame('xuekao'); return; }
+    if(h==='zhouce'){ openFrame('zhouce'); return; }
+    if(h==='panjuan'){ openFrame('panjuan'); return; }
+    if(h==='dianming'){ openFrame('dianming'); return; }
+    if(h==='xuekao-prep'){ openFrame('xuekao','https://xuekao.jiuyeke.cn/#/prep'); return; }
+    if(h==='xuekao-wrong'){ openFrame('xuekao','https://xuekao.jiuyeke.cn/#/wrong'); return; }
+    if(h==='xuekao-diag'){ openFrame('xuekao','https://xuekao.jiuyeke.cn/#/diag'); return; }
+    if(h==='zhouce-card'){ openFrame('zhouce'); return; }
+    goDash();
+  }
+  document.querySelectorAll('[data-go]').forEach(function(a){
+    a.addEventListener('click', function(ev){
+      var key = a.getAttribute('data-go');
+      if(a.getAttribute('target')==='_blank') return;
+      ev.preventDefault();
+      if(a.getAttribute('href') && a.getAttribute('href').indexOf('#')!==0){ window.open(a.href,'_blank'); return; }
+      if(key==='xuekao-prep'){ openFrame('xuekao','https://xuekao.jiuyeke.cn/#/prep'); history.replaceState(null,'','#xuekao-prep'); return; }
+      if(key==='xuekao-wrong'){ openFrame('xuekao','https://xuekao.jiuyeke.cn/#/wrong'); history.replaceState(null,'','#xuekao-wrong'); return; }
+      if(key==='xuekao-diag'){ openFrame('xuekao','https://xuekao.jiuyeke.cn/#/diag'); history.replaceState(null,'','#xuekao-diag'); return; }
+      history.replaceState(null,'','#'+key);
+      if(key==='dash'){ goDash(); } else { openFrame(key); }
+    });
+  });
+  document.getElementById('bkBtn').onclick = goDash;
+  window.addEventListener('hashchange', route);
+  route();
+})();
+</script>
+</body>
+</html>
